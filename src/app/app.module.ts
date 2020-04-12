@@ -16,16 +16,10 @@ import { AboutComponent } from './about/about.component';
 import { EducationComponent } from './education/education.component';
 import { SkillsComponent } from './skills/skills.component';
 import { InterestsComponent } from './interests/interests.component';
-import { EmployeesComponent } from './employees/employees.component';
-import { EmployeeComponent } from './employees/employee/employee.component';
-import { EmployeeListComponent } from './employees/employee-list/employee-list.component';
 import { NotFoundComponent } from './not-found/not-found.component';
+import { ProjectsComponent } from './projects/projects.component';
 
 const appRoutes: Routes = [
-  { path: 'register',
-    component: EmployeesComponent,
-    pathMatch: 'full'
-  },
   { path: 'home',
     component: AppComponent,
     redirectTo: '/',
@@ -43,10 +37,8 @@ const appRoutes: Routes = [
     EducationComponent,
     SkillsComponent,
     InterestsComponent,
-    EmployeesComponent,
-    EmployeeComponent,
-    EmployeeListComponent,
-    NotFoundComponent
+    NotFoundComponent,
+    ProjectsComponent
   ],
   imports: [
     BrowserModule,
