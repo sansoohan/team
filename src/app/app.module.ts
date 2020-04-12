@@ -18,6 +18,7 @@ import { SkillsComponent } from './skills/skills.component';
 import { InterestsComponent } from './interests/interests.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { ProjectsComponent } from './projects/projects.component';
+import { WorkflowComponent } from './workflow/workflow.component';
 
 const appRoutes: Routes = [
   { path: 'home',
@@ -38,7 +39,8 @@ const appRoutes: Routes = [
     SkillsComponent,
     InterestsComponent,
     NotFoundComponent,
-    ProjectsComponent
+    ProjectsComponent,
+    WorkflowComponent
   ],
   imports: [
     BrowserModule,
