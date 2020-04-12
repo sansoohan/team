@@ -7,8 +7,3 @@ import { AppModule } from './app/app.module';
 
 platformBrowserDynamic().bootstrapModule(AppModule)
   .catch(err => console.log(err));
-
-
-var myfunction = function(something){
-  alert(something);
-}
