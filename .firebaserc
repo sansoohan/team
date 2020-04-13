@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "developers-8a830": {
+      "hosting": {
+        "developer-new": [
+          "developers-8a830"
+        ]
+      }
+    }
+  }
+}
