@@ -4,8 +4,9 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 
-import { AngularFireModule } from 'angularfire2';
-import { AngularFireDatabaseModule } from 'angularfire2/database';
+import { AngularFireModule } from '@angular/fire';
+import { AngularFireAnalyticsModule } from '@angular/fire/analytics';
+import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { ToastrModule } from 'ngx-toastr';
 
 import { environment } from '../environments/environment';
@@ -44,8 +45,9 @@ const appRoutes: Routes = [
   ],
   imports: [
     BrowserModule,
-    AngularFireModule.initializeApp(environment.firebaseConfig),
-    AngularFireDatabaseModule,
+    AngularFireModule.initializeApp(environment.firebase),
+    AngularFireAnalyticsModule,
+    AngularFirestoreModule,
     FormsModule,
     ToastrModule.forRoot()
   ],
