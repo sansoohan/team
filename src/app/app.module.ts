@@ -1,3 +1,4 @@
+import {APP_BASE_HREF} from '@angular/common';
 
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
@@ -12,46 +13,27 @@ import { ToastrModule } from 'ngx-toastr';
 import { environment } from '../environments/environment';
 
 import { AppComponent } from './app.component';
-import { NavbarComponent } from './navbar/navbar.component';
-import { AboutComponent } from './about/about.component';
-import { EducationComponent } from './education/education.component';
-import { SkillsComponent } from './skills/skills.component';
-import { InterestsComponent } from './interests/interests.component';
 import { NotFoundComponent } from './not-found/not-found.component';
-import { ProjectsComponent } from './projects/projects.component';
-import { WorkflowComponent } from './workflow/workflow.component';
-
-const appRoutes: Routes = [
-  { path: 'home',
-    component: AppComponent,
-    redirectTo: '/',
-    pathMatch: 'full'
-  },
-  { path: '**', component: NotFoundComponent }
-];
-
+import { ProfileComponent } from './profile/profile.component';
+import { ProfileModule } from './profile/profile.module';
+import { AppRoutingModule } from './app-routing.module';
 
 @NgModule({
   declarations: [
     AppComponent,
-    NavbarComponent,
-    AboutComponent,
-    EducationComponent,
-    SkillsComponent,
-    InterestsComponent,
-    NotFoundComponent,
-    ProjectsComponent,
-    WorkflowComponent
+    NotFoundComponent
   ],
   imports: [
     BrowserModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireAnalyticsModule,
     AngularFirestoreModule,
-    FormsModule,
-    ToastrModule.forRoot()
+    AppRoutingModule,
+    FormsModule
   ],
-  providers: [],
+  providers: [
+    {provide: APP_BASE_HREF, useValue: '/'}
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
