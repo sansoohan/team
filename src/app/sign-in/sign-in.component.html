@@ -1,0 +1,9 @@
+<ngx-auth-firebaseui-login
+  [messageOnAuthError]="'SignIn Faild'"
+  [messageOnAuthSuccess]="'SignIn Success'"
+  [providers]="['email', 'google', 'github']"
+  (onSuccess)="signInSuccess($event)"
+  (handleError)="signInFailed($event)"
+  (onCreateAccountRequested)="signUpClicked()"
+  (onResetPasswordRequested)="resetPassworClicked()"
+></ngx-auth-firebaseui-login>
