@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { NavbarComponent } from './navbar/navbar.component';
 import { AboutComponent } from './about/about.component';
 import { EducationComponent } from './education/education.component';
 import { SkillsComponent } from './skills/skills.component';
@@ -13,7 +12,6 @@ import { ProfileComponent } from './profile.component';
 @NgModule({
   declarations: [
     ProfileComponent,
-    NavbarComponent,
     AboutComponent,
     EducationComponent,
     SkillsComponent,

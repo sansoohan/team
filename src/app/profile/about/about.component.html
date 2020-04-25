@@ -6,7 +6,7 @@
     </h1>
     <div class="subheading mb-5"><a href="https://www.google.co.jp/maps/place/{{aboutContent.address}}">
       {{aboutContent.address}}</a> · {{aboutContent.phoneNumber}} ·
-      <a href="mailto:{{aboutContent.email}}">{{aboutContent.email}}</a>
+      <a href="mailto:{{aboutContent.email}}" style="text-transform:none;">{{aboutContent.email}}</a>
     </div>
     <ul class="list-inline list-social-icons mb-0">
       <li *ngFor="let social of aboutContent.social" class="list-inline-item">
