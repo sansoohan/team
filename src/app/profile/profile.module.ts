@@ -7,7 +7,7 @@ import { EducationComponent } from './education/education.component';
 import { SkillsComponent } from './skills/skills.component';
 import { InterestsComponent } from './interests/interests.component';
 import { ProjectsComponent } from './projects/projects.component';
-import { WorkflowComponent } from './workflow/workflow.component';
+import { AdditionalProfilesComponent } from './additional-profiles/additional-profiles.component';
 import { ProfileComponent } from './profile.component';
 
 @NgModule({
@@ -19,8 +19,9 @@ import { ProfileComponent } from './profile.component';
     SkillsComponent,
     InterestsComponent,
     ProjectsComponent,
-    WorkflowComponent
+    AdditionalProfilesComponent
   ],
+  imports: [ CommonModule ],
   exports: [ ProfileComponent ],
   providers: []
 })
