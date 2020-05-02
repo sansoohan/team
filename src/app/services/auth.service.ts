@@ -36,4 +36,8 @@ export class AuthService {
     console.log(event);
     // console.log(this.signInErrorMessage);
   }
+
+  signUpFailed(event): void {
+    console.log(event);
+  }
 }

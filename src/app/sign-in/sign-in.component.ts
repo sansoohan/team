@@ -10,7 +10,7 @@ import { AuthService } from '../services/auth.service';
 export class SignInComponent implements OnInit {
   // signInErrorMessage = '';
   // tslint:disable-next-line:no-shadowed-variable
-  constructor(private router: Router, private authService: AuthService) {
+  constructor(private router: Router, public authService: AuthService) {
     if (this.authService.isSignedIn()){
       this.router.navigate(['/profile']);
     }
