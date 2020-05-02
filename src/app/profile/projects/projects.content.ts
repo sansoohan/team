@@ -1,5 +1,4 @@
 interface ProjectsContent {
-  id: string;
   projects: Array<ProjectDescription>;
 }
 

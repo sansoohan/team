@@ -1,5 +1,4 @@
 interface SkillsContent {
-  id: string;
   skillGroups: Array<SkillGroup>;
 }
 

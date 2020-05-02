@@ -1,5 +1,4 @@
 interface AboutContent {
-  id: string;
   firstName: string;
   lastName: string;
   address: string;

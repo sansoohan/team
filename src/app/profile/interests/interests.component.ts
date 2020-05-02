@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
   selector: 'app-interests',
@@ -6,15 +6,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./interests.component.css']
 })
 export class InterestsComponent implements OnInit {
-  interestsContent: InterestsContent = {
-    id: 'someId',
-    descriptions: [
-      'Hadoop Distribute System',
-      'Hacking technique for developer',
-      'Bio Sensor for Input Device',
-      'AI Programing'
-    ]
-  };
+  @Input() interestsContent: InterestsContent;
 
   constructor() { }
 

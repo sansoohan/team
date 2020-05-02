@@ -1,5 +1,4 @@
 interface AdditaionProfileContent {
-  id: string;
   title: string;
   largeGroups: Array<LargeGroup>;
 }
@@ -18,3 +17,4 @@ interface SmallGroupDescription {
   descriptionDetail: string;
   faIcon: string;
 }
+

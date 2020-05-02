@@ -25,16 +25,16 @@
       <li class="nav-item">
         <a class="nav-link js-scroll-trigger" href="#interests">Interests</a>
       </li>
-      <li *ngFor="let additaionProfileContent of additaionProfilesContent" class="nav-item">
+      <li *ngFor="let additaionProfileContent of profileContent.additaionProfilesContent" class="nav-item">
         <a class="nav-link js-scroll-trigger" href="#{{additaionProfileContent.title}}">{{additaionProfileContent.title}}</a>
       </li>
     </ul>
   </div>
 </nav>
 
-<app-about></app-about>
-<app-education></app-education>
-<app-skills></app-skills>
-<app-projects></app-projects>
-<app-interests></app-interests>
-<app-additional-profiles [additaionProfilesContent]="additaionProfilesContent"></app-additional-profiles>
+<app-about [aboutContent]="profileContent.aboutContent"></app-about>
+<app-education [educationsContent]="profileContent.educationsContent"></app-education>
+<app-skills [skillsContent]="profileContent.skillsContent"></app-skills>
+<app-projects [projectsContent]="profileContent.projectsContent"></app-projects>
+<app-interests [interestsContent]="profileContent.interestsContent"></app-interests>
+<app-additional-profiles [additaionProfilesContent]="profileContent.additaionProfilesContent"></app-additional-profiles>
