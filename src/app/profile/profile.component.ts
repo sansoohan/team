@@ -12,7 +12,7 @@ export class ProfileComponent implements OnInit {
   profileContent: ProfileContent = {
     id: 'someID',
     profileTitle: 'SanSoo Lab',
-    roles: {someUserID: 'owner'},
+    roles: {'110306208655561059071': 'owner'},
     skillsContent: {
       skillGroups: [
         {

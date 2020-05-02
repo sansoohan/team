@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-sign-up',
@@ -7,8 +8,8 @@ import { Router } from '@angular/router';
   styleUrls: ['./sign-up.component.css']
 })
 export class SignUpComponent implements OnInit {
-  constructor(private router: Router) {
-    if (this.isSignedIn()){
+  constructor(private router: Router, private authService: AuthService) {
+    if (this.authService.isSignedIn()){
       this.router.navigate(['/profile']);
     }
   }
@@ -16,21 +17,8 @@ export class SignUpComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  isSignedIn(): any {
-    if (localStorage.getItem('currentUser')){
-      return true;
-    }
-    else{
-      return false;
-    }
-  }
-
   signUpSuccess(): void {
     this.router.navigate(['/sign-in']);
-  }
-
-  signUpFailed(): void {
-
   }
 
   onSignInClicked(): void {

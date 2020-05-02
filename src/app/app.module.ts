@@ -30,16 +30,13 @@ import { SignUpComponent } from './sign-up/sign-up.component';
 import { NgxAuthFirebaseUIModule } from 'ngx-auth-firebaseui';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { MatPasswordStrengthModule } from '@angular-material-extensions/password-strength';
-import { ResetPasswordComponent } from './reset-password/reset-password.component';
-
 
 @NgModule({
   declarations: [
     AppComponent,
     NotFoundComponent,
     SignInComponent,
-    SignUpComponent,
-    ResetPasswordComponent
+    SignUpComponent
   ],
   imports: [
     BrowserModule,
