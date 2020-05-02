@@ -12,9 +12,9 @@
       </div>
       <div class="resume-date text-md-right">
         <span class="text-primary">
-          {{project.startedAt.toLocaleString('en-us',{month:'short', year:'numeric'})}}
+          {{project.startedAt.toDate().toLocaleString('en-us',{month:'short', year:'numeric'})}}
            - 
-          {{project.finishedAt ? project.finishedAt.toLocaleString('en-us',{month:'short', year:'numeric'}) : 'Now'}}
+          {{project.finishedAt ? project.finishedAt.toDate().toLocaleString('en-us',{month:'short', year:'numeric'}) : 'Now'}}
         </span>
       </div>
     </div>

@@ -1,5 +1,6 @@
 interface ProfileContent {
   id: string;
+  ownerId: string;
   roles: any;
   profileTitle: string;
   aboutContent: AboutContent;

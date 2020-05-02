@@ -13,9 +13,9 @@
       </div>
       <div class="resume-date text-md-right">
         <span class="text-primary">
-          {{educationContent.startedAt.toLocaleString('en-us',{month:'short', year:'numeric'})}}
+          {{educationContent.startedAt.toDate().toLocaleString('en-us',{month:'short', year:'numeric'})}}
            - 
-          {{educationContent.finishedAt ? educationContent.finishedAt.toLocaleString('en-us',{month:'short', year:'numeric'}) : 'Now'}}
+          {{educationContent.finishedAt ? educationContent.finishedAt.toDate().toLocaleString('en-us',{month:'short', year:'numeric'}) : 'Now'}}
         </span>
       </div>
     </div>
