@@ -32,4 +32,13 @@ export class MessageService {
       `
     });
   }
+
+  async showPrompt(messageTitle: string, inputPlaceholder: string){
+    const { value: email } = await Swal.fire({
+      title: messageTitle,
+      input: 'text',
+      inputPlaceholder: 'Enter your email address'
+    });
+    return email;
+  }
 }

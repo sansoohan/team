@@ -1,13 +1,33 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { MessageService } from '../services/message.service';
-
+import { AngularFireAuth } from '@angular/fire/auth';
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  constructor(private router: Router, private message: MessageService) { }
+  constructor(
+    private router: Router,
+    private message: MessageService,
+    private afAuth: AngularFireAuth
+  ) { }
+
+  /**
+   * Initiate the password reset process for this user
+   * @param email email of the user
+   */
+  resetPassword() {
+    this.message.showPrompt('Reset Password', 'Please Enter your email').then(email => {
+      this.afAuth.sendPasswordResetEmail(`${email}`, { url: `${window.location.origin}/sign-in` })
+      .then(
+        () => alert('A password reset link has been sent to your email address'),
+        (rejectionReason) => this.message.showError('An error occurred while attempting to reset your password', rejectionReason))
+      .catch(e => {
+        this.message.showError('An error occurred while attempting to reset your password', e);
+      });
+    });
+  }
 
   isSignedIn(): any {
     if (localStorage.getItem('currentUser')){
