@@ -9,11 +9,11 @@ export class ProfileService {
 
   constructor(private firestore: AngularFirestore) { }
 
-  updateProfile(updatedProfileContent: ProfileContent, profileContentsObserver: Observable<ProfileContent[]>): void {
-    profileContentsObserver.subscribe(profileContents => {
-      this.firestore.collection('profiles').doc(profileContents[0].id).update(updatedProfileContent);
-    });
-  }
+  // updateProfile(updatedProfileContent: ProfileContent, profileContentsObserver: Observable<ProfileContent[]>): void {
+  //   profileContentsObserver.subscribe(profileContents => {
+  //     this.firestore.collection('profiles').doc(profileContents[0].id).update(updatedProfileContent);
+  //   });
+  // }
 
   createNewProfile(profileContent: ProfileContent): void {
     profileContent.ownerId = JSON.parse(localStorage.currentUser).uid;

@@ -64,13 +64,12 @@ import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
       }
     ),
     ProfileModule,
-    AngularFireModule.initializeApp(environment.firebase),
     AngularFireAnalyticsModule,
     AngularFireAuthModule,
     AngularFirestoreModule,
     AppRoutingModule,
     FormsModule,
-    MatPasswordStrengthModule,
+    MatPasswordStrengthModule
   ],
   providers: [
     {provide: APP_BASE_HREF, useValue: '/'}

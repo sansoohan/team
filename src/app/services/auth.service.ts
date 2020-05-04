@@ -39,6 +39,7 @@ export class AuthService {
   }
 
   signInSuccess(event): void {
+    console.log(event);
     for (const key in event) {
       if (key){
         for (const innerKey in event[key]) {
@@ -46,7 +47,7 @@ export class AuthService {
             const currentUser = event[key][innerKey][0];
             localStorage.setItem('currentUser', JSON.stringify(currentUser));
             // console.log(JSON.parse(localStorage.getItem('currentUser')));
-            this.message.showSuccess(`Hello ${currentUser.displayName}`, null);
+            this.message.showSuccess(`Hello ${currentUser.displayName ? currentUser.displayName : currentUser.email}`, null);
           }
         }
       }
@@ -65,7 +66,7 @@ export class AuthService {
   }
 
   signUpFailed(event): void {
-    console.log(event);
-    this.message.showError('Sign up failed', event.message);
+    // console.log(event);
+    // this.message.showError('Sign up failed', event.message);
   }
 }
