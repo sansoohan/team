@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { MessageService } from '../services/message.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  constructor(private router: Router) { }
+  constructor(private router: Router, private message: MessageService) { }
 
   isSignedIn(): any {
     if (localStorage.getItem('currentUser')){
@@ -24,7 +25,8 @@ export class AuthService {
           if (innerKey === 'providerData') {
             const currentUser = event[key][innerKey][0];
             localStorage.setItem('currentUser', JSON.stringify(currentUser));
-            console.log(JSON.parse(localStorage.getItem('currentUser')));
+            // console.log(JSON.parse(localStorage.getItem('currentUser')));
+            this.message.showSuccess(`Hello ${currentUser.displayName}`, null);
           }
         }
       }
@@ -34,10 +36,16 @@ export class AuthService {
 
   signInFailed(event): void {
     console.log(event);
-    // console.log(this.signInErrorMessage);
+    this.message.showError('Sign in failed', event.message);
+  }
+
+  signUpSuccess(): void {
+    this.router.navigate(['/sign-in']);
+    this.message.showSuccess('Sign up Success', null);
   }
 
   signUpFailed(event): void {
     console.log(event);
+    this.message.showError('Sign up failed', event.message);
   }
 }

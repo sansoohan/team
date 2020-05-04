@@ -1,5 +1,5 @@
 <ngx-auth-firebaseui-register
   (onLoginRequested)="onSignInClicked()"
-  (onSuccess)="signUpSuccess()"
+  (onSuccess)="authService.signUpSuccess()"
   (onError)="authService.signUpFailed($event)"
 ></ngx-auth-firebaseui-register>

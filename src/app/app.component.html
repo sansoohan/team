@@ -25,7 +25,10 @@
       </li>
     </ul>
     <form class="form-inline my-2 my-lg-0">
-      <ngx-auth-firebaseui-avatar *ngIf="isSignedIn()" (onSignOut)="clickSignOut()"></ngx-auth-firebaseui-avatar>
+      <ngx-auth-firebaseui-avatar *ngIf="isSignedIn()"
+        (onSignOut)="clickSignOut()"
+        [canEditAccount]="true"
+      ></ngx-auth-firebaseui-avatar>
       <button *ngIf="!isSignedIn()" routerLink="/sign-in" routerLinkActive="active" class="btn btn-outline-success my-2 my-sm-0">Sign In</button>
     </form>
   </div>

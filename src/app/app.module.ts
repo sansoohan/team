@@ -10,7 +10,7 @@ import * as firebase from 'firebase/app';
 // - https://github.com/RaphaelJenni/FirebaseUI-Angular/issues/76
 // the plugin exposes the two libraries as well. You can use those:
 // import {FirebaseUIModule, firebase, firebaseui} from 'firebaseui-angular';
-import {AngularFireAuthModule} from '@angular/fire/auth';
+import { AngularFireAuthModule } from '@angular/fire/auth';
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireAnalyticsModule } from '@angular/fire/analytics';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
@@ -26,10 +26,11 @@ import { AppRoutingModule } from './app-routing.module';
 import { SignInComponent } from './sign-in/sign-in.component';
 import { SignUpComponent } from './sign-up/sign-up.component';
 
-// Import your library
 import { NgxAuthFirebaseUIModule } from 'ngx-auth-firebaseui';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatPasswordStrengthModule } from '@angular-material-extensions/password-strength';
+import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
+
 
 @NgModule({
   declarations: [
@@ -41,6 +42,7 @@ import { MatPasswordStrengthModule } from '@angular-material-extensions/password
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
+    SweetAlert2Module.forRoot(),
     NgxAuthFirebaseUIModule.forRoot(
       environment.firebase,
       () => 'Developers',
