@@ -7,7 +7,7 @@ interface ProjectDescription {
   projectName: string;
   memberNum: number;
   position: string;
-  startedAt: firebase.firestore.Timestamp;
-  finishedAt: firebase.firestore.Timestamp;
+  startedAt: firebase.firestore.Timestamp | Date;
+  finishedAt: firebase.firestore.Timestamp | Date;
   taskDescriptions: Array<string>;
 }

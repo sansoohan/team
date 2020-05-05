@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
+import { profileDefault } from '../profile/profile.default';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProfileService {
+  profileUpdateState: string = null;
 
   constructor(private firestore: AngularFirestore) { }
 
@@ -15,17 +17,32 @@ export class ProfileService {
   //   });
   // }
 
-  createNewProfile(profileContent: ProfileContent): void {
-    profileContent.ownerId = JSON.parse(localStorage.currentUser).uid;
-    this.firestore.collection('profiles').add(profileContent)
-    .then(doc => {
-      profileContent.id = doc.id;
-      doc.update(profileContent);
+  hasProfile(hasProfile = false){
+    this.getProfileContentsObserver().subscribe(profileContents => {
+      profileContents.forEach(profileContent => {
+        hasProfile = true;
+      });
     });
+    return hasProfile;
+  }
+
+  createNewProfile(): void {
+    if (this.profileUpdateState !== 'deleteProfile'){
+      this.getProfileContentsObserver().subscribe(profileContents => {
+        if (localStorage.currentUser && profileContents.length === 0){
+          profileDefault.ownerId = JSON.parse(localStorage.currentUser).uid;
+          this.firestore.collection('profiles').add(profileDefault)
+          .then(doc => {
+            profileDefault.id = doc.id;
+            doc.update(profileDefault);
+          });
+        }
+      });
+    }
   }
 
   getProfileContentsObserver(): Observable<ProfileContent[]> {
-    const userId = '110306208655561059071';
+    const userId = JSON.parse(localStorage.currentUser).uid;
     const profileContentsObserver: Observable<ProfileContent[]> = this.firestore
     .collection<ProfileContent>('profiles', ref => ref.where('ownerId', '==', userId))
     .valueChanges();
@@ -34,12 +51,19 @@ export class ProfileService {
   }
 
   deleteProfile(): void {
+    this.profileUpdateState = 'deleteProfile';
     const userId = JSON.parse(localStorage.currentUser).uid;
-    const profilesCollection = this.firestore
-    .collection<ProfileContent>('profiles', ref => ref.where('id', '==', userId));
-    const profileContentsObserver: Observable<ProfileContent[]> = profilesCollection.valueChanges();
-    profileContentsObserver.subscribe(res => {
-      this.firestore.collection<ProfileContent>('profiles').doc(res[0].id).delete();
+    this.firestore.collection<ProfileContent>('profiles',  ref => ref
+      .where('ownerId', '==', userId)
+    )
+    .get()
+    .subscribe(querySnapshot => {
+      querySnapshot.forEach(doc => {
+        this.firestore.doc(`profiles/${doc.id}`).delete();
+        // doc.get(doc.id).delete();
+          // doc.data() is never undefined for query doc snapshots
+          // console.log(doc.id, " => ", doc.data());
+      });
     });
   }
 }

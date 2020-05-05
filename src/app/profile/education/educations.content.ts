@@ -6,6 +6,6 @@ interface EducationContent {
   organization: string;
   degree: string;
   descriptions: Array<string>;
-  startedAt: firebase.firestore.Timestamp;
-  finishedAt: firebase.firestore.Timestamp;
+  startedAt: firebase.firestore.Timestamp | Date;
+  finishedAt: firebase.firestore.Timestamp | Date;
 }

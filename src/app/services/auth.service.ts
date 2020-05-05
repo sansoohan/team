@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { MessageService } from '../services/message.service';
 import { AngularFireAuth } from '@angular/fire/auth';
+import { ProfileService } from './profile.service';
 @Injectable({
   providedIn: 'root'
 })
@@ -10,7 +11,8 @@ export class AuthService {
   constructor(
     private router: Router,
     private message: MessageService,
-    private afAuth: AngularFireAuth
+    private afAuth: AngularFireAuth,
+    private profileService: ProfileService
   ) { }
 
   /**
@@ -39,19 +41,19 @@ export class AuthService {
   }
 
   signInSuccess(event): void {
-    console.log(event);
-    for (const key in event) {
-      if (key){
-        for (const innerKey in event[key]) {
-          if (innerKey === 'providerData') {
-            const currentUser = event[key][innerKey][0];
-            localStorage.setItem('currentUser', JSON.stringify(currentUser));
-            // console.log(JSON.parse(localStorage.getItem('currentUser')));
-            this.message.showSuccess(`Hello ${currentUser.displayName ? currentUser.displayName : currentUser.email}`, null);
-          }
-        }
-      }
-    }
+    const currentUser = {
+      providerData: event.providerData,
+      email: event.email,
+      emailVerified: event.emailVerified,
+      phoneNumber: event.phoneNumber,
+      photoURL: event.photoURL,
+      displayName: event.displayName,
+      uid: event.uid
+    };
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    console.log(JSON.parse(localStorage.getItem('currentUser')));
+    this.message.showSuccess(`Hello ${currentUser.displayName ? currentUser.displayName : currentUser.email}`, null);
+    this.profileService.createNewProfile();
     this.router.navigate(['/profile']);
   }
 
@@ -66,7 +68,7 @@ export class AuthService {
   }
 
   signUpFailed(event): void {
-    // console.log(event);
+    console.log(event);
     // this.message.showError('Sign up failed', event.message);
   }
 }

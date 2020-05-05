@@ -2,6 +2,7 @@ interface ProfileContent {
   id: string;
   ownerId: string;
   roles: any;
+  profileImageSrc?: string;
   profileTitle: string;
   aboutContent: AboutContent;
   educationsContent: EducationsContent;
