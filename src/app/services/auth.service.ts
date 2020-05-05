@@ -63,12 +63,17 @@ export class AuthService {
   }
 
   signUpSuccess(): void {
-    this.router.navigate(['/sign-in']);
     this.message.showSuccess('Sign up Success', null);
+    this.router.navigate(['/sign-in']);
   }
 
   signUpFailed(event): void {
     console.log(event);
-    // this.message.showError('Sign up failed', event.message);
+    if (event.code){
+      this.message.showError('Sign up failed', event.message);
+    }
+    else{
+      this.signUpSuccess();
+    }
   }
 }

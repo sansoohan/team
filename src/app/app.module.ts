@@ -30,7 +30,6 @@ import { NgxAuthFirebaseUIModule } from 'ngx-auth-firebaseui';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatPasswordStrengthModule } from '@angular-material-extensions/password-strength';
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
-import { RandomAvatarComponent } from './modules/random-avatar/random-avatar.component';
 
 
 @NgModule({
@@ -38,8 +37,7 @@ import { RandomAvatarComponent } from './modules/random-avatar/random-avatar.com
     AppComponent,
     NotFoundComponent,
     SignInComponent,
-    SignUpComponent,
-    RandomAvatarComponent
+    SignUpComponent
   ],
   imports: [
     BrowserModule,

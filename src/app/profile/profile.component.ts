@@ -20,7 +20,7 @@ export class ProfileComponent implements OnInit {
   data: string;
   defaultSrc: any;
 
-  constructor(private profileService: ProfileService, domSanitizer: DomSanitizer) {
+  constructor(public profileService: ProfileService, private domSanitizer: DomSanitizer) {
     this.profileContentsObserver = this.profileService.getProfileContentsObserver();
     if (localStorage.currentUser){
       this.hash = JSON.parse(localStorage.currentUser).uid;
@@ -32,7 +32,7 @@ export class ProfileComponent implements OnInit {
         format: 'png'                             // use SVG instead of PNG
       };
       this.data = new Identicon(this.hash, this.options).toString();
-      this.defaultSrc = domSanitizer.bypassSecurityTrustUrl(`data:image/png;base64,${this.data}`);
+      this.defaultSrc = this.domSanitizer.bypassSecurityTrustUrl(`data:image/png;base64,${this.data}`);
       this.profileContentsObserver.subscribe(profileContents => {
         if (profileContents[0].profileImageSrc){
           this.defaultSrc = profileContents[0].profileImageSrc;
@@ -43,10 +43,5 @@ export class ProfileComponent implements OnInit {
 
   ngOnInit(): void {
 
-  }
-
-
-  deleteProfile(): void {
-    this.profileService.deleteProfile();
   }
 }
