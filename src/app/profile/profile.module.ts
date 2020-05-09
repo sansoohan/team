@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { AboutComponent } from './about/about.component';
@@ -8,7 +8,8 @@ import { InterestsComponent } from './interests/interests.component';
 import { ProjectsComponent } from './projects/projects.component';
 import { AdditionalProfilesComponent } from './additional-profiles/additional-profiles.component';
 import { ProfileComponent } from './profile.component';
-
+import { MonthpickerComponent } from '../modules/monthpicker/monthpicker.component';
+import { MonthpickerModule } from '../modules/monthpicker/monthpicker.module';
 @NgModule({
   declarations: [
     ProfileComponent,
@@ -19,8 +20,12 @@ import { ProfileComponent } from './profile.component';
     ProjectsComponent,
     AdditionalProfilesComponent
   ],
-  imports: [ CommonModule ],
+  imports: [
+    CommonModule,
+    MonthpickerModule
+  ],
   exports: [ ProfileComponent ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: []
 })
 export class ProfileModule { }

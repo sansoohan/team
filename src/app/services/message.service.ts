@@ -33,11 +33,29 @@ export class MessageService {
     });
   }
 
+  showWarning(messageTitle: string, messageContent: string){
+    Swal.fire({
+      title: messageTitle,
+      text: messageContent,
+      icon: 'warning'
+    });
+  }
+
   async showPrompt(messageTitle: string, inputPlaceholder: string){
     const { value: email } = await Swal.fire({
       title: messageTitle,
       input: 'text',
       inputPlaceholder: 'Enter your email address'
+    });
+    return email;
+  }
+
+  async updateProfile(messageTitle: string, messageInput: string, inputPlaceholder: string){
+    const { value: email } = await Swal.fire({
+      title: messageTitle,
+      input: 'text',
+      inputValue: messageInput,
+      inputPlaceholder: 'Please Enter here'
     });
     return email;
   }
