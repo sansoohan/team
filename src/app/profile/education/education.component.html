@@ -18,9 +18,11 @@
           {{educationContent.finishedAt ? educationContent.finishedAt.toLocaleString('en-us',{month:'short', year:'numeric'}) : 'Now'}}
         </span>
       </div>
+
       <div class=container *ngIf="isEditing">
         <div class="row">
-          <input value="{{educationContent.organization}}" type="text" class="form-control col-11" placeholder="Recipient's username">
+          <div class="col-12">University / College / School</div>
+          <input value="{{educationContent.organization}}" type="text" class="form-control col-11" placeholder="Organization Name">
           <button class="btn btn-outline-secondary col-1" type="button"><i class="fa fa-trash"></i></button>
         </div>
         <div class="row">
@@ -30,7 +32,17 @@
           <div class="col-6"><app-monthpicker (change)="onChange($event)" [date]="educationContent.finishedAt"></app-monthpicker></div>
         </div>
         <div class="row">
-          
+          <div class="col-12">Degree</div>
+          <input value="{{educationContent.degree}}" type="text" class="form-control col-12" placeholder="Degree">
+        </div>
+        <div class="row">
+          <div class="col-1"></div>
+          <div class="col-11">Descriptions</div>
+        </div>
+        <div class="row" *ngFor="let description of educationContent.descriptions">
+          <div class="col-1"></div>
+          <input value="{{description}}" type="text" class="form-control col-10" placeholder="Description">
+          <button *ngIf="isEditing" class="btn btn-outline-secondary col-1" type="button"><i class="fa fa-trash"></i></button>
         </div>
       </div>
     </div>

@@ -1,21 +1,60 @@
 <section class="resume-section p-3 p-lg-5 d-flex flex-column" id="projects">
   <div class="my-auto">
     <h2 class="mb-5">Projects</h2>
-
-    <div *ngFor="let project of projectsContent.projects" class="resume-item d-flex flex-column flex-md-row mb-5">
-      <div class="resume-content mr-auto">
-        <h3 class="mb-0">{{project.organization}}</h3>
-        <div class="subheading mb-3 mt-3">{{project.projectName}}</div>
-        <div>Members: {{project.memberNum}}</div>
-        <div>Position: {{project.position}}</div>
-        <div *ngFor="let taskDescription of project.taskDescriptions; index as i">Task Description{{i+1}}: {{taskDescription}}</div>
+    <div *ngIf="!isEditing">
+      <div *ngFor="let project of projectsContent.projects" class="resume-item d-flex flex-column flex-md-row mb-5">
+        <div class="resume-content mr-auto">
+          <h3 class="mb-0">{{project.organization}}</h3>
+          <div class="subheading mb-3 mt-3">{{project.projectName}}</div>
+          <div>Members: {{project.memberNum}}</div>
+          <div>Position: {{project.position}}</div>
+          <div *ngFor="let taskDescription of project.taskDescriptions; index as i">Task Description{{i+1}}: {{taskDescription}}</div>
+        </div>
+        <div class="resume-date text-md-right">
+          <span class="text-primary">
+            {{project.startedAt.toLocaleString('en-us',{month:'short', year:'numeric'})}}
+             - 
+            {{project.finishedAt ? project.finishedAt.toLocaleString('en-us',{month:'short', year:'numeric'}) : 'Now'}}
+          </span>
+        </div>
       </div>
-      <div class="resume-date text-md-right">
-        <span class="text-primary">
-          {{project.startedAt.toLocaleString('en-us',{month:'short', year:'numeric'})}}
-           - 
-          {{project.finishedAt ? project.finishedAt.toLocaleString('en-us',{month:'short', year:'numeric'}) : 'Now'}}
-        </span>
+    </div>
+
+    <div *ngIf="isEditing">
+      <div *ngFor="let project of projectsContent.projects">
+        <div class="container-fluid mb-5">
+          <div class="row">
+            <div class="col-12">Organization Name</div>
+            <input value="{{project.organization}}" type="text" class="form-control col-11" placeholder="Organization Name">
+            <button class="btn btn-outline-secondary col-1" type="button"><i class="fa fa-trash"></i></button>
+
+            <div class="col-12">Project Name</div>
+            <input value="{{project.projectName}}" type="text" class="form-control col-12" placeholder="Project Name">
+
+            <div class="col-6">Member Number</div>
+            <div class="col-6">Your Positioin</div>
+            <input value="{{project.memberNum}}" type="text" class="form-control col-6" placeholder="Member Number">
+            <input value="{{project.position}}" type="text" class="form-control col-6" placeholder="Your Positioin">
+          </div>
+
+          <div class="row">
+            <div class="col-6">Started At</div>
+            <div class="col-6">Graduated At</div>
+            <div class="col-6"><app-monthpicker (change)="onChange($event)" [date]="project.startedAt"></app-monthpicker></div>
+            <div class="col-6"><app-monthpicker (change)="onChange($event)" [date]="project.finishedAt"></app-monthpicker></div>
+          </div>
+  
+          <div class="row">
+            <div class="col-1"></div>
+            <div class="col-11">Task Descriptions</div>
+          </div>
+          <div class="row" *ngFor="let taskDescription of project.taskDescriptions">
+            <div class="col-1"></div>
+            <input value="{{taskDescription}}" type="text" class="form-control col-10" placeholder="Member Number">
+            <button class="btn btn-outline-secondary col-1" type="button"><i class="fa fa-trash"></i></button>
+            <div></div>
+          </div>          
+        </div>
       </div>
     </div>
   </div>

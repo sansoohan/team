@@ -1,0 +1,10 @@
+<div class="container-fluid">
+  <div class="row">
+    <button class="btn btn-outline-secondary col-6" type="button"
+      (click)="remoteInput(targetArray,targetArrayIndex)"><i class="fa fa-trash"></i>
+    </button>
+    <button class="btn btn-outline-success col-6" type="button"
+      (click)="addInput(targetArray)" *ngIf="targetArray.length-1 == targetArrayIndex"><i class="fa fa-plus"></i>
+    </button>
+  </div>
+</div>

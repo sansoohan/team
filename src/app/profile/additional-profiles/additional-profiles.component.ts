@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { AdditaionProfileContent } from './additional-profile.content';
 
 @Component({
   selector: 'app-additional-profiles',

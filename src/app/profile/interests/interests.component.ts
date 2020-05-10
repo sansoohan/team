@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { InterestsContent } from './interests.content';
 
 @Component({
   selector: 'app-interests',

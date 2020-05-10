@@ -33,6 +33,7 @@ import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import {MomentDateAdapter, MAT_MOMENT_DATE_ADAPTER_OPTIONS} from '@angular/material-moment-adapter';
+import { InputAddRemoveComponent } from './modules/user-form/input-add-remove/input-add-remove.component';
 
 
 // See the Moment.js docs for the meaning of these formats:
@@ -54,7 +55,8 @@ export const MY_FORMATS = {
     AppComponent,
     NotFoundComponent,
     SignInComponent,
-    SignUpComponent
+    SignUpComponent,
+    InputAddRemoveComponent
   ],
   imports: [
     BrowserModule,

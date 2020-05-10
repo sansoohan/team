@@ -1,40 +1,54 @@
 
-<section class="resume-section p-3 p-lg-5 d-flex d-column" id="about">
+<section *ngIf="!isEditing" class="resume-section p-3 p-lg-5 d-flex d-column">
   <div class="my-auto container-flow">
-    <h1 *ngIf="!isEditing" class="mb-0">{{aboutContent.firstName}}
+    <h1 class="mb-0">{{aboutContent.firstName}}
       <span class="text-primary">{{aboutContent.lastName}}</span>
     </h1>
-    <div class="mb-3 mt-3 input-group input-group-lg row list-inline-item" *ngIf="isEditing">
-      <input value="{{aboutContent.firstName}}" type="text" class="form-control col-6" placeholder="First Name">
-      <input value="{{aboutContent.lastName}}" type="text" class="form-control col-6" placeholder="Last Name">
-    </div>
 
-    <div *ngIf="!isEditing" class="subheading mb-5"><a href="https://www.google.co.jp/maps/place/{{aboutContent.address}}">
+    <div class="subheading mb-5"><a href="https://www.google.co.jp/maps/place/{{aboutContent.address}}">
       {{aboutContent.address}}</a> · {{aboutContent.phoneNumber}} ·
       <a href="mailto:{{aboutContent.email}}" style="text-transform:none;">{{aboutContent.email}}</a>
-    </div>
-    <div class="mb-3 mt-3 input-group row list-inline-item" *ngIf="isEditing">
-      <input value="{{aboutContent.address}}" type="text" class="form-control col-12" placeholder="Address">
-    </div>
-    <div class="mb-3 mt-3 input-group row list-inline-item" *ngIf="isEditing">
-      <input value="{{aboutContent.phoneNumber}}" type="text" class="form-control col-6" placeholder="Phone Number">
-      <input value="{{aboutContent.email}}" type="text" class="form-control col-6" placeholder="Email">
     </div>
 
     <ul class="list-inline list-social-icons mb-0 row">
       <li *ngFor="let social of aboutContent.social" class="list-inline-item">
-        <a *ngIf="!isEditing" href="{{social.socialUrl}}">
+        <a href="{{social.socialUrl}}">
           <span class="fa-stack fa-lg">
             <i class="fa fa-circle fa-stack-2x"></i>
             <i class="{{social.faIcon}} fa-stack-1x fa-inverse"></i>
           </span>
         </a>
       </li>
-      <div *ngFor="let social of aboutContent.social" class="input-group list-inline-item">
-        <input *ngIf="isEditing" value="{{social.faIcon}}" type="text" class="form-control col-4" placeholder="Phone Number">
-        <input *ngIf="isEditing" value="{{social.socialUrl}}" type="text" class="form-control col-7" placeholder="Email">
-        <button *ngIf="isEditing" class="btn btn-outline-secondary col-1" type="button"><i class="fa fa-trash"></i></button>
-      </div>
     </ul>
+  </div>
+</section>
+<section *ngIf="isEditing" class="resume-section p-3 p-lg-5 d-flex d-column" id="about">
+  <div class="my-auto container">
+    <div class="row">
+      <div class="col-6">First Name</div>
+      <div class="col-6">Last Name</div>
+      <input value="{{aboutContent.firstName}}" type="text" class="form-control col-6" placeholder="First Name">
+      <input value="{{aboutContent.lastName}}" type="text" class="form-control col-6" placeholder="Last Name">
+    </div>
+
+    <div class="row">
+      <div class="col-12">Address</div>
+      <input value="{{aboutContent.address}}" type="text" class="form-control col-12" placeholder="Address">
+    </div>
+    <div class="row">
+      <div class="col-6">Phone Number</div>
+      <div class="col-6">Email</div>
+      <input value="{{aboutContent.phoneNumber}}" type="text" class="form-control col-6" placeholder="Phone Number">
+      <input value="{{aboutContent.email}}" type="text" class="form-control col-6" placeholder="Email">
+    </div>
+    <div class="row">
+      <div class="col-4">Font AwsomeIcon</div>
+      <div class="col-8">Url</div>
+    </div>
+    <div *ngFor="let social of aboutContent.social" class="row">
+      <input value="{{social.faIcon}}" type="text" class="form-control col-4" placeholder="Icon">
+      <input value="{{social.socialUrl}}" type="text" class="form-control col-7" placeholder="Url">
+      <button class="btn btn-outline-secondary col-1" type="button"><i class="fa fa-trash"></i></button>
+    </div>
   </div>
 </section>

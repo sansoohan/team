@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { AboutContent } from './about.content';
 
 @Component({
   selector: 'app-about',
@@ -9,7 +10,9 @@ export class AboutComponent implements OnInit {
   @Input() aboutContent: AboutContent;
   @Input() isEditing: boolean;
 
-  constructor() { }
+  constructor() {
+
+  }
 
   ngOnInit() {
   }

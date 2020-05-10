@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { EducationsContent } from './educations.content';
 
 import * as moment from 'moment';
 // import 'moment/locale/de';

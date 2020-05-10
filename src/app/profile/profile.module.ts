@@ -10,6 +10,7 @@ import { AdditionalProfilesComponent } from './additional-profiles/additional-pr
 import { ProfileComponent } from './profile.component';
 import { MonthpickerComponent } from '../modules/monthpicker/monthpicker.component';
 import { MonthpickerModule } from '../modules/monthpicker/monthpicker.module';
+// import { InputAddRemoveModule } from '../modules/user-form/input-add-remove/input-add-remove.module';
 @NgModule({
   declarations: [
     ProfileComponent,
@@ -18,11 +19,18 @@ import { MonthpickerModule } from '../modules/monthpicker/monthpicker.module';
     SkillsComponent,
     InterestsComponent,
     ProjectsComponent,
-    AdditionalProfilesComponent
+    AdditionalProfilesComponent,
+    // EducationContent,
+    // SkillsContent,
+    // InterestsContent,
+    // ProjectsContent,
+    // AdditionalProfilesContent
+
   ],
   imports: [
     CommonModule,
-    MonthpickerModule
+    MonthpickerModule,
+    // InputAddRemoveModule
   ],
   exports: [ ProfileComponent ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

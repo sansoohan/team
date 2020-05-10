@@ -1,6 +1,9 @@
+import { ProfileContent } from './profile.content';
+
 export const profileDefault: ProfileContent = {
   id: 'someId',
   ownerId: 'ownerId',
+  profileImageSrc: null,
   profileTitle: 'SanSoo Lab',
   roles: {someUserID: 'owner'},
   skillsContent: {

@@ -6,6 +6,7 @@ import { ProfileService } from '../services/profile.service';
 import Identicon from 'identicon.js';
 import { DomSanitizer } from '@angular/platform-browser';
 import { AuthService } from '../services/auth.service';
+import { ProfileContent } from './profile.content';
 
 // import * as imagePicker from 'nativescript-imagepicker';
 @Component({

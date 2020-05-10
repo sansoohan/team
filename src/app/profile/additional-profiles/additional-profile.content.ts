@@ -1,20 +1,48 @@
-interface AdditaionProfileContent {
+export class AdditaionProfileContent {
   title: string;
   largeGroups: Array<LargeGroup>;
+  constructor(
+    title: string = '',
+    largeGroups: Array<LargeGroup> = [new LargeGroup()]
+  ) {
+    this.title = title;
+    this.largeGroups = largeGroups;
+  }
 }
 
-interface LargeGroup {
+export class LargeGroup {
   largeGroupName: string;
   smallGroups: Array<SmallGroup>;
+  constructor(
+    largeGroupName: string = '',
+    smallGroups: Array<SmallGroup> = [new SmallGroup()]
+  ){
+    this.largeGroupName = largeGroupName;
+    this.smallGroups = smallGroups;
+  }
 }
 
-interface SmallGroup {
+export class SmallGroup {
   smallGroupName: string;
   descriptions: Array<SmallGroupDescription>;
+  constructor(
+    smallGroupName: string = '',
+    descriptions: Array<SmallGroupDescription> = [new SmallGroupDescription()]
+  ){
+    this.smallGroupName = smallGroupName;
+    this.descriptions = descriptions;
+  }
 }
 
-interface SmallGroupDescription {
+export class SmallGroupDescription {
   descriptionDetail: string;
   faIcon: string;
+  constructor(
+    descriptionDetail: string = '',
+    faIcon: string = ''
+  ){
+    this.descriptionDetail = descriptionDetail;
+    this.faIcon = faIcon;
+  }
 }
 

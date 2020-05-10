@@ -3,6 +3,7 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { profileDefault } from '../profile/profile.default';
 import { MessageService } from './message.service';
+import { ProfileContent } from '../profile/profile.content';
 
 @Injectable({
   providedIn: 'root'
