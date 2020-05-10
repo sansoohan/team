@@ -37,43 +37,30 @@
             <div class="col-6">Description</div>
           </div>
         </div>
-        <div *ngFor="let largeGroup of additaionProfileContent.largeGroups" class="container-fluid">
+        <div *ngFor="let largeGroup of additaionProfileContent.largeGroups; index as i" class="container-fluid">
           <div class="row">
             <input value="{{largeGroup.largeGroupName}}" type="text" class="form-control col-11" placeholder="Large Group Name">
-            <div class="container-fluid col-1">
-              <div class="row">
-              <button class="btn btn-outline-secondary col-6" type="button"><i class="fa fa-trash"></i></button>
-              <button class="btn btn-outline-secondary col-6" type="button"><i class="fa fa-trash"></i></button>
-
-              </div>
+            <div class="col-1" style="padding: 0;">
+              <app-input-add-remove [targetArray]="additaionProfileContent.largeGroups" [targetArrayIndex]="i" [newObject]="newLargeGroup"></app-input-add-remove>
             </div>
-            
           </div>
 
-          <div *ngFor="let smallGroup of largeGroup.smallGroups">
+          <div *ngFor="let smallGroup of largeGroup.smallGroups; index as i">
             <div class="row">
               <div class="col-1"></div>
               <input value="{{smallGroup.smallGroupName}}" type="text" class="form-control col-10" placeholder="Small Group Name">
-              <div class="container-fluid col-1">
-                <div class="row">
-                  <button class="btn btn-outline-secondary col-6" type="button"><i class="fa fa-trash"></i></button>
-                  <button class="btn btn-outline-secondary col-6" type="button"><i class="fa fa-trash"></i></button>
-                </div>
+              <div class="col-1" style="padding: 0;">
+                <app-input-add-remove [targetArray]="largeGroup.smallGroups" [targetArrayIndex]="i" [newObject]="newSmallGroup"></app-input-add-remove>
               </div>
-              
             </div>
 
             <div *ngFor="let description of smallGroup.descriptions; index as i" class="row">
               <div class="col-2"></div>
               <input value="{{description.faIcon}}" type="text" class="form-control col-3" placeholder="Description Icon">
               <input value="{{description.descriptionDetail}}" type="text" class="form-control col-6" placeholder="Description">
-              <div class="container-fluid col-1">
-                <div class="row">
-                  <button class="btn btn-outline-secondary col-6" type="button"><i class="fa fa-trash"></i></button>
-                  <button class="btn btn-outline-secondary col-6" type="button" *ngIf="smallGroup.descriptions.length-1 == i"><i class="fa fa-trash"></i></button>
-                </div>
+              <div class="col-1" style="padding: 0;">
+                <app-input-add-remove [targetArray]="smallGroup.descriptions" [targetArrayIndex]="i" [newObject]="newSmallGroupDescription"></app-input-add-remove>
               </div>
-              
             </div>
           </div>
         </div>

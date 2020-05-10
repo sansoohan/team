@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { AboutContent } from './about.content';
+import { AboutContent, AboutSocial } from './about.content';
 
 @Component({
   selector: 'app-about',
@@ -9,6 +9,7 @@ import { AboutContent } from './about.content';
 export class AboutComponent implements OnInit {
   @Input() aboutContent: AboutContent;
   @Input() isEditing: boolean;
+  public newAboutSocial: AboutSocial = new AboutSocial();
 
   constructor() {
 

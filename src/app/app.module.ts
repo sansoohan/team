@@ -55,8 +55,7 @@ export const MY_FORMATS = {
     AppComponent,
     NotFoundComponent,
     SignInComponent,
-    SignUpComponent,
-    InputAddRemoveComponent
+    SignUpComponent
   ],
   imports: [
     BrowserModule,

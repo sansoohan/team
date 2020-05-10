@@ -7,6 +7,7 @@ import Identicon from 'identicon.js';
 import { DomSanitizer } from '@angular/platform-browser';
 import { AuthService } from '../services/auth.service';
 import { ProfileContent } from './profile.content';
+import Swal from 'sweetalert2';
 
 // import * as imagePicker from 'nativescript-imagepicker';
 @Component({
@@ -29,9 +30,7 @@ export class ProfileComponent implements OnInit {
     private domSanitizer: DomSanitizer
   ) {
     this.isEditing = false;
-    if (!this.profileContentsObserver){
-      this.profileContentsObserver = this.profileService.getProfileContentsObserver();
-    }
+    this.profileContentsObserver = this.profileService.getProfileContentsObserver();
     this.profileContentsObserver.subscribe(profileContents => {
       this.profileContents = this.replaceToDateRecursively(profileContents);
     });
@@ -59,12 +58,35 @@ export class ProfileComponent implements OnInit {
   }
 
   async clickEditUpdate(profileContent: ProfileContent){
-    // this.replaceToDateRecursively(profileContent);
-    console.log(profileContent);
-    if (this.isEditing){
-      await this.profileService.updateProfile(profileContent, this.profileContentsObserver);
-    }
-    this.isEditing = false;
+    const swalWithBootstrapButtons = Swal.mixin({
+      customClass: {
+        confirmButton: 'btn btn-success',
+        cancelButton: 'btn btn-danger'
+      },
+      buttonsStyling: false
+    });
+
+    await swalWithBootstrapButtons.fire({
+      title: 'Are you sure?',
+      // tslint:disable-next-line:quotemark
+      text: "Remove this data",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'No, cancel!',
+      reverseButtons: true
+    }).then((result) => {
+      if (result.value) {
+        if (this.isEditing){
+          this.profileService.updateProfile(profileContent, this.profileContentsObserver);
+        }
+        this.isEditing = false;
+      }
+      else if (result.dismiss === Swal.DismissReason.cancel){
+
+      }
+    });
+    // console.log(profileContent);
   }
 
   clickEditCancel(){

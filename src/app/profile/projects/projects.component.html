@@ -21,12 +21,14 @@
     </div>
 
     <div *ngIf="isEditing">
-      <div *ngFor="let project of projectsContent.projects">
+      <div *ngFor="let project of projectsContent.projects; index as i">
         <div class="container-fluid mb-5">
           <div class="row">
             <div class="col-12">Organization Name</div>
             <input value="{{project.organization}}" type="text" class="form-control col-11" placeholder="Organization Name">
-            <button class="btn btn-outline-secondary col-1" type="button"><i class="fa fa-trash"></i></button>
+            <div class="col-1" style="padding: 0;">
+              <app-input-add-remove [targetArray]="projectsContent.projects" [targetArrayIndex]="i" [newObject]="newProjectDescription"></app-input-add-remove>
+            </div>
 
             <div class="col-12">Project Name</div>
             <input value="{{project.projectName}}" type="text" class="form-control col-12" placeholder="Project Name">
@@ -40,18 +42,20 @@
           <div class="row">
             <div class="col-6">Started At</div>
             <div class="col-6">Graduated At</div>
-            <div class="col-6"><app-monthpicker (change)="onChange($event)" [date]="project.startedAt"></app-monthpicker></div>
-            <div class="col-6"><app-monthpicker (change)="onChange($event)" [date]="project.finishedAt"></app-monthpicker></div>
+            <div class="col-6"><app-monthpicker [date]="project.startedAt"></app-monthpicker></div>
+            <div class="col-6"><app-monthpicker [date]="project.finishedAt"></app-monthpicker></div>
           </div>
   
           <div class="row">
             <div class="col-1"></div>
             <div class="col-11">Task Descriptions</div>
           </div>
-          <div class="row" *ngFor="let taskDescription of project.taskDescriptions">
+          <div class="row" *ngFor="let taskDescription of project.taskDescriptions; index as i">
             <div class="col-1"></div>
             <input value="{{taskDescription}}" type="text" class="form-control col-10" placeholder="Member Number">
-            <button class="btn btn-outline-secondary col-1" type="button"><i class="fa fa-trash"></i></button>
+            <div class="col-1" style="padding: 0;">
+              <app-input-add-remove [targetArray]="project.taskDescriptions" [targetArrayIndex]="i" [newObject]="newTaskDescription"></app-input-add-remove>
+            </div>
             <div></div>
           </div>          
         </div>

@@ -45,10 +45,12 @@
       <div class="col-4">Font AwsomeIcon</div>
       <div class="col-8">Url</div>
     </div>
-    <div *ngFor="let social of aboutContent.social" class="row">
+    <div *ngFor="let social of aboutContent.social; index as i" class="row">
       <input value="{{social.faIcon}}" type="text" class="form-control col-4" placeholder="Icon">
       <input value="{{social.socialUrl}}" type="text" class="form-control col-7" placeholder="Url">
-      <button class="btn btn-outline-secondary col-1" type="button"><i class="fa fa-trash"></i></button>
+      <div class="col-1" style="padding: 0;">
+        <app-input-add-remove [targetArray]="aboutContent.social" [targetArrayIndex]="i" [newObject]="newAboutSocial"></app-input-add-remove>
+      </div>
     </div>
   </div>
 </section>

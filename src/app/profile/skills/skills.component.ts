@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { SkillsContent } from './skills.content';
+import { SkillsContent, SkillGroup, SkillDescription } from './skills.content';
 
 @Component({
   selector: 'app-skills',
@@ -9,6 +9,9 @@ import { SkillsContent } from './skills.content';
 export class SkillsComponent implements OnInit {
   @Input() skillsContent: SkillsContent;
   @Input() isEditing: boolean;
+  public newSkillGroup: SkillGroup = new SkillGroup();
+  public newSkillDescription: SkillDescription = new SkillDescription();
+
   constructor() { }
 
   ngOnInit() {

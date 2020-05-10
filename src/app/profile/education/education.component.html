@@ -3,7 +3,7 @@
   <div class="my-auto">
     <h2 class="mb-5">Education</h2>
 
-    <div *ngFor="let educationContent of educationsContent.educations" class="resume-item d-flex flex-column flex-md-row mb-5">
+    <div *ngFor="let educationContent of educationsContent.educations; index as i" class="resume-item d-flex flex-column flex-md-row mb-5">
       <div *ngIf="!isEditing" class="resume-content mr-auto">
         <h3 class="mb-0">{{educationContent.organization}}</h3>
         <div class="subheading mb-3 mt-3">{{educationContent.degree}}</div>
@@ -23,7 +23,9 @@
         <div class="row">
           <div class="col-12">University / College / School</div>
           <input value="{{educationContent.organization}}" type="text" class="form-control col-11" placeholder="Organization Name">
-          <button class="btn btn-outline-secondary col-1" type="button"><i class="fa fa-trash"></i></button>
+          <div class="col-1" style="padding: 0;">
+            <app-input-add-remove [targetArray]="educationsContent.educations" [targetArrayIndex]="i" [newObject]="newEducation"></app-input-add-remove>
+          </div>
         </div>
         <div class="row">
           <div class="col-6">Started At</div>
@@ -39,10 +41,12 @@
           <div class="col-1"></div>
           <div class="col-11">Descriptions</div>
         </div>
-        <div class="row" *ngFor="let description of educationContent.descriptions">
+        <div class="row" *ngFor="let description of educationContent.descriptions; index as i">
           <div class="col-1"></div>
           <input value="{{description}}" type="text" class="form-control col-10" placeholder="Description">
-          <button *ngIf="isEditing" class="btn btn-outline-secondary col-1" type="button"><i class="fa fa-trash"></i></button>
+          <div class="col-1" style="padding: 0;">
+            <app-input-add-remove [targetArray]="educationContent.descriptions" [targetArrayIndex]="i" [newObject]="newDescription"></app-input-add-remove>
+          </div>
         </div>
       </div>
     </div>

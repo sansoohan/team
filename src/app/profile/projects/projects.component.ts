@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { ProjectsContent } from './projects.content';
+import { ProjectsContent, ProjectDescription } from './projects.content';
 
 @Component({
   selector: 'app-projects',
@@ -9,6 +9,8 @@ import { ProjectsContent } from './projects.content';
 export class ProjectsComponent implements OnInit {
   @Input() projectsContent: ProjectsContent;
   @Input() isEditing: boolean;
+  public newTaskDescription: '';
+  public newProjectDescription: ProjectDescription = new ProjectDescription();
 
   constructor() { }
 

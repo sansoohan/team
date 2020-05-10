@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { AdditaionProfileContent } from './additional-profile.content';
+import { AdditaionProfileContent, LargeGroup, SmallGroup, SmallGroupDescription } from './additional-profile.content';
 
 @Component({
   selector: 'app-additional-profiles',
@@ -9,10 +9,13 @@ import { AdditaionProfileContent } from './additional-profile.content';
 export class AdditionalProfilesComponent implements OnInit {
   @Input() additaionProfilesContent: Array<AdditaionProfileContent>;
   @Input() isEditing: boolean;
-
+  public newSmallGroupDescription = new SmallGroupDescription();
+  public newSmallGroup = new SmallGroup();
+  public newLargeGroup = new LargeGroup();
   constructor() { }
 
   ngOnInit() {
+
   }
 
 }

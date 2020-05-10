@@ -39,7 +39,7 @@ export class SmallGroupDescription {
   faIcon: string;
   constructor(
     descriptionDetail: string = '',
-    faIcon: string = ''
+    faIcon: string = 'fa'
   ){
     this.descriptionDetail = descriptionDetail;
     this.faIcon = faIcon;

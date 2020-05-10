@@ -13,9 +13,11 @@
             <div class="col-12">Hobbies and Interests</div>
           </div>
 
-          <div class="row" *ngFor="let description of interestsContent.descriptions">
+          <div class="row" *ngFor="let description of interestsContent.descriptions; index as i">
             <input value="{{description}}" type="text" class="form-control col-11" placeholder="Interest">
-            <button class="btn btn-outline-secondary col-1" type="button"><i class="fa fa-trash"></i></button>
+            <div class="col-1" style="padding: 0;">
+              <app-input-add-remove [targetArray]="interestsContent.descriptions" [targetArrayIndex]="i" [newObject]="newDescription"></app-input-add-remove>
+            </div>
             <div></div>
           </div>
         </div>
