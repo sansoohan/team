@@ -12,10 +12,10 @@ import { auth } from 'firebase/app';
 })
 export class AppComponent {
   title = 'app';
-  items: Observable<any[]>;
+
   // tslint:disable-next-line:no-shadowed-variable
   constructor(firestore: AngularFirestore, private router: Router) {
-    this.items = firestore.collection('items').valueChanges();
+
   }
 
   isSignedIn(): any {
