@@ -18,11 +18,9 @@ import { TypeScriptEmitter } from '@angular/compiler';
 export class ProfileComponent implements OnInit {
   profileContentsObserver: Observable<ProfileContent[]>;
   profileContents: ProfileContent[];
-  hash: string;
-  options: any;
-  data: string;
   defaultSrc: any;
   isEditing: boolean;
+  isPage: boolean;
   userName: string;
   paramSub: any;
   profileSub: any;
@@ -36,24 +34,28 @@ export class ProfileComponent implements OnInit {
   ) {
     this.paramSub = this.route.params.subscribe(params => {
       this.isEditing = false;
+      this.isPage = true;
       this.userName = params.userName;
       this.profileContentsObserver = this.profileService.getProfileContentsObserver(this.userName);
       this.profileSub = this.profileContentsObserver.subscribe(profileContents => {
         this.profileContents = this.replaceToDateRecursively(profileContents);
+        if (this.profileContents.length === 0){
+          this.isPage = false;
+        }
         if (this.profileContents[0].profileImageSrc){
           this.defaultSrc = this.profileContents[0].profileImageSrc;
         }
-        else{
-          this.hash = this.profileContents[0].ownerId;
-          this.options = {
+        else {
+          const hash = this.profileContents[0].ownerId;
+          const options = {
             // foreground: [0, 0, 0, 255],               // rgba black
             background: [230, 230, 230, 230],         // rgba white
             margin: 0.2,                              // 20% margin
             size: 420,                                // 420px square
             format: 'png'                             // use SVG instead of PNG
           };
-          this.data = new Identicon(this.hash, this.options).toString();
-          this.defaultSrc = this.domSanitizer.bypassSecurityTrustUrl(`data:image/png;base64,${this.data}`);
+          const data = new Identicon(hash, options).toString();
+          this.defaultSrc = this.domSanitizer.bypassSecurityTrustUrl(`data:image/png;base64,${data}`);
         }
       });
     });

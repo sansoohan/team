@@ -12,6 +12,7 @@ import { ProfileComponent } from './profile.component';
 import { MonthpickerComponent } from '../modules/monthpicker/monthpicker.component';
 import { MonthpickerModule } from '../modules/monthpicker/monthpicker.module';
 import { InputAddRemoveModule } from '../modules/user-form/input-add-remove/input-add-remove.module';
+import { NotFoundComponent } from '../not-found/not-found.component';
 
 @NgModule({
   declarations: [
@@ -22,6 +23,7 @@ import { InputAddRemoveModule } from '../modules/user-form/input-add-remove/inpu
     InterestsComponent,
     ProjectsComponent,
     AdditionalProfilesComponent,
+    NotFoundComponent,
     // EducationContent,
     // SkillsContent,
     // InterestsContent,
@@ -36,6 +38,7 @@ import { InputAddRemoveModule } from '../modules/user-form/input-add-remove/inpu
   exports: [
     ProfileComponent,
     MonthpickerModule,
+    NotFoundComponent,
   ],
   providers: []
 })

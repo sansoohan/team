@@ -55,7 +55,6 @@ export const MY_FORMATS = {
 @NgModule({
   declarations: [
     AppComponent,
-    NotFoundComponent,
     SignInComponent,
     SignUpComponent
   ],

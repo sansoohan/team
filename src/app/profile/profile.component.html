@@ -1,54 +1,60 @@
-<div *ngFor="let profileContent of profileContents">
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" id="sideNav">
-    <a class="navbar-brand js-scroll-trigger" href="#page-top">
-      <span class="d-block d-lg-none">Han's Development</span>
-      <span class="d-none d-lg-block">
-        <img class="img-fluid img-profile rounded-circle mx-auto mb-2" [src]="defaultSrc" alt="">
-      </span>
-    </a>
-
-    <div class="list-inline-item">
-      <Button class="mx-auto mb-2 btn btn-info" *ngIf="authService.isSignedIn() && !isEditing" (click)="clickEdit()">Edit Profile</Button>
-      <Button class="mx-auto mb-2 btn btn-success" *ngIf="authService.isSignedIn() && isEditing" (click)="clickEditUpdate(profileContent)">Update</Button>
-      <Button class="mx-auto mb-2 btn btn-danger" *ngIf="authService.isSignedIn() && isEditing" (click)="clickEditCancel()">Cancel</Button>
-    </div>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav">
-        <li class="nav-item">
-          <a class="nav-link js-scroll-trigger" (click)="profileService.deleteProfile()">deleteProfile</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link js-scroll-trigger" (click)="profileService.createNewProfile()">createNewProfile</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes(profileContent.userName, 'about')">About</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes(profileContent.userName, 'education')">Education</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes(profileContent.userName, 'skills')">Skills</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes(profileContent.userName, 'projects')">Projects</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes(profileContent.userName, 'interests')">Interests</a>
-        </li>
-        <li *ngFor="let additaionProfileContent of profileContent.additaionProfilesContent" class="nav-item">
-          <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes(profileContent.userName, additaionProfileContent.title)">{{additaionProfileContent.title}}</a>
-        </li>
-      </ul>
-    </div>
-  </nav>
-  <div class="profiles">
-    <app-about [isEditing]="isEditing" [aboutContent]="profileContent.aboutContent"></app-about>
-    <app-education [isEditing]="isEditing" [educationsContent]="profileContent.educationsContent"></app-education>
-    <app-skills [isEditing]="isEditing" [skillsContent]="profileContent.skillsContent"></app-skills>
-    <app-projects [isEditing]="isEditing" [projectsContent]="profileContent.projectsContent"></app-projects>
-    <app-interests [isEditing]="isEditing" [interestsContent]="profileContent.interestsContent"></app-interests>
-    <app-additional-profiles [isEditing]="isEditing" [additaionProfilesContent]="profileContent.additaionProfilesContent"></app-additional-profiles>  
-  </div>
-
-  <div class="spinner-border"></div>
+<div *ngIf=!isPage>
+  <app-not-found></app-not-found>
 </div>
+<div *ngIf=isPage>
+  <div *ngFor="let profileContent of profileContents">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" id="sideNav">
+      <a class="navbar-brand js-scroll-trigger" href="#page-top">
+        <span class="d-block d-lg-none">Han's Development</span>
+        <span class="d-none d-lg-block">
+          <img class="img-fluid img-profile rounded-circle mx-auto mb-2" [src]="defaultSrc" alt="">
+        </span>
+      </a>
+  
+      <div class="list-inline-item">
+        <Button class="mx-auto mb-2 btn btn-info" *ngIf="authService.isSignedIn() && !isEditing" (click)="clickEdit()">Edit Profile</Button>
+        <Button class="mx-auto mb-2 btn btn-success" *ngIf="authService.isSignedIn() && isEditing" (click)="clickEditUpdate(profileContent)">Update</Button>
+        <Button class="mx-auto mb-2 btn btn-danger" *ngIf="authService.isSignedIn() && isEditing" (click)="clickEditCancel()">Cancel</Button>
+      </div>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link js-scroll-trigger" (click)="profileService.deleteProfile()">deleteProfile</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link js-scroll-trigger" (click)="profileService.createNewProfile()">createNewProfile</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes(profileContent.userName, 'about')">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes(profileContent.userName, 'education')">Education</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes(profileContent.userName, 'skills')">Skills</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes(profileContent.userName, 'projects')">Projects</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes(profileContent.userName, 'interests')">Interests</a>
+          </li>
+          <li *ngFor="let additaionProfileContent of profileContent.additaionProfilesContent" class="nav-item">
+            <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes(profileContent.userName, additaionProfileContent.title)">{{additaionProfileContent.title}}</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <div class="profiles">
+      <app-about [isEditing]="isEditing" [aboutContent]="profileContent.aboutContent"></app-about>
+      <app-education [isEditing]="isEditing" [educationsContent]="profileContent.educationsContent"></app-education>
+      <app-skills [isEditing]="isEditing" [skillsContent]="profileContent.skillsContent"></app-skills>
+      <app-projects [isEditing]="isEditing" [projectsContent]="profileContent.projectsContent"></app-projects>
+      <app-interests [isEditing]="isEditing" [interestsContent]="profileContent.interestsContent"></app-interests>
+      <app-additional-profiles [isEditing]="isEditing" [additaionProfilesContent]="profileContent.additaionProfilesContent"></app-additional-profiles>  
+    </div>
+  
+    <div class="spinner-border"></div>
+  </div>  
+</div>
+
