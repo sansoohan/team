@@ -6,15 +6,12 @@
         <img class="img-fluid img-profile rounded-circle mx-auto mb-2" [src]="defaultSrc" alt="">
       </span>
     </a>
-    
+
     <div class="list-inline-item">
       <Button class="mx-auto mb-2 btn btn-info" *ngIf="authService.isSignedIn() && !isEditing" (click)="clickEdit()">Edit Profile</Button>
       <Button class="mx-auto mb-2 btn btn-success" *ngIf="authService.isSignedIn() && isEditing" (click)="clickEditUpdate(profileContent)">Update</Button>
       <Button class="mx-auto mb-2 btn btn-danger" *ngIf="authService.isSignedIn() && isEditing" (click)="clickEditCancel()">Cancel</Button>
     </div>
-    <!-- <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button> -->
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav">
         <li class="nav-item">
@@ -24,22 +21,22 @@
           <a class="nav-link js-scroll-trigger" (click)="profileService.createNewProfile()">createNewProfile</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link js-scroll-trigger" href="#about">About</a>
+          <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes(profileContent.userName, 'about')">About</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link js-scroll-trigger" href="#education">Education</a>
+          <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes(profileContent.userName, 'education')">Education</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link js-scroll-trigger" href="#skills">Skills</a>
+          <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes(profileContent.userName, 'skills')">Skills</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link js-scroll-trigger" href="#projects">Projects</a>
+          <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes(profileContent.userName, 'projects')">Projects</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link js-scroll-trigger" href="#interests">Interests</a>
+          <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes(profileContent.userName, 'interests')">Interests</a>
         </li>
         <li *ngFor="let additaionProfileContent of profileContent.additaionProfilesContent" class="nav-item">
-          <a class="nav-link js-scroll-trigger" href="#{{additaionProfileContent.title}}">{{additaionProfileContent.title}}</a>
+          <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes(profileContent.userName, additaionProfileContent.title)">{{additaionProfileContent.title}}</a>
         </li>
       </ul>
     </div>

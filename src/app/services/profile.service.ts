@@ -26,11 +26,13 @@ export class ProfileService {
 
   createNewProfile(): void {
     if (this.profileUpdateState !== 'deleteProfile'){
-      this.getProfileContentsObserver().subscribe(profileContents => {
+      const userId = JSON.parse(localStorage.currentUser).uid;
+      this.getProfileContentsObserver(userId).subscribe(profileContents => {
         if (localStorage.currentUser && profileContents.length === 0){
           profileDefault.ownerId = JSON.parse(localStorage.currentUser).uid;
           this.firestore.collection('profiles').add(profileDefault)
           .then(doc => {
+            profileDefault.userName = userId;
             profileDefault.id = doc.id;
             doc.update(profileDefault);
           });
@@ -39,11 +41,19 @@ export class ProfileService {
     }
   }
 
-  getProfileContentsObserver(): Observable<ProfileContent[]> {
-    const userId = JSON.parse(localStorage.currentUser).uid;
-    const profileContentsObserver: Observable<ProfileContent[]> = this.firestore
-    .collection<ProfileContent>('profiles', ref => ref.where('ownerId', '==', userId))
-    .valueChanges();
+  getProfileContentsObserver(userName?: string): Observable<ProfileContent[]> {
+    let profileContentsObserver: Observable<ProfileContent[]>;
+    if (userName){
+      profileContentsObserver = this.firestore
+      .collection<ProfileContent>('profiles', ref => ref.where('userName', '==', userName))
+      .valueChanges();
+    }
+    else {
+      const userId = JSON.parse(localStorage.currentUser).uid;
+      profileContentsObserver = this.firestore
+      .collection<ProfileContent>('profiles', ref => ref.where('ownerId', '==', userId))
+      .valueChanges();
+    }
     return profileContentsObserver;
   }
 

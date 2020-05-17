@@ -10,15 +10,21 @@ import { SignUpComponent } from './sign-up/sign-up.component';
 const appRoutes: Routes = [
   { path: '', redirectTo: '/profile', pathMatch: 'full' },
   { path: 'profile', component: ProfileComponent },
+  { path: 'profile/:userName', component: ProfileComponent },
   { path: 'sign-in', component: SignInComponent },
   { path: 'sign-up', component: SignUpComponent },
   { path: '**', component: NotFoundComponent }
 ];
- // sets up routes constant where you define your routes
+// sets up routes constant where you define your routes
 
 // configures NgModule imports and exports
 @NgModule({
-  imports: [RouterModule.forRoot(appRoutes)],
+  imports: [
+    RouterModule.forRoot(appRoutes, {
+      anchorScrolling: 'enabled',
+      useHash: true
+    })
+  ],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

@@ -3,6 +3,7 @@ import {APP_BASE_HREF} from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA  } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 import { RouterModule, Routes } from '@angular/router';
 
 // import * as firebase from 'firebase/app';
@@ -34,6 +35,7 @@ import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import {MomentDateAdapter, MAT_MOMENT_DATE_ADAPTER_OPTIONS} from '@angular/material-moment-adapter';
 import { InputAddRemoveComponent } from './modules/user-form/input-add-remove/input-add-remove.component';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 
 // See the Moment.js docs for the meaning of these formats:
@@ -59,6 +61,8 @@ export const MY_FORMATS = {
   ],
   imports: [
     BrowserModule,
+    FormsModule,
+    HttpClientModule,
     BrowserAnimationsModule,
     SweetAlert2Module.forRoot(),
     NgxAuthFirebaseUIModule.forRoot(
@@ -82,11 +86,11 @@ export const MY_FORMATS = {
       }
     ),
     ProfileModule,
+    // DashboardModule,
     AngularFireAnalyticsModule,
     AngularFireAuthModule,
     AngularFirestoreModule,
     AppRoutingModule,
-    FormsModule,
     MatPasswordStrengthModule
   ],
   providers: [

@@ -8,6 +8,7 @@ import { EducationsContent } from './education/educations.content';
 export class ProfileContent {
   id: string;
   ownerId: string;
+  userName?: string;
   roles: any;
   profileImageSrc?: string;
   profileTitle: string;

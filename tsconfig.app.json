@@ -6,11 +6,9 @@
   },
   "files": [
     "src/main.ts",
-    "src/polyfills.ts",
-    "src/**/*.content.ts"
+    "src/polyfills.ts"
   ],
   "include": [
-    "src/**/*.d.ts",
-    "src/**/*.content.ts"
+    "src/**/*.ts"
   ]
 }
