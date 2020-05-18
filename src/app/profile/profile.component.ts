@@ -8,7 +8,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { AuthService } from '../services/auth.service';
 import { ProfileContent } from './profile.content';
 import Swal from 'sweetalert2';
-import { TypeScriptEmitter } from '@angular/compiler';
+import { AngularFireStorage } from '@angular/fire/storage';
 
 @Component({
   selector: 'app-profile',
@@ -30,7 +30,8 @@ export class ProfileComponent implements OnInit {
     public authService: AuthService,
     private domSanitizer: DomSanitizer,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private storage: AngularFireStorage
   ) {
     this.paramSub = this.route.params.subscribe(params => {
       this.isEditing = false;
@@ -58,6 +59,59 @@ export class ProfileComponent implements OnInit {
           this.defaultSrc = this.domSanitizer.bypassSecurityTrustUrl(`data:image/png;base64,${data}`);
         }
       });
+    });
+  }
+
+  async uploadprofileImageSrc(profileContent) {
+    await Swal.fire({
+      title: 'Select Your Profile Image',
+      input: 'file',
+      showConfirmButton: true,
+      showCancelButton: true,
+      showCloseButton: true,
+      confirmButtonText: 'Update Image',
+      cancelButtonText: 'Remove Image',
+      cancelButtonColor: '#d33',
+      inputAttributes: {
+        // tslint:disable-next-line:object-literal-key-quotes
+        'accept': 'image/*',
+        'aria-label': 'Upload your profile picture'
+      }
+    }).then(data => {
+      const filePath = `profile/${JSON.parse(localStorage.currentUser).uid}/about/profileImage`;
+      const fileRef = this.storage.ref(filePath);
+
+      if (data.value) {
+        const file = data.value;
+        console.log(file);
+        const task = this.storage.upload(filePath, file);
+
+        task
+        .then(() => {
+          fileRef.getDownloadURL().subscribe(imageUrl => {
+            profileContent.profileImageSrc = imageUrl;
+            this.profileService.updateProfile(profileContent, this.profileContentsObserver);
+            Swal.fire({
+              icon: 'success',
+              title: 'Your Profile Image is uploaded!',
+              showConfirmButton: false,
+              timer: 1500
+            });
+          });
+        })
+        .catch(e => console.log(e));
+      }
+      else if (data.dismiss === Swal.DismissReason.cancel) {
+        fileRef.delete();
+        profileContent.profileImageSrc = null;
+        this.profileService.updateProfile(profileContent, this.profileContentsObserver);
+        Swal.fire({
+          icon: 'success',
+          title: 'Your Profile Image is uploaded!',
+          showConfirmButton: false,
+          timer: 1500
+        });
+      }
     });
   }
 

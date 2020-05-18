@@ -4,10 +4,10 @@
 <div *ngIf=isPage>
   <div *ngFor="let profileContent of profileContents">
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" id="sideNav">
-      <a class="navbar-brand js-scroll-trigger" href="#page-top">
+      <a class="navbar-brand js-scroll-trigger">
         <span class="d-block d-lg-none">Han's Development</span>
         <span class="d-none d-lg-block">
-          <img class="img-fluid img-profile rounded-circle mx-auto mb-2" [src]="defaultSrc" alt="">
+          <img class="img-fluid img-profile rounded-circle mx-auto mb-2" (click)="uploadprofileImageSrc(profileContent)" [src]="defaultSrc" alt="">
         </span>
       </a>
   
