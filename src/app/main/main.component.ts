@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { WOW } from 'wowjs';
 
 @Component({
   selector: 'app-main',
@@ -7,7 +8,14 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MainComponent implements OnInit {
 
-  constructor() { }
+  constructor() {
+    new WOW().init({
+      boxClass: 'wow',
+      animateClass: 'animated',
+      offset: 0,
+      live: true
+    });
+  }
 
   ngOnInit(): void {
   }

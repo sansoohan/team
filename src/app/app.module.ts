@@ -2,11 +2,10 @@ import {APP_BASE_HREF} from '@angular/common';
 import { environment } from '../environments/environment';
 
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule, CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA  } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
-import { RouterModule, Routes } from '@angular/router';
 
 // import * as firebase from 'firebase/app';
 // currently there is a bug while building the app with --prod
@@ -23,17 +22,19 @@ import { NgxAuthFirebaseUIModule } from 'ngx-auth-firebaseui';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatPasswordStrengthModule } from '@angular-material-extensions/password-strength';
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
+// import { NgwWowModule } from 'ngx-wow';
+
 import { EmbededGooglemapModule } from './modules/embeded-googlemap/embeded-googlemap.module';
-
-import { SignInComponent } from './sign-in/sign-in.component';
-import { SignUpComponent } from './sign-up/sign-up.component';
-
 
 
 import { AppComponent } from './app.component';
+
 import { ProfileModule } from './profile/profile.module';
 import { ContactComponent } from './contact/contact.component';
 import { MainComponent } from './main/main.component';
+
+import { SignInComponent } from './sign-in/sign-in.component';
+import { SignUpComponent } from './sign-up/sign-up.component';
 
 // See the Moment.js docs for the meaning of these formats:
 // https://momentjs.com/docs/#/displaying/format/
@@ -62,6 +63,7 @@ export const MY_FORMATS = {
     FormsModule,
     HttpClientModule,
     BrowserAnimationsModule,
+    // NgwWowModule,
     SweetAlert2Module.forRoot(),
     NgxAuthFirebaseUIModule.forRoot(
       environment.firebase,
