@@ -6,13 +6,17 @@ import { NotFoundComponent } from './not-found/not-found.component';
 // Import all the components for which navigation service has to be activated
 import { SignInComponent } from './sign-in/sign-in.component';
 import { SignUpComponent } from './sign-up/sign-up.component';
+import { ContactComponent } from './contact/contact.component';
+import { MainComponent } from './main/main.component';
 
 const appRoutes: Routes = [
-  { path: '', redirectTo: '/profile', pathMatch: 'full' },
+  // { path: '', redirectTo: '/profile', pathMatch: 'full' },
+  { path: '', component: MainComponent },
   { path: 'profile', component: ProfileComponent },
   { path: 'profile/:userName', component: ProfileComponent },
   { path: 'sign-in', component: SignInComponent },
   { path: 'sign-up', component: SignUpComponent },
+  { path: 'contact', component: ContactComponent },
   { path: '**', component: NotFoundComponent }
 ];
 // sets up routes constant where you define your routes

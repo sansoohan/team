@@ -1,9 +1,11 @@
 import {APP_BASE_HREF} from '@angular/common';
+import { environment } from '../environments/environment';
 
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA  } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { AppRoutingModule } from './app-routing.module';
 import { RouterModule, Routes } from '@angular/router';
 
 // import * as firebase from 'firebase/app';
@@ -17,27 +19,21 @@ import { AngularFireAnalyticsModule } from '@angular/fire/analytics';
 import { AngularFireStorageModule, BUCKET } from '@angular/fire/storage';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { ToastrModule } from 'ngx-toastr';
-
-import { environment } from '../environments/environment';
-
-import { AppComponent } from './app.component';
-import { NotFoundComponent } from './not-found/not-found.component';
-import { ProfileComponent } from './profile/profile.component';
-import { ProfileModule } from './profile/profile.module';
-import { AppRoutingModule } from './app-routing.module';
-import { SignInComponent } from './sign-in/sign-in.component';
-import { SignUpComponent } from './sign-up/sign-up.component';
-
 import { NgxAuthFirebaseUIModule } from 'ngx-auth-firebaseui';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatPasswordStrengthModule } from '@angular-material-extensions/password-strength';
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
+import { EmbededGooglemapModule } from './modules/embeded-googlemap/embeded-googlemap.module';
 
-import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
-import {MomentDateAdapter, MAT_MOMENT_DATE_ADAPTER_OPTIONS} from '@angular/material-moment-adapter';
-import { InputAddRemoveComponent } from './modules/user-form/input-add-remove/input-add-remove.component';
-import { DashboardModule } from './dashboard/dashboard.module';
+import { SignInComponent } from './sign-in/sign-in.component';
+import { SignUpComponent } from './sign-up/sign-up.component';
 
+
+
+import { AppComponent } from './app.component';
+import { ProfileModule } from './profile/profile.module';
+import { ContactComponent } from './contact/contact.component';
+import { MainComponent } from './main/main.component';
 
 // See the Moment.js docs for the meaning of these formats:
 // https://momentjs.com/docs/#/displaying/format/
@@ -57,7 +53,9 @@ export const MY_FORMATS = {
   declarations: [
     AppComponent,
     SignInComponent,
-    SignUpComponent
+    SignUpComponent,
+    ContactComponent,
+    MainComponent
   ],
   imports: [
     BrowserModule,
@@ -92,7 +90,8 @@ export const MY_FORMATS = {
     AngularFirestoreModule,
     AngularFireStorageModule,
     AppRoutingModule,
-    MatPasswordStrengthModule
+    MatPasswordStrengthModule,
+    EmbededGooglemapModule
   ],
   providers: [
     {provide: APP_BASE_HREF, useValue: '/'}
