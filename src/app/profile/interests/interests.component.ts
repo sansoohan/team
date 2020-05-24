@@ -9,8 +9,11 @@ import { InterestsContent } from './interests.content';
 export class InterestsComponent implements OnInit {
   @Input() interestsContent: InterestsContent;
   @Input() isEditing: boolean;
+  public newDescription: string;
 
-  constructor() { }
+  constructor() {
+    this.newDescription = '';
+  }
 
   ngOnInit() {
   }

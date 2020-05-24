@@ -86,7 +86,6 @@ export const MY_FORMATS = {
       }
     ),
     ProfileModule,
-    // DashboardModule,
     AngularFireAnalyticsModule,
     AngularFireAuthModule,
     AngularFirestoreModule,
