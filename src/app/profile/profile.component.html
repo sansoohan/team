@@ -1,7 +1,12 @@
 <div *ngIf=!isPage>
   <app-not-found></app-not-found>
 </div>
+
 <div *ngIf=isPage>
+  <div *ngIf="!profileContents">
+    <app-page-loading></app-page-loading>
+  </div>
+
   <div *ngFor="let profileContent of profileContents">
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" id="sideNav">
       <a class="navbar-brand js-scroll-trigger">
@@ -45,7 +50,7 @@
         </ul>
       </div>
     </nav>
-    <div class="profiles">
+    <div class="profiles">  
       <app-about [isEditing]="isEditing" [aboutContent]="profileContent.aboutContent"></app-about>
       <app-education [isEditing]="isEditing" [educationsContent]="profileContent.educationsContent"></app-education>
       <app-skills [isEditing]="isEditing" [skillsContent]="profileContent.skillsContent"></app-skills>
@@ -53,8 +58,6 @@
       <app-interests [isEditing]="isEditing" [interestsContent]="profileContent.interestsContent"></app-interests>
       <app-additional-profiles [isEditing]="isEditing" [additaionProfilesContent]="profileContent.additaionProfilesContent"></app-additional-profiles>  
     </div>
-  
-    <div class="spinner-border"></div>
   </div>  
 </div>
 

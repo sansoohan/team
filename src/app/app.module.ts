@@ -35,6 +35,7 @@ import { MainComponent } from './main/main.component';
 
 import { SignInComponent } from './sign-in/sign-in.component';
 import { SignUpComponent } from './sign-up/sign-up.component';
+import { PageLoadingComponent } from './page-loading/page-loading.component';
 
 // See the Moment.js docs for the meaning of these formats:
 // https://momentjs.com/docs/#/displaying/format/
