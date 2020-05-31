@@ -27,7 +27,7 @@
       <div class="my-auto">
         <h2 class="mb-5">{{additaionProfileContent.title}}</h2>
 
-        <div class="container-fluid">
+        <div class="container">
           <div class="row">
             <div class="col-12">Large Group Name</div>
             <div class="col-1"></div>
@@ -37,7 +37,7 @@
             <div class="col-6">Description</div>
           </div>
         </div>
-        <div *ngFor="let largeGroup of additaionProfileContent.largeGroups; index as i" class="container-fluid">
+        <div *ngFor="let largeGroup of additaionProfileContent.largeGroups; index as i" class="container">
           <div class="row">
             <input value="{{largeGroup.largeGroupName}}" type="text" class="form-control col-11" placeholder="Large Group Name">
             <div class="col-1" style="padding: 0;">

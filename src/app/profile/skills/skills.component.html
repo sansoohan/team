@@ -2,7 +2,7 @@
   <div class="my-auto">
     <h2 class="mb-5">Skills</h2>
     <div *ngIf="!isEditing">
-      <div *ngFor="let skillGroup of skillsContent.skillGroups container-fluid">
+      <div *ngFor="let skillGroup of skillsContent.skillGroups container">
         <div class="subheading mb-3 mt-3" >{{skillGroup.skillGroupName}}</div>
   
         <ul class="list-inline list-icons row">
@@ -13,7 +13,7 @@
       </div>
     </div>
 
-    <div *ngIf="isEditing" class="container-fluid">
+    <div *ngIf="isEditing" class="container">
       <div class="row">
         <div class="col-12">Skill Group</div>
       </div>
@@ -23,7 +23,7 @@
         <div class="col-3">Skill Name</div>
         <div class="col-3">Term</div>
       </div>
-      <div *ngFor="let skillGroup of skillsContent.skillGroups; index as i" class="container-fluid">
+      <div *ngFor="let skillGroup of skillsContent.skillGroups; index as i" class="container">
         <div class="row">
           <input value="{{skillGroup.skillGroupName}}" type="text" class="form-control col-11" placeholder="Recipient's username">
           <div class="col-1" style="padding: 0;">
