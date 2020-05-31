@@ -32,6 +32,7 @@ export class ProfileService {
           profileDefault.ownerId = JSON.parse(localStorage.currentUser).uid;
           this.firestore.collection('profiles').add(profileDefault)
           .then(doc => {
+            profileDefault.roles[userId] = 'owner';
             profileDefault.userName = userId;
             profileDefault.id = doc.id;
             doc.update(profileDefault);
