@@ -24,7 +24,6 @@
     <form class="form-inline">
       <input class="form-control mr-sm-2" type="search" list="staticUserIds" placeholder="Search Profile" aria-label="Search"
         [value]="searchValue"
-        (click)="initSearch($event)"
         (keyup)="changeSearch($event)"
       >
       <datalist id="staticUserIds">
