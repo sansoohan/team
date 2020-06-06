@@ -29,7 +29,6 @@
     "@sweetalert2/ngx-sweetalert2": "^8.1.0",
     "bootstrap": "^4.4.1",
     "bootstrap-4-autocomplete": "^1.2.3",
-    "bootstrap-autocomplete": "^2.3.5",
     "firebase": "^7.14.0",
     "identicon.js": "^2.3.3",
     "jquery": "^3.5.1",
