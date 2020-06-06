@@ -13,7 +13,6 @@
   ],
   "include": [
     "src/**/*.spec.ts",
-    "src/**/*.d.ts",
-    "node_modules/bootstrap-4-autocomplete/dist/bootstrap-4-autocomplete.d.ts"
+    "src/**/*.d.ts"
   ]
 }

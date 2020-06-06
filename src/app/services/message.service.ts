@@ -26,7 +26,7 @@ export class MessageService {
       text: messageContent,
       icon: 'success',
       showConfirmButton: false,
-      timer: 2000,
+      timer: 1000,
       backdrop: `
         rgba(0,0,0,0)
       `

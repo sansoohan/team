@@ -6,7 +6,6 @@ import { Router } from '@angular/router';
 import { auth } from 'firebase/app';
 import { AuthService } from './services/auth.service';
 import {FormControl} from '@angular/forms';
-import autocomplete from './modules/autocomplete/autocomplete';
 import {startWith, map} from 'rxjs/operators';
 import * as $ from 'jquery';
 import * as firebase from 'firebase';
