@@ -17,13 +17,23 @@ import { AngularFireStorage } from '@angular/fire/storage';
 })
 export class ProfileComponent implements OnInit {
   profileContentsObserver: Observable<ProfileContent[]>;
+  userEmailValidateObserver: Observable<ProfileContent[]>;
+  userNameValidateObserver: Observable<ProfileContent[]>;
   profileContents: ProfileContent[];
   defaultSrc: any;
   isEditing: boolean;
   isPage: boolean;
+  hasUserNameCollision: boolean;
+  hasUserEmailCollision: boolean;
+  updateOk: boolean;
   userName: string;
+  userEmail: string;
+  validateUserName: string;
+  validateUserEmail: string;
   paramSub: any;
   profileSub: any;
+  userNameValidateSub: any;
+  userEmailValidateSub: any;
 
   constructor(
     public profileService: ProfileService,
@@ -36,6 +46,9 @@ export class ProfileComponent implements OnInit {
     this.paramSub = this.route.params.subscribe(params => {
       this.isEditing = false;
       this.isPage = true;
+      this.hasUserNameCollision = false;
+      this.hasUserEmailCollision = false;
+      this.updateOk = true;
       this.userName = params.userName;
       this.profileContentsObserver = this.profileService.getProfileContentsObserver(this.userName);
       this.profileSub = this.profileContentsObserver.subscribe(profileContents => {
@@ -115,11 +128,81 @@ export class ProfileComponent implements OnInit {
     });
   }
 
+  onUserEmailChange(changedUserEmail){
+    this.hasUserEmailCollision = false;
+    this.updateOk = false;
+    if (this.userEmailValidateSub){
+      this.userEmailValidateSub.unsubscribe();
+    }
+    this.userEmailValidateObserver = this.profileService.getUserEmailCollisionObserver(changedUserEmail);
+    this.userEmailValidateSub = this.userEmailValidateObserver.subscribe(profileContents => {
+      profileContents.forEach(profileContent => {
+        if (this.validateUserEmail !== changedUserEmail){
+          this.hasUserEmailCollision = true;
+        }
+      });
+      // console.log(this.hasUserEmailCollision);
+      this.updateOk = true;
+    });
+  }
+
+  onUserNameChange(changedUserName){
+    this.hasUserNameCollision = false;
+    this.updateOk = false;
+    if (this.userNameValidateSub){
+      this.userNameValidateSub.unsubscribe();
+    }
+    this.userNameValidateObserver = this.profileService.getUserNameCollisionObserver(changedUserName);
+    this.userNameValidateSub = this.userNameValidateObserver.subscribe(profileContents => {
+      profileContents.forEach(profileContent => {
+        if (this.validateUserName !== changedUserName){
+          this.hasUserNameCollision = true;
+        }
+      });
+      this.updateOk = true;
+    });
+  }
+
   clickEdit() {
     this.isEditing = true;
+    if (!this.userNameValidateSub){
+      this.validateUserName = this.profileContents[0].aboutContent.userName;
+    }
+    if (!this.userEmailValidateSub){
+      this.validateUserEmail = this.profileContents[0].aboutContent.email;
+    }
   }
 
   async clickEditUpdate(profileContent: ProfileContent){
+    if (!this.updateOk){
+      Swal.fire({
+        icon: 'warning',
+        title: 'Upate Fail',
+        text: 'Checking User Email and Name',
+        showCancelButton: false
+      });
+      return;
+    }
+
+    if (this.hasUserEmailCollision){
+      Swal.fire({
+        icon: 'warning',
+        title: 'Upate Fail',
+        text: 'User Email is already registered.',
+        showCancelButton: false
+      });
+      return;
+    }
+    else if (this.hasUserNameCollision){
+      Swal.fire({
+        icon: 'warning',
+        title: 'Upate Fail',
+        text: 'User Name is already registered.',
+        showCancelButton: false
+      });
+      return;
+    }
+
     const swalWithBootstrapButtons = Swal.mixin({
       customClass: {
         confirmButton: 'btn btn-success',
@@ -195,5 +278,11 @@ export class ProfileComponent implements OnInit {
   OnDestroy() {
     this.paramSub.unsubscribe();
     this.profileSub.unsubscribe();
+    if (this.userNameValidateSub){
+      this.userNameValidateSub.unsubscribe();
+    }
+    if (this.userEmailValidateSub){
+      this.userEmailValidateSub.unsubscribe();
+    }
   }
 }

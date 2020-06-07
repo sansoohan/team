@@ -25,10 +25,12 @@
 <section *ngIf="isEditing" class="resume-section p-3 p-lg-5 d-flex d-column" id="about">
   <div class="my-auto container">
     <div class="row">
-      <div class="col-6">First Name</div>
-      <div class="col-6">Last Name</div>
-      <input value="{{aboutContent.firstName}}" type="text" class="form-control col-6" placeholder="First Name">
-      <input value="{{aboutContent.lastName}}" type="text" class="form-control col-6" placeholder="Last Name">
+      <div class="col-4">First Name</div>
+      <div class="col-4">Last Name</div>
+      <div class="col-4">User Name</div>
+      <input value="{{aboutContent.firstName}}" type="text" class="form-control col-4" placeholder="First Name">
+      <input value="{{aboutContent.lastName}}" type="text" class="form-control col-4" placeholder="Last Name">
+      <input value="{{aboutContent.userName}}" type="text" class="form-control col-4" placeholder="User Name" (change)="onUserNameChange($event)">
     </div>
 
     <div class="row">
@@ -39,7 +41,7 @@
       <div class="col-6">Phone Number</div>
       <div class="col-6">Email</div>
       <input value="{{aboutContent.phoneNumber}}" type="text" class="form-control col-6" placeholder="Phone Number">
-      <input value="{{aboutContent.email}}" type="text" class="form-control col-6" placeholder="Email">
+      <input value="{{aboutContent.email}}" type="text" class="form-control col-6" placeholder="Email" (change)="onUserEmailChange($event)">
     </div>
     <div class="row">
       <div class="col-4">Font AwsomeIcon</div>

@@ -15,7 +15,7 @@
           <img class="img-fluid img-profile rounded-circle mx-auto mb-2" (click)="uploadProfileImageSrc(profileContent)" [src]="defaultSrc" alt="">
         </span>
       </a>
-  
+
       <div class="list-inline-item">
         <Button class="mx-auto mb-2 btn btn-info" *ngIf="authService.isSignedIn() && !isEditing" (click)="clickEdit()">Edit Profile</Button>
         <Button class="mx-auto mb-2 btn btn-success" *ngIf="authService.isSignedIn() && isEditing" (click)="clickEditUpdate(profileContent)">Update</Button>
@@ -45,7 +45,9 @@
       </div>
     </nav>
     <div class="profiles">  
-      <app-about [isEditing]="isEditing" [aboutContent]="profileContent.aboutContent"></app-about>
+      <app-about [isEditing]="isEditing" [aboutContent]="profileContent.aboutContent"
+       (userEmailOutput)=onUserEmailChange($event) (userNameOutput)=onUserNameChange($event)
+      ></app-about>
       <app-education [isEditing]="isEditing" [educationsContent]="profileContent.educationsContent"></app-education>
       <app-skills [isEditing]="isEditing" [skillsContent]="profileContent.skillsContent"></app-skills>
       <app-projects [isEditing]="isEditing" [projectsContent]="profileContent.projectsContent"></app-projects>

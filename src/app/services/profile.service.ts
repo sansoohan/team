@@ -15,7 +15,8 @@ export class ProfileService {
   constructor(private firestore: AngularFirestore, private message: MessageService) { }
 
   updateProfile(updatedProfileContent: ProfileContent, profileContentsObserver: Observable<ProfileContent[]>) {
-    this.firestore.collection('profiles').doc(updatedProfileContent.id).update(updatedProfileContent)
+    this.firestore.collection('profiles').doc(updatedProfileContent.id)
+    .update(updatedProfileContent)
     .then(() => {
       this.message.showSuccess('Profile Update', 'Success!');
     })
@@ -42,6 +43,7 @@ export class ProfileService {
       profileDefault.aboutContent.email = userEmail;
       profileDefault.aboutContent.phoneNumber = userPhoneNumber;
       profileDefault.profileImageSrc = userPhoneUrl ? userPhoneUrl : '';
+
       this.getProfileContentsObserver(userId).subscribe(profileContents => {
         if (localStorage.currentUser && profileContents.length === 0){
           this.firestore.collection('profiles').add(profileDefault)
@@ -52,6 +54,24 @@ export class ProfileService {
         }
       });
     }
+  }
+
+  getUserEmailCollisionObserver(userEmail: string){
+    let userEmailCollisionObserver: Observable<ProfileContent[]>;
+    userEmailCollisionObserver = this.firestore
+    .collection<ProfileContent>('profiles', ref => ref
+    .where(new firebase.firestore.FieldPath('aboutContent', 'email'), '==', userEmail))
+    .valueChanges();
+    return userEmailCollisionObserver;
+  }
+
+  getUserNameCollisionObserver(userName: string){
+    let userNameCollisionObserver: Observable<ProfileContent[]>;
+    userNameCollisionObserver = this.firestore
+    .collection<ProfileContent>('profiles', ref => ref
+    .where(new firebase.firestore.FieldPath('aboutContent', 'userName'), '==', userName))
+    .valueChanges();
+    return userNameCollisionObserver;
   }
 
   getProfileContentsObserver(userName?: string): Observable<ProfileContent[]> {
