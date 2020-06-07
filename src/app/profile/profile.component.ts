@@ -129,12 +129,12 @@ export class ProfileComponent implements OnInit {
     });
 
     await swalWithBootstrapButtons.fire({
-      title: 'Are you sure?',
+      title: 'Updating...',
       // tslint:disable-next-line:quotemark
-      text: "Remove this data",
+      text: "Are you sure?",
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!',
+      confirmButtonText: 'Yes, update it!',
       cancelButtonText: 'No, cancel!',
       reverseButtons: true
     }).then((result) => {

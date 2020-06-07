@@ -29,7 +29,7 @@ export class EducationComponent implements OnInit {
   }
 
   onChange(event) {
-    console.log(event);
+    // console.log(event);
     // console.warn(this.selectedYearAsText, this.selectedMonthAsText, `(month index: ${this.selectedMonthIndex})`)
   }
 }

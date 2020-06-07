@@ -57,6 +57,10 @@ export class AuthService {
     this.router.navigate(['/profile']);
   }
 
+  getCurrentUser() {
+    return JSON.parse(localStorage.getItem('currentUser'));
+  }
+
   signInFailed(event): void {
     console.log(event);
     this.message.showError('Sign in failed', event.message);
