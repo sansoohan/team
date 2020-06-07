@@ -12,7 +12,7 @@
       <a class="navbar-brand js-scroll-trigger">
         <span class="d-block d-lg-none">Han's Development</span>
         <span class="d-none d-lg-block">
-          <img class="img-fluid img-profile rounded-circle mx-auto mb-2" (click)="uploadprofileImageSrc(profileContent)" [src]="defaultSrc" alt="">
+          <img class="img-fluid img-profile rounded-circle mx-auto mb-2" (click)="uploadProfileImageSrc(profileContent)" [src]="defaultSrc" alt="">
         </span>
       </a>
   
@@ -24,22 +24,22 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes(profileContent.userName, 'about')">About</a>
+            <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes(profileContent.aboutContent.userName, 'about')">About</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes(profileContent.userName, 'education')">Education</a>
+            <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes(profileContent.aboutContent.userName, 'education')">Education</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes(profileContent.userName, 'skills')">Skills</a>
+            <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes(profileContent.aboutContent.userName, 'skills')">Skills</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes(profileContent.userName, 'projects')">Projects</a>
+            <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes(profileContent.aboutContent.userName, 'projects')">Projects</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes(profileContent.userName, 'interests')">Interests</a>
+            <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes(profileContent.aboutContent.userName, 'interests')">Interests</a>
           </li>
           <li *ngFor="let additaionProfileContent of profileContent.additaionProfilesContent" class="nav-item">
-            <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes(profileContent.userName, additaionProfileContent.title)">{{additaionProfileContent.title}}</a>
+            <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes(profileContent.aboutContent.userName, additaionProfileContent.title)">{{additaionProfileContent.title}}</a>
           </li>
         </ul>
       </div>

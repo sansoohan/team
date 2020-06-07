@@ -43,7 +43,7 @@ export class ProfileComponent implements OnInit {
         if (this.profileContents.length === 0){
           this.isPage = false;
         }
-        if (this.profileContents[0].profileImageSrc){
+        if (this.profileContents[0].profileImageSrc !== ''){
           this.defaultSrc = this.profileContents[0].profileImageSrc;
         }
         else {
@@ -62,7 +62,7 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  async uploadprofileImageSrc(profileContent) {
+  async uploadProfileImageSrc(profileContent) {
     await Swal.fire({
       title: 'Select Your Profile Image',
       input: 'file',

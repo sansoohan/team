@@ -51,7 +51,7 @@ export class AuthService {
       uid: event.uid
     };
     localStorage.setItem('currentUser', JSON.stringify(currentUser));
-    console.log(JSON.parse(localStorage.getItem('currentUser')));
+    // console.log(JSON.parse(localStorage.getItem('currentUser')));
     this.message.showSuccess(`Hello ${currentUser.displayName ? currentUser.displayName : currentUser.email}`, null);
     this.profileService.createNewProfile();
     this.router.navigate(['/profile']);

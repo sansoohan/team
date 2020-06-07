@@ -1,13 +1,15 @@
 export class AboutContent {
-  firstName: string;
-  lastName: string;
+  firstName?: string;
+  lastName?: string;
+  userName: string;
   address: string;
-  phoneNumber: string;
-  email: string;
+  phoneNumber?: string;
+  email?: string;
   social: Array<AboutSocial>;
   constructor(
     firstName: string = '',
     lastName: string = '',
+    userName: string = '',
     address: string = '',
     phoneNumber: string = '',
     email: string = '',
@@ -15,6 +17,7 @@ export class AboutContent {
   ){
     this.firstName = firstName;
     this.lastName = lastName;
+    this.userName = userName;
     this.address = address;
     this.phoneNumber = phoneNumber;
     this.email = email;

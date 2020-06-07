@@ -13,7 +13,7 @@
       </div>
       <div *ngIf="!isEditing" class="resume-date text-md-right">
         <span class="text-primary">
-          {{educationContent.startedAt.toLocaleString('en-us',{month:'short', year:'numeric'})}}
+          {{educationContent.startedAt ? educationContent.startedAt.toLocaleString('en-us',{month:'short', year:'numeric'}) : 'None'}}
            - 
           {{educationContent.finishedAt ? educationContent.finishedAt.toLocaleString('en-us',{month:'short', year:'numeric'}) : 'Now'}}
         </span>

@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { profileDefault } from '../profile/profile.default';
 import { MessageService } from './message.service';
 import { ProfileContent } from '../profile/profile.content';
+import * as firebase from 'firebase';
 
 @Injectable({
   providedIn: 'root'
@@ -27,13 +28,24 @@ export class ProfileService {
   createNewProfile(): void {
     if (this.profileUpdateState !== 'deleteProfile'){
       const userId = JSON.parse(localStorage.currentUser).uid;
+      const userEmail = JSON.parse(localStorage.currentUser).email;
+      const userPhoneNumber = JSON.parse(localStorage.currentUser).phoneNumber;
+      const userPhoneUrl = JSON.parse(localStorage.currentUser).photoURL;
+      const userFirstName = JSON.parse(localStorage.currentUser).displayName.split(' ')[0];
+      const userLastName = JSON.parse(localStorage.currentUser).displayName.split(' ')[1];
+      profileDefault.roles[userId] = 'owner';
+      profileDefault.ownerId = userId;
+      profileDefault.profileTitle = `${userId}'s Title`;
+      profileDefault.aboutContent.userName = userId;
+      profileDefault.aboutContent.firstName = userFirstName;
+      profileDefault.aboutContent.lastName = userLastName;
+      profileDefault.aboutContent.email = userEmail;
+      profileDefault.aboutContent.phoneNumber = userPhoneNumber;
+      profileDefault.profileImageSrc = userPhoneUrl ? userPhoneUrl : '';
       this.getProfileContentsObserver(userId).subscribe(profileContents => {
         if (localStorage.currentUser && profileContents.length === 0){
           this.firestore.collection('profiles').add(profileDefault)
           .then(doc => {
-            profileDefault.roles[userId] = 'owner';
-            profileDefault.ownerId = userId;
-            profileDefault.userName = userId;
             profileDefault.id = doc.id;
             doc.update(profileDefault);
           });
@@ -46,7 +58,8 @@ export class ProfileService {
     let profileContentsObserver: Observable<ProfileContent[]>;
     if (userName){
       profileContentsObserver = this.firestore
-      .collection<ProfileContent>('profiles', ref => ref.where('userName', '==', userName))
+      .collection<ProfileContent>('profiles', ref => ref
+      .where(new firebase.firestore.FieldPath('aboutContent', 'userName'), '==', userName))
       .valueChanges();
     }
     else {
