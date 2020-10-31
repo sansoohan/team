@@ -26,7 +26,6 @@ export class ProfileComponent implements OnInit {
   hasUserNameCollision: boolean;
   hasUserEmailCollision: boolean;
   updateOk: boolean;
-  userName: string;
   userEmail: string;
   validateUserName: string;
   validateUserEmail: string;
@@ -34,6 +33,7 @@ export class ProfileComponent implements OnInit {
   profileSub: any;
   userNameValidateSub: any;
   userEmailValidateSub: any;
+  params: any;
 
   constructor(
     public profileService: ProfileService,
@@ -49,12 +49,13 @@ export class ProfileComponent implements OnInit {
       this.hasUserNameCollision = false;
       this.hasUserEmailCollision = false;
       this.updateOk = true;
-      this.userName = params.userName;
-      this.profileContentsObserver = this.profileService.getProfileContentsObserver();
+      this.params = params;
+      this.profileContentsObserver = this.profileService.getProfileContentsObserver({params});
       this.profileSub = this.profileContentsObserver.subscribe(profileContents => {
         this.profileContents = this.replaceToDateRecursively(profileContents);
-        if (this.profileContents.length === 0){
+        if (this.profileContents.length === 0 || !this.profileContents){
           this.isPage = false;
+          return
         }
 
         if (this.profileContents[0].profileImageSrc !== ''){
@@ -74,9 +75,13 @@ export class ProfileComponent implements OnInit {
         }
 
         const userName = this.profileContents[0].aboutContent.userName;
-        const currentUser = JSON.parse(localStorage.currentUser);
-        currentUser.userName = userName;
-        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        console.log(userName)
+        const currentUser = JSON.parse(localStorage.currentUser || null);
+        if (currentUser){
+          currentUser.userName = userName;
+          localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        }
+        console.log(currentUser);
         this.scrollToContactTypes('about');
       });
     });
@@ -275,8 +280,9 @@ export class ProfileComponent implements OnInit {
 
   scrollToContactTypes(titleName: string) {
     this.router.onSameUrlNavigation = 'reload';
-    const currentUser = JSON.parse(localStorage.currentUser);
-    this.router.navigate(['/profile', currentUser.userName || currentUser.uid], { fragment: titleName }).finally(() => {
+    const currentUser = JSON.parse(localStorage.currentUser || null);
+    const queryUser = currentUser?.userName || currentUser?.uid || this.params?.userName
+    this.router.navigate(['/profile', queryUser], { fragment: titleName }).finally(() => {
       this.router.onSameUrlNavigation = 'ignore'; // Restore config after navigation completes
     });
   }
