@@ -21,7 +21,7 @@ export class ProfileService {
       this.message.showSuccess('Profile Update', 'Success!');
     })
     .catch(e => {
-      console.log(e);
+      console.error(e);
       this.message.showWarning('Profile Update Failed.', e);
     });
   }
@@ -74,17 +74,17 @@ export class ProfileService {
     return userNameCollisionObserver;
   }
 
-  getProfileContentsObserver({params=null}): Observable<ProfileContent[]> {
+  getProfileContentsObserver({params = null}): Observable<ProfileContent[]> {
     let profileContentsObserver: Observable<ProfileContent[]>;
     const currentUser = JSON.parse(localStorage.currentUser || null);
-    const queryUserName = currentUser?.userName || params?.userName
+    const queryUserName = currentUser?.userName || params?.userName;
     if (queryUserName){
       profileContentsObserver = this.firestore
       .collection<ProfileContent>('profiles', ref => ref
       .where(new firebase.firestore.FieldPath('aboutContent', 'userName'), '==', queryUserName))
       .valueChanges();
     }
-    else if(currentUser?.uid){
+    else if (currentUser?.uid){
       profileContentsObserver = this.firestore
       .collection<ProfileContent>('profiles', ref => ref.where('ownerId', '==', currentUser?.uid))
       .valueChanges();
