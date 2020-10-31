@@ -51,7 +51,6 @@ export class AuthService {
       uid: event.uid
     };
     localStorage.setItem('currentUser', JSON.stringify(currentUser));
-    // console.log(JSON.parse(localStorage.getItem('currentUser')));
     this.message.showSuccess(`Hello ${currentUser.displayName ? currentUser.displayName : currentUser.email}`, null);
     this.profileService.createNewProfile();
     this.router.navigate(['/profile']);
@@ -62,7 +61,6 @@ export class AuthService {
   }
 
   signInFailed(event): void {
-    console.log(event);
     this.message.showError('Sign in failed', event.message);
   }
 
@@ -72,7 +70,6 @@ export class AuthService {
   }
 
   signUpFailed(event): void {
-    console.log(event);
     if (event.code){
       this.message.showError('Sign up failed', event.message);
     }

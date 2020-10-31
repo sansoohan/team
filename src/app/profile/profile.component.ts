@@ -55,7 +55,7 @@ export class ProfileComponent implements OnInit {
         this.profileContents = this.replaceToDateRecursively(profileContents);
         if (this.profileContents.length === 0 || !this.profileContents){
           this.isPage = false;
-          return
+          return;
         }
 
         if (this.profileContents[0].profileImageSrc !== ''){
@@ -75,13 +75,12 @@ export class ProfileComponent implements OnInit {
         }
 
         const userName = this.profileContents[0].aboutContent.userName;
-        console.log(userName)
         const currentUser = JSON.parse(localStorage.currentUser || null);
         if (currentUser){
           currentUser.userName = userName;
           localStorage.setItem('currentUser', JSON.stringify(currentUser));
         }
-        console.log(currentUser);
+
         this.scrollToContactTypes('about');
       });
     });
@@ -108,7 +107,6 @@ export class ProfileComponent implements OnInit {
 
       if (data.value) {
         const file = data.value;
-        console.log(file);
         const task = this.storage.upload(filePath, file);
 
         task
@@ -124,7 +122,7 @@ export class ProfileComponent implements OnInit {
             });
           });
         })
-        .catch(e => console.log(e));
+        .catch(e => console.error(e));
       }
       else if (data.dismiss === Swal.DismissReason.cancel) {
         fileRef.delete();
@@ -153,7 +151,6 @@ export class ProfileComponent implements OnInit {
           this.hasUserEmailCollision = true;
         }
       });
-      // console.log(this.hasUserEmailCollision);
       this.updateOk = true;
     });
   }
@@ -243,7 +240,6 @@ export class ProfileComponent implements OnInit {
 
       }
     });
-    // console.log(profileContent);
   }
 
   clickEditCancel(){
@@ -255,7 +251,6 @@ export class ProfileComponent implements OnInit {
       for (let i = 0; i < profileContent.length; i++){
         if (profileContent[i] instanceof firebase.firestore.Timestamp){
           profileContent[i] = profileContent[i].toDate();
-          // console.log(profileContent[i]);
         }
         else{
           this.replaceToDateRecursively(profileContent[i]);
@@ -267,7 +262,6 @@ export class ProfileComponent implements OnInit {
         if (key){
           if (profileContent[key] instanceof firebase.firestore.Timestamp){
             profileContent[key] = profileContent[key].toDate();
-            // console.log(profileContent[key]);
           }
           else{
             this.replaceToDateRecursively(profileContent[key]);
@@ -281,7 +275,7 @@ export class ProfileComponent implements OnInit {
   scrollToContactTypes(titleName: string) {
     this.router.onSameUrlNavigation = 'reload';
     const currentUser = JSON.parse(localStorage.currentUser || null);
-    const queryUser = currentUser?.userName || currentUser?.uid || this.params?.userName
+    const queryUser = currentUser?.userName || currentUser?.uid || this.params?.userName;
     this.router.navigate(['/profile', queryUser], { fragment: titleName }).finally(() => {
       this.router.onSameUrlNavigation = 'ignore'; // Restore config after navigation completes
     });
