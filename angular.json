@@ -147,5 +147,8 @@
       }
     }
   },
-  "defaultProject": "TestAngular"
+  "defaultProject": "TestAngular",
+  "cli": {
+    "analytics": "fb6154bc-e9da-49cf-8467-ba44f8a43f07"
+  }
 }

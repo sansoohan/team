@@ -44,7 +44,7 @@ export class ProfileService {
       profileDefault.aboutContent.phoneNumber = userPhoneNumber;
       profileDefault.profileImageSrc = userPhoneUrl ? userPhoneUrl : '';
 
-      this.getProfileContentsObserver(userId).subscribe(profileContents => {
+      this.getProfileContentsObserver().subscribe(profileContents => {
         if (localStorage.currentUser && profileContents.length === 0){
           this.firestore.collection('profiles').add(profileDefault)
           .then(doc => {
@@ -74,18 +74,18 @@ export class ProfileService {
     return userNameCollisionObserver;
   }
 
-  getProfileContentsObserver(userName?: string): Observable<ProfileContent[]> {
+  getProfileContentsObserver(): Observable<ProfileContent[]> {
     let profileContentsObserver: Observable<ProfileContent[]>;
-    if (userName){
+    const currentUser = JSON.parse(localStorage.currentUser);
+    if (currentUser.userName){
       profileContentsObserver = this.firestore
       .collection<ProfileContent>('profiles', ref => ref
-      .where(new firebase.firestore.FieldPath('aboutContent', 'userName'), '==', userName))
+      .where(new firebase.firestore.FieldPath('aboutContent', 'userName'), '==', currentUser.userName))
       .valueChanges();
     }
     else {
-      const userId = JSON.parse(localStorage.currentUser).uid;
       profileContentsObserver = this.firestore
-      .collection<ProfileContent>('profiles', ref => ref.where('ownerId', '==', userId))
+      .collection<ProfileContent>('profiles', ref => ref.where('ownerId', '==', currentUser.uid))
       .valueChanges();
     }
     return profileContentsObserver;

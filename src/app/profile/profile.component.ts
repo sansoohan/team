@@ -50,12 +50,13 @@ export class ProfileComponent implements OnInit {
       this.hasUserEmailCollision = false;
       this.updateOk = true;
       this.userName = params.userName;
-      this.profileContentsObserver = this.profileService.getProfileContentsObserver(this.userName);
+      this.profileContentsObserver = this.profileService.getProfileContentsObserver();
       this.profileSub = this.profileContentsObserver.subscribe(profileContents => {
         this.profileContents = this.replaceToDateRecursively(profileContents);
         if (this.profileContents.length === 0){
           this.isPage = false;
         }
+
         if (this.profileContents[0].profileImageSrc !== ''){
           this.defaultSrc = this.profileContents[0].profileImageSrc;
         }
@@ -71,6 +72,12 @@ export class ProfileComponent implements OnInit {
           const data = new Identicon(hash, options).toString();
           this.defaultSrc = this.domSanitizer.bypassSecurityTrustUrl(`data:image/png;base64,${data}`);
         }
+
+        const userName = this.profileContents[0].aboutContent.userName;
+        const currentUser = JSON.parse(localStorage.currentUser);
+        currentUser.userName = userName;
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        this.scrollToContactTypes('about');
       });
     });
   }
@@ -266,9 +273,10 @@ export class ProfileComponent implements OnInit {
     return profileContent;
   }
 
-  scrollToContactTypes(userName: string, titleName: string) {
+  scrollToContactTypes(titleName: string) {
     this.router.onSameUrlNavigation = 'reload';
-    this.router.navigate(['/profile', userName], { fragment: titleName }).finally(() => {
+    const currentUser = JSON.parse(localStorage.currentUser);
+    this.router.navigate(['/profile', currentUser.userName || currentUser.uid], { fragment: titleName }).finally(() => {
       this.router.onSameUrlNavigation = 'ignore'; // Restore config after navigation completes
     });
   }
