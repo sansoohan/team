@@ -9,6 +9,7 @@
     "src/polyfills.ts"
   ],
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "node_modules/bootstrap-4-autocomplete/dist/bootstrap-4-autocomplete.d.ts"
   ]
 }
