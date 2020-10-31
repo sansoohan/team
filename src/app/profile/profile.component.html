@@ -24,22 +24,22 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes(profileContent.aboutContent.userName, 'about')">About</a>
+            <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes('about')">About</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes(profileContent.aboutContent.userName, 'education')">Education</a>
+            <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes('education')">Education</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes(profileContent.aboutContent.userName, 'skills')">Skills</a>
+            <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes('skills')">Skills</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes(profileContent.aboutContent.userName, 'projects')">Projects</a>
+            <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes('projects')">Projects</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes(profileContent.aboutContent.userName, 'interests')">Interests</a>
+            <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes('interests')">Interests</a>
           </li>
           <li *ngFor="let additaionProfileContent of profileContent.additaionProfilesContent" class="nav-item">
-            <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes(profileContent.aboutContent.userName, additaionProfileContent.title)">{{additaionProfileContent.title}}</a>
+            <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes(additaionProfileContent.title)">{{additaionProfileContent.title}}</a>
           </li>
         </ul>
       </div>
