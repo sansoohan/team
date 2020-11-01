@@ -9,6 +9,7 @@ import { SkillsContent, SkillGroup, SkillDescription } from './skills.content';
 export class SkillsComponent implements OnInit {
   @Input() skillsContent: SkillsContent;
   @Input() isEditing: boolean;
+  @Input() profileForm: any;
   public newSkillGroup: SkillGroup = new SkillGroup();
   public newSkillDescription: SkillDescription = new SkillDescription();
 

@@ -18,35 +18,53 @@
           {{educationContent.finishedAt ? educationContent.finishedAt.toLocaleString('en-us',{month:'short', year:'numeric'}) : 'Now'}}
         </span>
       </div>
+    </div>
 
-      <div class=container *ngIf="isEditing">
-        <div class="row">
-          <div class="col-12">University / College / School</div>
-          <input value="{{educationContent.organization}}" type="text" class="form-control col-11" placeholder="Organization Name">
-          <div class="col-1" style="padding: 0;">
-            <app-input-add-remove [targetArray]="educationsContent.educations" [targetArrayIndex]="i" [newObject]="newEducation"></app-input-add-remove>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-6">Started At</div>
-          <div class="col-6">Graduated At</div>
-          <div class="col-6"><app-monthpicker (change)="onChange($event)" [date]="educationContent.startedAt"></app-monthpicker></div>
-          <div class="col-6"><app-monthpicker (change)="onChange($event)" [date]="educationContent.finishedAt"></app-monthpicker></div>
-        </div>
-        <div class="row">
-          <div class="col-12">Degree</div>
-          <input value="{{educationContent.degree}}" type="text" class="form-control col-12" placeholder="Degree">
-        </div>
-        <div class="row">
-          <div class="col-1"></div>
-          <div class="col-11">Descriptions</div>
-        </div>
-        <div class="row" *ngFor="let description of educationContent.descriptions; index as i">
-          <div class="col-1"></div>
-          <input value="{{description}}" type="text" class="form-control col-10" placeholder="Description">
-          <div class="col-1" style="padding: 0;">
-            <app-input-add-remove [targetArray]="educationContent.descriptions" [targetArrayIndex]="i" [newObject]="newDescription"></app-input-add-remove>
-          </div>
+    <div [formGroup]="profileForm">
+      <div formGroupName="educationsContent">
+        <div formArrayName='educations'>
+          <div *ngFor="let education of profileForm.controls.educationsContent.controls.educations.controls; let i=index">
+            <div [formGroupName]="i">
+              <div class=container *ngIf="isEditing">
+                <div class="row">
+                  <div class="col-12">University / College / School</div>
+                  <input type="text" class="form-control col-11" placeholder="Organization Name" formControlName="organization">
+                  <div class="col-1" style="padding: 0;">
+                    <app-input-add-remove [targetArray]="profileForm.controls.educationsContent.controls.educations.controls" [targetArrayIndex]="i" [newObject]="newEducation"></app-input-add-remove>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-6">Started At</div>
+                  <div class="col-6">Graduated At</div>
+                  <div class="col-6">
+                    <input type="month" formControlName="startedAt">
+                  </div>
+                  <div class="col-6">
+                    <input type="month" formControlName="finishedAt">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12">Degree</div>
+                  <input type="text" class="form-control col-12" placeholder="Degree" formControlName="degree">
+                </div>
+                <div class="row">
+                  <div class="col-1"></div>
+                  <div class="col-11">Descriptions</div>
+                </div>
+                <div formArrayName='descriptions'>
+                  <div *ngFor="let description of education.controls.descriptions.controls; let j=index">
+                    <div class="row">
+                      <div class="col-1"></div>
+                      <input type="text" class="form-control col-10" placeholder="Description" [formControlName]="j">
+                      <div class="col-1" style="padding: 0;">
+                        <app-input-add-remove [targetArray]="education.controls.descriptions.controls" [targetArrayIndex]="j" [newObject]="newDescription"></app-input-add-remove>
+                      </div>
+                    </div>
+                  </div>  
+                </div>
+              </div>
+            </div>
+          </div>  
         </div>
       </div>
     </div>

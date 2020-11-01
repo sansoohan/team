@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
 
@@ -14,6 +14,7 @@ import { MonthpickerModule } from '../modules/monthpicker/monthpicker.module';
 import { InputAddRemoveModule } from '../modules/user-form/input-add-remove/input-add-remove.module';
 import { NotFoundComponent } from '../not-found/not-found.component';
 import { PageLoadingComponent } from '../page-loading/page-loading.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -35,6 +36,7 @@ import { PageLoadingComponent } from '../page-loading/page-loading.component';
   imports: [
     CommonModule,
     MonthpickerModule,
+    ReactiveFormsModule,
     InputAddRemoveModule
   ],
   exports: [
@@ -43,6 +45,7 @@ import { PageLoadingComponent } from '../page-loading/page-loading.component';
     NotFoundComponent,
     PageLoadingComponent
   ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: []
 })
 export class ProfileModule { }

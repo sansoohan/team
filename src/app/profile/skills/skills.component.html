@@ -13,7 +13,7 @@
       </div>
     </div>
 
-    <div *ngIf="isEditing" class="container">
+    <div *ngIf="isEditing" class="container" [formGroup]="profileForm">
       <div class="row">
         <div class="col-12">Skill Group</div>
       </div>
@@ -23,21 +23,31 @@
         <div class="col-3">Skill Name</div>
         <div class="col-3">Term</div>
       </div>
-      <div *ngFor="let skillGroup of skillsContent.skillGroups; index as i" class="container">
-        <div class="row">
-          <input value="{{skillGroup.skillGroupName}}" type="text" class="form-control col-11" placeholder="Recipient's username">
-          <div class="col-1" style="padding: 0;">
-            <app-input-add-remove [targetArray]="skillsContent.skillGroups" [targetArrayIndex]="i" [newObject]="newSkillGroup"></app-input-add-remove>
-          </div>
-        </div>
-
-        <div *ngFor="let skill of skillGroup.skills; index as i" class="row">
-          <div class="col-1"></div>
-          <input value="{{skill.devicon}}" type="text" class="form-control col-5" placeholder="Skill Icon">
-          <input value="{{skill.skillName}}" type="text" class="form-control col-3" placeholder="Skill">
-          <input value="{{skill.term}}" type="text" class="form-control col-2" placeholder="Term">
-          <div class="col-1" style="padding: 0;">
-            <app-input-add-remove [targetArray]="skillGroup.skills" [targetArrayIndex]="i" [newObject]="newSkillDescription"></app-input-add-remove>
+      <div formGroupName='skillsContent'>
+        <div formArrayName='skillGroups'>
+          <div *ngFor="let skillGroup of profileForm.controls.skillsContent.controls.skillGroups.controls; let i=index">
+            <div [formGroupName]="i">
+              <div class="row">
+                <input type="text" class="form-control col-11" placeholder="Recipient's username" formControlName="skillGroupName">
+                <div class="col-1" style="padding: 0;">
+                  <app-input-add-remove [targetArray]="profileForm.controls.skillsContent.controls.skillGroups.controls" [targetArrayIndex]="i" [newObject]="newSkillGroup"></app-input-add-remove>
+                </div>
+              </div>
+      
+              <div formArrayName='skills'>
+                <div *ngFor="let skill of skillGroup.controls.skills.controls; let j=index">
+                  <div class="row" [formGroupName]="j">
+                    <div class="col-1"></div>
+                    <input type="text" class="form-control col-5" placeholder="Skill Icon" formControlName="devicon">
+                    <input type="text" class="form-control col-3" placeholder="Skill" formControlName="skillName">
+                    <input type="text" class="form-control col-2" placeholder="Term" formControlName="term">
+                    <div class="col-1" style="padding: 0;">
+                      <app-input-add-remove [targetArray]="skillGroup.controls.skills.controls" [targetArrayIndex]="j" [newObject]="newSkillDescription"></app-input-add-remove>
+                    </div>    
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

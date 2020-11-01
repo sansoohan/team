@@ -9,6 +9,7 @@ import { ProjectsContent, ProjectDescription } from './projects.content';
 export class ProjectsComponent implements OnInit {
   @Input() projectsContent: ProjectsContent;
   @Input() isEditing: boolean;
+  @Input() profileForm: any;
   public newTaskDescription: '';
   public newProjectDescription: ProjectDescription = new ProjectDescription();
 

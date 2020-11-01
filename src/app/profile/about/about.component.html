@@ -22,36 +22,41 @@
     </ul>
   </div>
 </section>
-<section *ngIf="isEditing" class="resume-section p-3 p-lg-5 d-flex d-column" id="about">
-  <div class="my-auto container">
+
+<section *ngIf="isEditing" class="resume-section p-3 p-lg-5 d-flex d-column" id="about" [formGroup]="profileForm">
+  <div class="my-auto container" formGroupName="aboutContent">
     <div class="row">
       <div class="col-4">First Name</div>
       <div class="col-4">Last Name</div>
       <div class="col-4">User Name</div>
-      <input value="{{aboutContent.firstName}}" type="text" class="form-control col-4" placeholder="First Name">
-      <input value="{{aboutContent.lastName}}" type="text" class="form-control col-4" placeholder="Last Name">
-      <input value="{{aboutContent.userName}}" type="text" class="form-control col-4" placeholder="User Name" (change)="onUserNameChange($event)">
+      <input type="text" class="form-control col-4" placeholder="First Name" formControlName="firstName">
+      <input type="text" class="form-control col-4" placeholder="Last Name" formControlName="lastName">
+      <input type="text" class="form-control col-4" placeholder="User Name" (change)="onUserNameChange($event)" formControlName="userName">
     </div>
 
     <div class="row">
       <div class="col-12">Address</div>
-      <input value="{{aboutContent.address}}" type="text" class="form-control col-12" placeholder="Address">
+      <input value="{{aboutContent.address}}" type="text" class="form-control col-12" placeholder="Address" formControlName="address">
     </div>
     <div class="row">
       <div class="col-6">Phone Number</div>
       <div class="col-6">Email</div>
-      <input value="{{aboutContent.phoneNumber}}" type="text" class="form-control col-6" placeholder="Phone Number">
-      <input value="{{aboutContent.email}}" type="text" class="form-control col-6" placeholder="Email" (change)="onUserEmailChange($event)">
+      <input type="text" class="form-control col-6" placeholder="Phone Number" formControlName="phoneNumber">
+      <input type="text" class="form-control col-6" placeholder="Email" (change)="onUserEmailChange($event)" formControlName="email">
     </div>
     <div class="row">
       <div class="col-4">Font AwsomeIcon</div>
       <div class="col-8">Url</div>
     </div>
-    <div *ngFor="let social of aboutContent.social; index as i" class="row">
-      <input value="{{social.faIcon}}" type="text" class="form-control col-4" placeholder="Icon">
-      <input value="{{social.socialUrl}}" type="text" class="form-control col-7" placeholder="Url">
-      <div class="col-1" style="padding: 0;">
-        <app-input-add-remove [targetArray]="aboutContent.social" [targetArrayIndex]="i" [newObject]="newAboutSocial"></app-input-add-remove>
+    <div formArrayName='social'>
+      <div *ngFor="let socialElement of profileForm.controls.aboutContent.controls.social.controls; let i=index">
+        <div [formGroupName]="i" class="row">
+          <input type="text" class="form-control col-4" placeholder="Icon" formControlName="faIcon">
+          <input type="text" class="form-control col-7" placeholder="Url" formControlName="socialUrl">
+          <div class="col-1" style="padding: 0;">
+            <app-input-add-remove [targetArray]="socialElement" [targetArrayIndex]="i" [newObject]="newAboutSocial"></app-input-add-remove>
+          </div>
+        </div>
       </div>
     </div>
   </div>
