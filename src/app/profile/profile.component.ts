@@ -9,6 +9,7 @@ import { AuthService } from '../services/auth.service';
 import { ProfileContent } from './profile.content';
 import Swal from 'sweetalert2';
 import { AngularFireStorage } from '@angular/fire/storage';
+import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
 
 @Component({
   selector: 'app-profile',
@@ -34,6 +35,7 @@ export class ProfileComponent implements OnInit {
   userNameValidateSub: any;
   userEmailValidateSub: any;
   params: any;
+  profileForm: any;
 
   constructor(
     public profileService: ProfileService,
@@ -41,7 +43,8 @@ export class ProfileComponent implements OnInit {
     private domSanitizer: DomSanitizer,
     private route: ActivatedRoute,
     private router: Router,
-    private storage: AngularFireStorage
+    private storage: AngularFireStorage,
+    private fb: FormBuilder,
   ) {
     this.paramSub = this.route.params.subscribe(params => {
       this.isEditing = false;
@@ -82,6 +85,9 @@ export class ProfileComponent implements OnInit {
         }
 
         this.scrollToContactTypes('about');
+
+        this.profileForm = this.buildFormRecursively(this.profileContents[0]);
+        console.log(this.profileForm);
       });
     });
   }
@@ -270,6 +276,31 @@ export class ProfileComponent implements OnInit {
       }
     }
     return profileContent;
+  }
+
+  buildFormRecursively(profileContent: any){
+    if (profileContent instanceof Date) {
+      return this.fb.control(new Date(profileContent).toISOString().slice(0, -1));
+    }
+    else if (profileContent instanceof Array){
+      const retArray: FormArray = this.fb.array([]);
+      for (const el of profileContent){
+        retArray.push(this.buildFormRecursively(el));
+      }
+      return retArray;
+    }
+    else if (profileContent instanceof Object) {
+      const retHash: FormGroup = this.fb.group({});
+      for (const key in profileContent){
+        if (key){
+          retHash.addControl(key, this.buildFormRecursively(profileContent[key]));
+        }
+      }
+      return retHash;
+    }
+    else {
+      return this.fb.control(profileContent);
+    }
   }
 
   scrollToContactTypes(titleName: string) {

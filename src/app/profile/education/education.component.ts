@@ -13,6 +13,7 @@ import * as moment from 'moment';
 export class EducationComponent implements OnInit {
   @Input() educationsContent: EducationsContent;
   @Input() isEditing: boolean;
+  @Input() profileForm: any;
   public newEducation: EducationContent = new EducationContent();
   public newDescription: '';
 

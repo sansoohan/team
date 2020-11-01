@@ -3,7 +3,7 @@ import { environment } from '../environments/environment';
 
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 
@@ -36,9 +36,12 @@ import { MainComponent } from './main/main.component';
 import { SignInComponent } from './sign-in/sign-in.component';
 import { SignUpComponent } from './sign-up/sign-up.component';
 import { PageLoadingComponent } from './page-loading/page-loading.component';
+
 import { MatInputModule } from '@angular/material/input';
-
-
+import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatChipsModule } from '@angular/material/chips';
 
 // See the Moment.js docs for the meaning of these formats:
 // https://momentjs.com/docs/#/displaying/format/
@@ -65,9 +68,9 @@ export const MY_FORMATS = {
   imports: [
     BrowserModule,
     FormsModule,
+    ReactiveFormsModule,
     HttpClientModule,
     BrowserAnimationsModule,
-    // NgwWowModule,
     SweetAlert2Module.forRoot(),
     NgxAuthFirebaseUIModule.forRoot(
       environment.firebase,
@@ -96,6 +99,11 @@ export const MY_FORMATS = {
     AngularFireStorageModule,
     AppRoutingModule,
     MatPasswordStrengthModule,
+    MatInputModule,
+    MatSelectModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatChipsModule,
     EmbededGooglemapModule
   ],
   providers: [

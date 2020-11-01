@@ -12,16 +12,16 @@ export class ProjectDescription {
   projectName: string;
   memberNum: number;
   position: string;
-  startedAt: firebase.firestore.Timestamp | Date;
-  finishedAt: firebase.firestore.Timestamp | Date;
+  startedAt: string;
+  finishedAt: string;
   taskDescriptions: Array<string>;
   constructor(
     organization: string = '',
     projectName: string = '',
     memberNum: number = 0,
     position: string = '',
-    startedAt: firebase.firestore.Timestamp | Date = null,
-    finishedAt: firebase.firestore.Timestamp | Date = null,
+    startedAt: string = null,
+    finishedAt: string = null,
     taskDescriptions: Array<string> = ['']
   ){
     this.organization = organization;

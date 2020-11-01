@@ -9,6 +9,7 @@ import { InterestsContent } from './interests.content';
 export class InterestsComponent implements OnInit {
   @Input() interestsContent: InterestsContent;
   @Input() isEditing: boolean;
+  @Input() profileForm: any;
   public newDescription: string;
 
   constructor() {

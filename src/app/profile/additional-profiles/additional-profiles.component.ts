@@ -9,6 +9,7 @@ import { AdditaionProfileContent, LargeGroup, SmallGroup, SmallGroupDescription 
 export class AdditionalProfilesComponent implements OnInit {
   @Input() additaionProfilesContent: Array<AdditaionProfileContent>;
   @Input() isEditing: boolean;
+  @Input() profileForm: any;
   public newSmallGroupDescription = new SmallGroupDescription();
   public newSmallGroup = new SmallGroup();
   public newLargeGroup = new LargeGroup();

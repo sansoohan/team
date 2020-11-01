@@ -11,14 +11,14 @@ export class EducationContent {
   organization: string;
   degree: string;
   descriptions: Array<string>;
-  startedAt: firebase.firestore.Timestamp | Date;
-  finishedAt: firebase.firestore.Timestamp | Date;
+  startedAt: string;
+  finishedAt: string;
   constructor(
     organization: string = '',
     degree: string = '',
     descriptions: Array<string> = [''],
-    startedAt: firebase.firestore.Timestamp | Date = null,
-    finishedAt: firebase.firestore.Timestamp | Date = null
+    startedAt: string = null,
+    finishedAt: string = null
   ){
     this.organization = organization;
     this.degree = degree;

@@ -9,14 +9,14 @@ import { AboutContent, AboutSocial } from './about.content';
 export class AboutComponent implements OnInit {
   @Input() aboutContent: AboutContent;
   @Input() isEditing: boolean;
+  @Input() profileForm: any;
   @Output() userEmailOutput = new EventEmitter<string>();
   @Output() userNameOutput = new EventEmitter<string>();
 
+
   public newAboutSocial: AboutSocial = new AboutSocial();
 
-  constructor() {
-
-  }
+  constructor() { }
 
   onUserEmailChange(event){
     this.userEmailOutput.emit(event.target.value);
