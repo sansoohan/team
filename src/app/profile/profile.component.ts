@@ -10,6 +10,7 @@ import { ProfileContent } from './profile.content';
 import Swal from 'sweetalert2';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
+import { AdditaionProfileContent } from './additional-profiles/additional-profile.content';
 
 @Component({
   selector: 'app-profile',
@@ -36,6 +37,7 @@ export class ProfileComponent implements OnInit {
   userEmailValidateSub: any;
   params: any;
   profileForm: any;
+  public newAdditaionProfileContent: AdditaionProfileContent = new AdditaionProfileContent();
 
   constructor(
     public profileService: ProfileService,
@@ -87,7 +89,6 @@ export class ProfileComponent implements OnInit {
         this.scrollToContactTypes('about');
 
         this.profileForm = this.buildFormRecursively(this.profileContents[0]);
-        console.log(this.profileForm);
       });
     });
   }
@@ -140,6 +141,39 @@ export class ProfileComponent implements OnInit {
           showConfirmButton: false,
           timer: 1500
         });
+      }
+    });
+  }
+
+  addAdditionalProfile(){
+    this.profileForm?.controls.additaionProfilesContent.push(
+      this.buildFormRecursively(this.newAdditaionProfileContent)
+    );
+  }
+
+  removeAdditionalProfile(index){
+    const swalWithBootstrapButtons = Swal.mixin({
+      customClass: {
+        confirmButton: 'btn btn-success',
+        cancelButton: 'btn btn-danger'
+      },
+      buttonsStyling: false
+    });
+
+    swalWithBootstrapButtons.fire({
+      title: 'Are you sure?',
+      // tslint:disable-next-line:quotemark
+      text: "Remove this data",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'No, cancel!',
+      reverseButtons: true
+    }).then((result) => {
+      if (result.value) {
+        this.profileForm?.controls.additaionProfilesContent.removeAt(index);
+      }
+      else if (result.dismiss === Swal.DismissReason.cancel) {
       }
     });
   }

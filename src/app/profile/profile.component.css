@@ -149,3 +149,10 @@ a {
 a:hover, a:focus, a:active {
   color: #824027;
 }
+
+.btn-circle {
+  border-radius: 20px; 
+  text-align: center; 
+  font-weight: bold;
+  margin: 20px;
+}
