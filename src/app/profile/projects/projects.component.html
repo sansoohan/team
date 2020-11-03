@@ -23,6 +23,16 @@
     <div *ngIf="isEditing" [formGroup]="profileForm">
       <div formGroupName='projectsContent'>
         <div formArrayName='projects'>
+
+          <div *ngIf="profileForm.controls.projectsContent.controls.projects.controls.length === 0">
+            <div class="row">
+              <div class="col-11"></div>
+              <div class="col-1" style="padding: 0;">
+                <app-input-add-remove [targetArrayForm]="profileForm.controls.projectsContent.controls.projects" [newObject]="newProjectDescription"></app-input-add-remove>
+              </div>
+            </div>
+          </div>
+
           <div *ngFor="let project of profileForm.controls.projectsContent.controls.projects.controls; let i=index">
             <div [formGroupName]="i">
               <div class="container mb-5">
@@ -30,7 +40,7 @@
                   <div class="col-12">Organization Name</div>
                   <input type="text" class="form-control col-11" placeholder="Organization Name" formControlName="organization">
                   <div class="col-1" style="padding: 0;">
-                    <app-input-add-remove [targetArray]="profileForm.controls.projectsContent.controls.projects.controls" [targetArrayIndex]="i" [newObject]="newProjectDescription"></app-input-add-remove>
+                    <app-input-add-remove [targetArrayForm]="profileForm.controls.projectsContent.controls.projects" [targetArrayIndex]="i" [newObject]="newProjectDescription"></app-input-add-remove>
                   </div>
       
                   <div class="col-12">Project Name</div>
@@ -46,10 +56,10 @@
                   <div class="col-6">Started At</div>
                   <div class="col-6">Finished At</div>
                   <div class="col-6">
-                    <input type="month" formControlName="startedAt">
+                    <app-monthpicker [control]="project.controls.startedAt"></app-monthpicker>
                   </div>
                   <div class="col-6">
-                    <input type="month" formControlName="finishedAt">
+                    <app-monthpicker [control]="project.controls.finishedAt"></app-monthpicker>
                   </div>
                 </div>
 
@@ -58,18 +68,27 @@
                   <div class="col-11">Task Descriptions</div>
                 </div>
                 <div formArrayName='taskDescriptions'>
+
+                  <div *ngIf="project.controls.taskDescriptions.controls.length === 0">
+                    <div class="row">
+                      <div class="col-11"></div>
+                      <div class="col-1" style="padding: 0;">
+                        <app-input-add-remove [targetArrayForm]="project.controls.taskDescriptions" [newObject]="newTaskDescription"></app-input-add-remove>
+                      </div>
+                    </div>
+                  </div>
+
                   <div *ngFor="let description of project.controls.taskDescriptions.controls; let j=index">
                     <div class="row">
                       <div class="col-1"></div>
                       <input type="text" class="form-control col-10" placeholder="Description" [formControlName]="j">
                       <div class="col-1" style="padding: 0;">
-                        <app-input-add-remove [targetArray]="project.controls.taskDescriptions.controls" [targetArrayIndex]="j" [newObject]="newTaskDescription"></app-input-add-remove>
+                        <app-input-add-remove [targetArrayForm]="project.controls.taskDescriptions" [targetArrayIndex]="j" [newObject]="newTaskDescription"></app-input-add-remove>
                       </div>
                     </div>
                   </div>  
                 </div>
               </div>
-        
             </div>
           </div>
         </div>

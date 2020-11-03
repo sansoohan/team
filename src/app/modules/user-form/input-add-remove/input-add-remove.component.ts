@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import Swal from 'sweetalert2';
+import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
 
 @Component({
   selector: 'app-input-add-remove',
@@ -7,17 +8,42 @@ import Swal from 'sweetalert2';
   styleUrls: ['./input-add-remove.component.css']
 })
 export class InputAddRemoveComponent implements OnInit {
-  @Input() targetArray: Array<any>;
+  @Input() targetArrayForm: FormArray;
   @Input() targetArrayIndex: number;
   @Input() newObject: any;
 
-  constructor() { }
+  constructor(private fb: FormBuilder) { }
 
-  addInput(targetArray: Array<any>){
-    targetArray.push(this.newObject);
+  addInput(){
+    this.targetArrayForm.push(this.buildFormRecursively(this.newObject));
   }
 
-  removeInput(targetArray: Array<any>, targetArrayIndex: number){
+  buildFormRecursively(profileContent: any){
+    if (profileContent instanceof Date) {
+      return this.fb.control(new Date(profileContent).toISOString().slice(0, -1));
+    }
+    else if (profileContent instanceof Array){
+      const retArray: FormArray = this.fb.array([]);
+      for (const el of profileContent){
+        retArray.push(this.buildFormRecursively(el));
+      }
+      return retArray;
+    }
+    else if (profileContent instanceof Object) {
+      const retHash: FormGroup = this.fb.group({});
+      for (const key in profileContent){
+        if (key){
+          retHash.addControl(key, this.buildFormRecursively(profileContent[key]));
+        }
+      }
+      return retHash;
+    }
+    else {
+      return this.fb.control(profileContent);
+    }
+  }
+
+  removeInput(){
     const swalWithBootstrapButtons = Swal.mixin({
       customClass: {
         confirmButton: 'btn btn-success',
@@ -37,7 +63,7 @@ export class InputAddRemoveComponent implements OnInit {
       reverseButtons: true
     }).then((result) => {
       if (result.value) {
-        targetArray.splice(targetArrayIndex, 1);
+        this.targetArrayForm.removeAt(this.targetArrayIndex);
       }
       else if (result.dismiss === Swal.DismissReason.cancel) {
       }
@@ -46,5 +72,4 @@ export class InputAddRemoveComponent implements OnInit {
 
   ngOnInit(): void {
   }
-
 }

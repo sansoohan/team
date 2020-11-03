@@ -14,13 +14,13 @@
         <a class="navbar-brand js-scroll-trigger">
           <span class="d-block d-lg-none">Han's Development</span>
           <span class="d-none d-lg-block">
-            <img class="img-fluid img-profile rounded-circle mx-auto mb-2" (click)="uploadProfileImageSrc(profileContent)" [src]="defaultSrc" alt="">
+            <img class="img-fluid img-profile rounded-circle mx-auto mb-2" (click)="uploadProfileImageSrc(profileForm.value)" [src]="defaultSrc" alt="">
           </span>
         </a>
   
         <div class="list-inline-item">
           <Button class="mx-auto mb-2 btn btn-info" *ngIf="authService.isSignedIn() && !isEditing" (click)="clickEdit()">Edit Profile</Button>
-          <Button class="mx-auto mb-2 btn btn-success" *ngIf="authService.isSignedIn() && isEditing" (click)="clickEditUpdate(profileContent)">Update</Button>
+          <Button class="mx-auto mb-2 btn btn-success" *ngIf="authService.isSignedIn() && isEditing" (click)="clickEditUpdate(profileForm.value)">Update</Button>
           <Button class="mx-auto mb-2 btn btn-danger" *ngIf="authService.isSignedIn() && isEditing" (click)="clickEditCancel()">Cancel</Button>
         </div>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -40,13 +40,54 @@
             <li class="nav-item">
               <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes('interests')">Interests</a>
             </li>
-            <li *ngFor="let additaionProfileContent of profileContent.additaionProfilesContent" class="nav-item">
-              <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes(additaionProfileContent.title)">{{additaionProfileContent.title}}</a>
-            </li>
+
+            <div *ngIf="!isEditing">
+              <li *ngFor="let additaionProfileContent of profileContent.additaionProfilesContent" class="nav-item">
+                <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes(additaionProfileContent.title)">{{additaionProfileContent.title}}</a>
+              </li>  
+            </div>
+
+            <div *ngIf="isEditing">
+              <div formGroupName="additaionProfilesContent">
+                <div *ngFor="let additaionProfile of profileForm.controls.additaionProfilesContent.controls; let i=index">
+                  <div class="row" [formGroupName]="i" style="margin: 0;">                    
+                    <input type="text" class="form-control col-8" placeholder="Title" formControlName="title">
+                    <div class="col-4" style="padding: 0;">
+                      <!-- <app-input-add-remove [targetArrayForm]="profileForm.controls.additaionProfilesContent" [targetArrayForm]="i" [newObject]="newAdditaionProfileContent"></app-input-add-remove> -->
+                      <div class="container">
+                        <div class="row">
+                          <button
+                            class="btn btn-danger col-6"
+                            (click)="removeAdditionalProfile(i)"
+                          >
+                            <i class="fa fa-trash"></i>
+                          </button>
+                          <button
+                            class="btn btn-secondary col-6"
+                            (click)="scrollToContactTypes(additaionProfile.value.title)"
+                          >
+                            <i class="fa fa-arrow-right"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row nav-item">
+                <button
+                  class="btn btn-outline-dark btn-circle col-10"
+                  (click)="addAdditionalProfile()"
+                >
+                  Add New Category  <i class="fa fa-plus"></i>
+                </button>
+              </div>
+            </div>
           </ul>
         </div>
       </nav>
-      <div class="profiles">  
+      <div class="profiles">
         <app-about [isEditing]="isEditing" [aboutContent]="profileContent.aboutContent"
           [profileForm]="profileForm"
           (userEmailOutput)=onUserEmailChange($event) (userNameOutput)=onUserNameChange($event)
@@ -57,8 +98,6 @@
         <app-interests [isEditing]="isEditing" [interestsContent]="profileContent.interestsContent" [profileForm]="profileForm"></app-interests>
         <app-additional-profiles [isEditing]="isEditing" [additaionProfilesContent]="profileContent.additaionProfilesContent" [profileForm]="profileForm"></app-additional-profiles>
       </div>
-  
     </form>
   </div>  
 </div>
-

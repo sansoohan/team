@@ -1,4 +1,3 @@
-
 <section class="resume-section p-3 p-lg-5 d-flex flex-column" id="education">
   <div class="my-auto">
     <h2 class="mb-5">Education</h2>
@@ -23,24 +22,34 @@
     <div [formGroup]="profileForm">
       <div formGroupName="educationsContent">
         <div formArrayName='educations'>
+
+          <div *ngIf="profileForm.controls.educationsContent.controls.educations.controls.length === 0">
+            <div class="row">
+              <div class="col-11"></div>
+              <div class="col-1" style="padding: 0;">
+                <app-input-add-remove [targetArrayForm]="profileForm.controls.educationsContent.controls.educations" [newObject]="newEducation"></app-input-add-remove>
+              </div>
+            </div>
+          </div>
+
           <div *ngFor="let education of profileForm.controls.educationsContent.controls.educations.controls; let i=index">
             <div [formGroupName]="i">
-              <div class=container *ngIf="isEditing">
+              <div class="container mb-5" *ngIf="isEditing">
                 <div class="row">
                   <div class="col-12">University / College / School</div>
                   <input type="text" class="form-control col-11" placeholder="Organization Name" formControlName="organization">
                   <div class="col-1" style="padding: 0;">
-                    <app-input-add-remove [targetArray]="profileForm.controls.educationsContent.controls.educations.controls" [targetArrayIndex]="i" [newObject]="newEducation"></app-input-add-remove>
+                    <app-input-add-remove [targetArrayForm]="profileForm.controls.educationsContent.controls.educations" [targetArrayIndex]="i" [newObject]="newEducation"></app-input-add-remove>
                   </div>
                 </div>
                 <div class="row">
                   <div class="col-6">Started At</div>
                   <div class="col-6">Graduated At</div>
                   <div class="col-6">
-                    <input type="month" formControlName="startedAt">
+                    <app-monthpicker [control]="education.controls.startedAt"></app-monthpicker>
                   </div>
                   <div class="col-6">
-                    <input type="month" formControlName="finishedAt">
+                    <app-monthpicker [control]="education.controls.finishedAt"></app-monthpicker>
                   </div>
                 </div>
                 <div class="row">
@@ -52,19 +61,29 @@
                   <div class="col-11">Descriptions</div>
                 </div>
                 <div formArrayName='descriptions'>
+
+                  <div *ngIf="education.controls.descriptions.controls.length === 0">
+                    <div class="row">
+                      <div class="col-11"></div>
+                      <div class="col-1" style="padding: 0;">
+                        <app-input-add-remove [targetArrayForm]="education.controls.descriptions" [newObject]="newDescription"></app-input-add-remove>
+                      </div>
+                    </div>
+                  </div>
+
                   <div *ngFor="let description of education.controls.descriptions.controls; let j=index">
                     <div class="row">
                       <div class="col-1"></div>
                       <input type="text" class="form-control col-10" placeholder="Description" [formControlName]="j">
                       <div class="col-1" style="padding: 0;">
-                        <app-input-add-remove [targetArray]="education.controls.descriptions.controls" [targetArrayIndex]="j" [newObject]="newDescription"></app-input-add-remove>
+                        <app-input-add-remove [targetArrayForm]="education.controls.descriptions" [targetArrayIndex]="j" [newObject]="newDescription"></app-input-add-remove>
                       </div>
                     </div>
-                  </div>  
+                  </div>
                 </div>
               </div>
             </div>
-          </div>  
+          </div>
         </div>
       </div>
     </div>
