@@ -1,6 +1,5 @@
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Routes } from '@angular/router';
 
 import { AboutComponent } from './about/about.component';
 import { EducationComponent } from './education/education.component';
@@ -27,17 +26,12 @@ import { ReactiveFormsModule } from '@angular/forms';
     AdditionalProfilesComponent,
     NotFoundComponent,
     PageLoadingComponent
-    // EducationContent,
-    // SkillsContent,
-    // InterestsContent,
-    // ProjectsContent,
-    // AdditionalProfilesContent
   ],
   imports: [
     CommonModule,
     MonthpickerModule,
     ReactiveFormsModule,
-    InputAddRemoveModule
+    InputAddRemoveModule,
   ],
   exports: [
     ProfileComponent,

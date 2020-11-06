@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router'; // CLI imports router
 import { ProfileComponent } from './profile/profile.component';
+import { BlogComponent } from './blog/blog.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 
 // Import all the components for which navigation service has to be activated
@@ -14,6 +15,7 @@ const appRoutes: Routes = [
   { path: '', component: MainComponent },
   { path: 'profile', component: ProfileComponent },
   { path: 'profile/:userName', component: ProfileComponent },
+  { path: 'blog', component: BlogComponent },
   { path: 'sign-in', component: SignInComponent },
   { path: 'sign-up', component: SignUpComponent },
   { path: 'contact', component: ContactComponent },

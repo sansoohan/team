@@ -2,7 +2,7 @@ import {APP_BASE_HREF} from '@angular/common';
 import { environment } from '../environments/environment';
 
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, SecurityContext } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
@@ -43,6 +43,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipsModule } from '@angular/material/chips';
 
+import { MarkdownModule } from 'ngx-markdown';
+import { BlogModule } from './blog/blog.module';
+
 // See the Moment.js docs for the meaning of these formats:
 // https://momentjs.com/docs/#/displaying/format/
 export const MY_FORMATS = {
@@ -63,7 +66,7 @@ export const MY_FORMATS = {
     SignInComponent,
     SignUpComponent,
     ContactComponent,
-    MainComponent
+    MainComponent,
   ],
   imports: [
     BrowserModule,
@@ -72,6 +75,9 @@ export const MY_FORMATS = {
     HttpClientModule,
     BrowserAnimationsModule,
     SweetAlert2Module.forRoot(),
+    MarkdownModule.forRoot({
+      sanitize: SecurityContext.NONE
+    }),
     NgxAuthFirebaseUIModule.forRoot(
       environment.firebase,
       () => 'Developers',
@@ -93,6 +99,7 @@ export const MY_FORMATS = {
       }
     ),
     ProfileModule,
+    BlogModule,
     AngularFireAnalyticsModule,
     AngularFireAuthModule,
     AngularFirestoreModule,
