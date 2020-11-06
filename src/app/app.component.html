@@ -2,6 +2,7 @@
 <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
   <a *ngIf="!authService.isSignedIn()" class="navbar-brand" href="/">Startup</a>
   <a *ngIf="authService.isSignedIn()" class="navbar-brand" href="/#/profile">Profile</a>
+  <a *ngIf="authService.isSignedIn()" class="navbar-brand" href="/#/blog">Blog</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
