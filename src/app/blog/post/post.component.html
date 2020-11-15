@@ -3,7 +3,7 @@
     <div class="form-row" *ngIf="!isEditing">
       <div class="col-12" style="padding:0px">
         <span class="blog-title">{{postForm.controls.postTitle.value}}</span>
-        <markdown ngPreserveWhitespaces>
+        <markdown emoji lineNumbers ngPreserveWhitespaces>
           {{postForm.controls.postMarkdown.value}}
         </markdown>  
       </div>
@@ -16,8 +16,8 @@
       </div>
       
       <div class="col-6">
-        <markdown class="blog-title" ngPreserveWhitespaces data={{postForm.controls.postTitle.value}}></markdown>
-        <markdown ngPreserveWhitespaces data={{postForm.controls.postMarkdown.value}}>
+        <markdown class="blog-title" emoji lineNumbers ngPreserveWhitespaces data={{postForm.controls.postTitle.value}}></markdown>
+        <markdown emoji lineNumbers ngPreserveWhitespaces data={{postForm.controls.postMarkdown.value}}>
         </markdown>
       </div>  
     </div>

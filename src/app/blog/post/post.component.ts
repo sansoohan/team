@@ -26,6 +26,7 @@ export class PostComponent implements OnInit {
   ) {
     this.newPostConent.postTitle = "Awsome";
     this.newPostConent.postMarkdown = "```javascript\n"
+    + ":heart:\n"
     + "const functions(){}\n"
     + "const functions(){}\n"
     + "const functions(){}\n"
