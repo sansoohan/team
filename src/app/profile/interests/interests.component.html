@@ -28,7 +28,7 @@
               <div class="row" *ngFor="let interest of profileForm.controls.interestsContent.controls.descriptions.controls; let i=index">
                 <input type="text" class="form-control col-11" placeholder="Interest" [formControlName]="i">
                 <div class="col-1" style="padding: 0;">
-                  <app-input-add-remove [targetArrayForm]="profileForm.controls.interestsContent.controls.descriptions" [targetArrayFormIndex]="i" [newObject]="newDescription"></app-input-add-remove>
+                  <app-input-add-remove [targetArrayForm]="profileForm.controls.interestsContent.controls.descriptions" [targetArrayIndex]="i" [newObject]="newDescription"></app-input-add-remove>
                 </div>
               </div>
             </div>
