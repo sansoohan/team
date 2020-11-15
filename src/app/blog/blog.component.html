@@ -1,98 +1,85 @@
-<div *ngIf=!isPage>
-  <app-not-found></app-not-found>
-</div>
+<div class="blog-background">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" id="sideNav">    
 
-<div *ngIf=isPage>  
-  <form>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" id="sideNav">
-      <a class="navbar-brand js-scroll-trigger">
-        <span class="d-block d-lg-none">Han's Development</span>
-        <span class="d-none d-lg-block">
-          <!-- <img class="img-fluid img-profile rounded-circle mx-auto mb-2" (click)="uploadProfileImageSrc(profileForm.value)" [src]="defaultSrc" alt=""> -->
-        </span>
-      </a>
 
-      <div class="list-inline-item">
-        <!-- <Button class="mx-auto mb-2 btn btn-info" *ngIf="authService.isSignedIn() && !isEditing" (click)="clickEdit()">Edit Profile</Button>
-        <Button class="mx-auto mb-2 btn btn-success" *ngIf="authService.isSignedIn() && isEditing" (click)="clickEditUpdate(profileForm.value)">Update</Button>
-        <Button class="mx-auto mb-2 btn btn-danger" *ngIf="authService.isSignedIn() && isEditing" (click)="clickEditCancel()">Cancel</Button> -->
-      </div>
-      <!-- <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes('about')">About</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes('education')">Education</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes('skills')">Skills</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes('projects')">Projects</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes('interests')">Interests</a>
-          </li>
+    <!-- Collapse button -->
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSideCollapse" aria-controls="navbarSideCollapse" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSideCollapse">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <Button class="btn btn-sm btn-info" *ngIf="authService.isSignedIn() && !isEditing" (click)="clickEdit()">Edit Post</Button>
+          <Button class="btn btn-sm btn-success" *ngIf="authService.isSignedIn() && isEditing" (click)="clickEditUpdate(profileForm.value)">Update</Button>
+          <Button class="btn btn-sm btn-danger" *ngIf="authService.isSignedIn() && isEditing" (click)="clickEditCancel()">Cancel</Button>
+        </li>
 
-          <div *ngIf="!isEditing">
-            <li *ngFor="let additaionProfileContent of profileContent.additaionProfilesContent" class="nav-item">
-              <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes(additaionProfileContent.title)">{{additaionProfileContent.title}}</a>
-            </li>  
-          </div>
-
-          <div *ngIf="isEditing">
-            <div formGroupName="additaionProfilesContent">
-              <div *ngFor="let additaionProfile of profileForm.controls.additaionProfilesContent.controls; let i=index">
-                <div class="row" [formGroupName]="i" style="margin: 0;">                    
-                  <input type="text" class="form-control col-8" placeholder="Title" formControlName="title">
-                  <div class="col-4" style="padding: 0;">
-                    <app-input-add-remove [targetArrayForm]="profileForm.controls.additaionProfilesContent" [targetArrayForm]="i" [newObject]="newAdditaionProfileContent"></app-input-add-remove>
-                    <div class="container">
-                      <div class="row">
-                        <button
-                          class="btn btn-danger col-6"
-                          (click)="removeAdditionalProfile(i)"
-                        >
-                          <i class="fa fa-trash"></i>
-                        </button>
-                        <button
-                          class="btn btn-secondary col-6"
-                          (click)="scrollToContactTypes(additaionProfile.value.title)"
-                        >
-                          <i class="fa fa-arrow-right"></i>
-                        </button>
-                      </div>
+        <li class="nav-item">
+          <a class="nav-link" (click)="scrollToContactTypes('about')">About</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" (click)="scrollToContactTypes('education')">Education</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" (click)="scrollToContactTypes('skills')">Skills</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" (click)="scrollToContactTypes('projects')">Projects</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" (click)="scrollToContactTypes('interests')">Interests</a>
+        </li>
+  
+        <!-- <div *ngIf="!isEditing">
+          <li *ngFor="let additaionProfileContent of profileContent.additaionProfilesContent" class="nav-item">
+            <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes(additaionProfileContent.title)">{{additaionProfileContent.title}}</a>
+          </li>
+        </div> -->
+  
+        <!-- <div *ngIf="isEditing">
+          <div formGroupName="additaionProfilesContent">
+            <div *ngFor="let additaionProfile of profileForm.controls.additaionProfilesContent.controls; let i=index">
+              <div class="row" [formGroupName]="i" style="margin: 0;">                    
+                <input type="text" class="form-control col-8" placeholder="Title" formControlName="title">
+                <div class="col-4" style="padding: 0;">
+                  <app-input-add-remove [targetArrayForm]="profileForm.controls.additaionProfilesContent" [targetArrayForm]="i" [newObject]="newAdditaionProfileContent"></app-input-add-remove>
+                  <div class="container">
+                    <div class="row">
+                      <button
+                        class="btn btn-danger col-6"
+                        (click)="removeAdditionalProfile(i)"
+                      >
+                        <i class="fa fa-trash"></i>
+                      </button>
+                      <button
+                        class="btn btn-secondary col-6"
+                        (click)="scrollToContactTypes(additaionProfile.value.title)"
+                      >
+                        <i class="fa fa-arrow-right"></i>
+                      </button>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-
-            <div class="row nav-item">
-              <button
-                class="btn btn-outline-dark btn-circle col-10"
-                (click)="addAdditionalProfile()"
-              >
-                Add New Category  <i class="fa fa-plus"></i>
-              </button>
-            </div>
           </div>
-        </ul>
-      </div> -->
-    </nav>
-
-    <div class="blog">
-      <section class="post-section p-3 p-lg-5 d-flex flex-column" id="education">
-        <div class="my-auto">
-          <h2 class="mb-5">Education</h2>
-
-          <!-- static markdown -->
-          <markdown ngPreserveWhitespaces>
-            {{content}}
-          </markdown>
-        </div>
-      </section>
-    </div>
-  </form>
+  
+          <div class="row nav-item">
+            <button
+              class="btn btn-outline-dark btn-circle col-10"
+              (click)="addAdditionalProfile()"
+            >
+              Add New Category  <i class="fa fa-plus"></i>
+            </button>
+          </div>
+        </div> -->
+      </ul>
+    </div>  
+  </nav>
+  <div class="blog">
+    <app-post [isEditing]=isEditing></app-post>
+  </div>
 </div>
+

@@ -1,14 +1,34 @@
 .blog {
   font-family: 'Open Sans', serif;
-  padding-top: 54px;
-  color: #868e96;
+  padding-top: 0px;
+  color: white;
+  background-color: #333333;
+}
+
+.blog-title {
+  font-size: 2rem;
+}
+
+.blog-editarea {
+  color: white;
+  border: solid #222222;
+  background-color: #222222; 
+  margin-top: 10px;
+}
+
+.blog-background{
+  background-color: #333333;
+  height: 100%
 }
 
 @media (min-width: 992px) {
   .blog {
-    padding-top: 0;
     padding-left: 17rem;
   }
+}
+
+.my-auto {
+  padding: 0px;
 }
 
 h1,
@@ -17,10 +37,8 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: 'Saira Extra Condensed', serif;
   font-weight: 700;
-  text-transform: uppercase;
-  color: #343a40;
+  color: White;
 }
 
 h1 {
@@ -44,7 +62,7 @@ h2 {
 }
 
 .list-social-icons a:hover {
-  color: #0062bd;
+  color: #BD5D38;
 }
 
 .list-social-icons a .fa-lg {
@@ -56,29 +74,34 @@ h2 {
 }
 
 .list-icons .list-inline-item i:hover {
-  color: #0062bd;
+  color: #BD5D38;
 }
 
 .list-inline-item-description{
-  color: #0062bd;
+  color: #BD5D38;
 }
 
 #sideNav .navbar-nav .nav-item .nav-link {
+  cursor: pointer;
   font-weight: 600;
-  text-transform: uppercase;
+  padding: 0;
+}
+
+#navbarSideCollapse.show{
+  padding-top: 20px;
 }
 
 @media (min-width: 992px) {
   #sideNav {
-    text-align: center;
     position: fixed;
-    top: 0;
+    padding-top: 62px;
     left: 0;
     display: flex;
-    flex-direction: column;
+    /* flex-direction: column; */
     width: 17rem;
     height: 100vh;
   }
+  
   #sideNav .navbar-brand {
     display: flex;
     margin: auto auto 0;
@@ -110,8 +133,7 @@ h2 {
 
 section.post-section {
   border-bottom: 1px solid #dee2e6;
-  padding-top: 5rem !important;
-  padding-bottom: 5rem !important;
+  padding-top: 62px !important;
 }
 
 section.post-section .post-item .post-date {
@@ -129,25 +151,24 @@ section.post-section .post-item .post-date {
 
 @media (min-width: 992px) {
   section.post-section {
-    padding-top: 3rem !important;
-    padding-bottom: 3rem !important;
+    padding-top: 62px !important;
   }
 }
 
 .bg-primary {
-  background-color: #0062bd !important;
+  background-color: #BD5D38 !important;
 }
 
 .text-primary {
-  color: #0062bd !important;
+  color: #BD5D38 !important;
 }
 
 a {
-  color: #0062bd;
+  color: #BD5D38;
 }
 
 a:hover, a:focus, a:active {
-  color: #0042bd;
+  color: #824027;
 }
 
 .btn-circle {

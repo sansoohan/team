@@ -11,20 +11,24 @@
     <form [formGroup]="profileForm">
 
       <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" id="sideNav">
+        <!-- Collapse button -->
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSideCollapse" aria-controls="navbarSideCollapse" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
         <a class="navbar-brand js-scroll-trigger">
-          <span class="d-block d-lg-none">Han's Development</span>
           <span class="d-none d-lg-block">
             <img class="img-fluid img-profile rounded-circle mx-auto mb-2" (click)="uploadProfileImageSrc(profileForm.value)" [src]="defaultSrc" alt="">
           </span>
         </a>
-  
-        <div class="list-inline-item">
-          <Button class="mx-auto mb-2 btn btn-info" *ngIf="authService.isSignedIn() && !isEditing" (click)="clickEdit()">Edit Profile</Button>
-          <Button class="mx-auto mb-2 btn btn-success" *ngIf="authService.isSignedIn() && isEditing" (click)="clickEditUpdate(profileForm.value)">Update</Button>
-          <Button class="mx-auto mb-2 btn btn-danger" *ngIf="authService.isSignedIn() && isEditing" (click)="clickEditCancel()">Cancel</Button>
-        </div>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+        <div class="collapse navbar-collapse" id="navbarSideCollapse">  
           <ul class="navbar-nav">
+            <li>
+              <Button class="mx-auto mb-2 btn btn-info" *ngIf="authService.isSignedIn() && !isEditing" (click)="clickEdit()">Edit Profile</Button>
+              <Button class="mx-auto mb-2 btn btn-success" *ngIf="authService.isSignedIn() && isEditing" (click)="clickEditUpdate(profileForm.value)">Update</Button>
+              <Button class="mx-auto mb-2 btn btn-danger" *ngIf="authService.isSignedIn() && isEditing" (click)="clickEditCancel()">Cancel</Button>
+            </li>
             <li class="nav-item">
               <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes('about')">About</a>
             </li>

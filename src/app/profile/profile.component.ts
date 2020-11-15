@@ -214,12 +214,6 @@ export class ProfileComponent implements OnInit {
 
   clickEdit() {
     this.isEditing = true;
-    if (!this.userNameValidateSub){
-      this.validateUserName = this.profileContents[0].aboutContent.userName;
-    }
-    if (!this.userEmailValidateSub){
-      this.validateUserEmail = this.profileContents[0].aboutContent.email;
-    }
   }
 
   async clickEditUpdate(profileContent: ProfileContent){

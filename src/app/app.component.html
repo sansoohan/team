@@ -1,27 +1,9 @@
 <router-outlet></router-outlet>
-<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-  <a *ngIf="!authService.isSignedIn()" class="navbar-brand" href="/">Startup</a>
-  <a *ngIf="authService.isSignedIn()" class="navbar-brand" href="/#/profile">Profile</a>
-  <a *ngIf="authService.isSignedIn()" class="navbar-brand" href="/#/blog">Blog</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-
+<nav class="app-navbar navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
   <div class="collapse navbar-collapse" id="navbarsExampleDefault">
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item active" hidden>
-        <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
-      </li>
-
-      <li class="nav-item dropdown" hidden>
-        <a class="nav-link dropdown-toggle" href="https://example.com" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Dropdown</a>
-        <div class="dropdown-menu" aria-labelledby="dropdown01">
-          <a class="dropdown-item" href="#">Action</a>
-          <a class="dropdown-item" href="#">Another action</a>
-          <a class="dropdown-item" href="#">Something else here</a>
-        </div>
-      </li>
-    </ul>
+    <a *ngIf="!authService.isSignedIn()" class="navbar-brand" href="/">Startup</a>
+    <a *ngIf="authService.isSignedIn()" class="navbar-brand" href="/#/profile">Profile</a>
+    <a *ngIf="authService.isSignedIn()" class="navbar-brand" href="/#/blog">Blog</a>  
     <form class="form-inline">
       <input class="form-control mr-sm-2" type="search" list="staticUserIds" placeholder="Search Profile" aria-label="Search"
         [value]="searchValue"
@@ -31,14 +13,18 @@
         <option *ngFor="let result of results | async" [value]="result.aboutContent.email"><i class="fa fa-car"></i>({{result.userName}})</option>
       </datalist>
       <button class="btn btn-outline-success mr-sm-2">Search</button>
-    </form>
-
-    <form class="form-inline my-2 my-lg-0">
-      <ngx-auth-firebaseui-avatar *ngIf="authService.isSignedIn()"
-        (onSignOut)="onSignOut()"
-        [canEditAccount]="true"
-      ></ngx-auth-firebaseui-avatar>
-      <button *ngIf="!authService.isSignedIn()" routerLink="/sign-in" routerLinkActive="active" class="btn btn-outline-success my-2 my-sm-0">Sign In</button>
-    </form>
+    </form>  
   </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <form class="form-inline">
+    <ngx-auth-firebaseui-avatar *ngIf="authService.isSignedIn()"
+      (onSignOut)="onSignOut()"
+      [canEditAccount]="true"
+    ></ngx-auth-firebaseui-avatar>
+    <button *ngIf="!authService.isSignedIn()" routerLink="/sign-in" routerLinkActive="active" class="btn btn-outline-success my-2 my-sm-0">Sign In</button>
+  </form>
 </nav>

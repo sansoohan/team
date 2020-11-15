@@ -1,0 +1,25 @@
+<section class="post-section p-3 d-flex flex-column" id="education">
+  <form [formGroup]="postForm">
+    <div class="form-row" *ngIf="!isEditing">
+      <div class="col-12" style="padding:0px">
+        <span class="blog-title">{{postForm.controls.postTitle.value}}</span>
+        <markdown emoji lineNumbers ngPreserveWhitespaces>
+          {{postForm.controls.postMarkdown.value}}
+        </markdown>  
+      </div>
+    </div>
+
+    <div class="form-row" *ngIf="isEditing">
+      <div class="col-6">
+        <input type="text" class="form-control blog-editarea" formControlName="postTitle"/>
+        <textarea class="form-control blog-editarea" rows="{{getPostMarkdownLines()}}" formControlName="postMarkdown"></textarea>
+      </div>
+      
+      <div class="col-6">
+        <markdown class="blog-title" emoji lineNumbers ngPreserveWhitespaces data={{postForm.controls.postTitle.value}}></markdown>
+        <markdown emoji lineNumbers ngPreserveWhitespaces data={{postForm.controls.postMarkdown.value}}>
+        </markdown>
+      </div>  
+    </div>
+  </form>
+</section>
