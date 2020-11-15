@@ -3,14 +3,14 @@
 </div>
 
 <div *ngIf=isPage>
-  <div *ngIf="!profileContents">
+  <div *ngIf="isLoading">
     <app-page-loading></app-page-loading>
   </div>
 
   <div *ngFor="let profileContent of profileContents">
     <form [formGroup]="profileForm">
 
-      <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" id="sideNav">
+      <nav [hidden]="isLoading" class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" id="sideNav">
         <!-- Collapse button -->
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSideCollapse" aria-controls="navbarSideCollapse" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>

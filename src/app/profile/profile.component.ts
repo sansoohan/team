@@ -25,6 +25,7 @@ export class ProfileComponent implements OnInit {
   defaultSrc: any;
   isEditing: boolean;
   isPage: boolean;
+  isLoading: boolean;
   hasUserNameCollision: boolean;
   hasUserEmailCollision: boolean;
   updateOk: boolean;
@@ -49,6 +50,7 @@ export class ProfileComponent implements OnInit {
     private fb: FormBuilder,
   ) {
     this.paramSub = this.route.params.subscribe(params => {
+      this.isLoading = true;
       this.isEditing = false;
       this.isPage = true;
       this.hasUserNameCollision = false;
@@ -62,6 +64,17 @@ export class ProfileComponent implements OnInit {
           this.isPage = false;
           return;
         }
+
+        const userName = this.profileContents[0].aboutContent.userName;
+        const currentUser = JSON.parse(localStorage.currentUser || null);
+        if (currentUser){
+          currentUser.userName = userName;
+          localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        }
+
+        this.scrollToContactTypes('about');
+
+        this.profileForm = this.buildFormRecursively(this.profileContents[0]);
 
         if (this.profileContents[0].profileImageSrc !== ''){
           this.defaultSrc = this.profileContents[0].profileImageSrc;
@@ -79,16 +92,9 @@ export class ProfileComponent implements OnInit {
           this.defaultSrc = this.domSanitizer.bypassSecurityTrustUrl(`data:image/png;base64,${data}`);
         }
 
-        const userName = this.profileContents[0].aboutContent.userName;
-        const currentUser = JSON.parse(localStorage.currentUser || null);
-        if (currentUser){
-          currentUser.userName = userName;
-          localStorage.setItem('currentUser', JSON.stringify(currentUser));
-        }
-
-        this.scrollToContactTypes('about');
-
-        this.profileForm = this.buildFormRecursively(this.profileContents[0]);
+        setTimeout(() => {
+          this.isLoading = false;
+        }, 500);
       });
     });
   }
