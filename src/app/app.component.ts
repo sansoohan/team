@@ -35,7 +35,6 @@ export class AppComponent {
   changeSearch(event){
     if (event.target.value){
       this.searchValue = event.target.value;
-      console.log(this.searchValue);
       if (this.searchValue === ''){
         this.results = null;
       }
