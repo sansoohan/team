@@ -18,6 +18,6 @@ export class MonthpickerComponent implements OnInit {
   }
 
   resetValue(){
-    this.control?.setValue(null)
+    this.control?.setValue(null);
   }
 }
