@@ -1,7 +1,5 @@
 <div class="blog-background">
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" id="sideNav">    
-
-
     <!-- Collapse button -->
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSideCollapse" aria-controls="navbarSideCollapse" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -12,11 +10,11 @@
       <ul class="navbar-nav">
         <li class="nav-item">
           <Button class="btn btn-sm btn-info" *ngIf="authService.isSignedIn() && !isEditing" (click)="clickEdit()">Edit Post</Button>
-          <Button class="btn btn-sm btn-success" *ngIf="authService.isSignedIn() && isEditing" (click)="clickEditUpdate(profileForm.value)">Update</Button>
+          <Button class="btn btn-sm btn-success" *ngIf="authService.isSignedIn() && isEditing" (click)="clickEditUpdate(blogForm.value)">Update</Button>
           <Button class="btn btn-sm btn-danger" *ngIf="authService.isSignedIn() && isEditing" (click)="clickEditCancel()">Cancel</Button>
         </li>
 
-        <li class="nav-item">
+        <!-- <li class="nav-item">
           <a class="nav-link" (click)="scrollToContactTypes('about')">About</a>
         </li>
         <li class="nav-item">
@@ -30,7 +28,7 @@
         </li>
         <li class="nav-item">
           <a class="nav-link" (click)="scrollToContactTypes('interests')">Interests</a>
-        </li>
+        </li> -->
   
         <!-- <div *ngIf="!isEditing">
           <li *ngFor="let additaionProfileContent of profileContent.additaionProfilesContent" class="nav-item">

@@ -12,13 +12,14 @@ import { CategoryContent } from './category/category.content';
   styleUrls: ['./blog.component.css']
 })
 export class BlogComponent implements OnInit {
+  blogForm: any;
   isPage: boolean;
   isEditing: boolean;
   updateOk: boolean;
 
   constructor(
+    public authService: AuthService,
     private fb: FormBuilder,
-    private authService: AuthService,
   ) {
     this.isPage = true;
     this.isEditing = false;
