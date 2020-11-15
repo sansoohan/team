@@ -61,11 +61,11 @@ export class AuthService {
   }
 
   signInFailed(event): void {
-    this.message.showError('Sign in failed', event.message);
+    this.message.showError('Sign In failed', event.message);
   }
 
   signUpSuccess(): void {
-    this.message.showSuccess('Sign up Success', null);
+    this.message.showSuccess('Sign Up Success', null);
     this.router.navigate(['/sign-in']);
   }
 
