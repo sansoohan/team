@@ -16,4 +16,8 @@ export class MonthpickerComponent implements OnInit {
   ngOnInit(){
 
   }
+
+  resetValue(){
+    this.control?.setValue(null)
+  }
 }
