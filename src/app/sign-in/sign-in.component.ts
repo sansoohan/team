@@ -21,10 +21,6 @@ export class SignInComponent implements OnInit {
     }
   }
 
-  test(e): void {
-    console.log(e);
-  }
-
   ngOnInit(): void {
   }
 
