@@ -92,15 +92,36 @@
         </div>
       </nav>
       <div class="profiles">
-        <app-about [isEditing]="isEditing" [aboutContent]="profileContent.aboutContent"
+        <app-about
+          [isEditing]="isEditing"
+          [aboutContent]="profileContent.aboutContent"
           [profileForm]="profileForm"
-          (userEmailOutput)=onUserEmailChange($event) (userNameOutput)=onUserNameChange($event)
         ></app-about>
-        <app-education [isEditing]="isEditing" [educationsContent]="profileContent.educationsContent" [profileForm]="profileForm"></app-education>
-        <app-skills [isEditing]="isEditing" [skillsContent]="profileContent.skillsContent" [profileForm]="profileForm"></app-skills>
-        <app-projects [isEditing]="isEditing" [projectsContent]="profileContent.projectsContent" [profileForm]="profileForm"></app-projects>
-        <app-interests [isEditing]="isEditing" [interestsContent]="profileContent.interestsContent" [profileForm]="profileForm"></app-interests>
-        <app-additional-profiles [isEditing]="isEditing" [additaionProfilesContent]="profileContent.additaionProfilesContent" [profileForm]="profileForm"></app-additional-profiles>
+        <app-education
+          [isEditing]="isEditing"
+          [educationsContent]="profileContent.educationsContent"
+          [profileForm]="profileForm">
+        </app-education>
+        <app-skills
+          [isEditing]="isEditing"
+          [skillsContent]="profileContent.skillsContent"
+          [profileForm]="profileForm">
+        </app-skills>
+        <app-projects
+          [isEditing]="isEditing"
+          [projectsContent]="profileContent.projectsContent"
+          [profileForm]="profileForm">
+        </app-projects>
+        <app-interests
+          [isEditing]="isEditing"
+          [interestsContent]="profileContent.interestsContent"
+          [profileForm]="profileForm">
+        </app-interests>
+        <app-additional-profiles
+          [isEditing]="isEditing"
+          [additaionProfilesContent]="profileContent.additaionProfilesContent"
+          [profileForm]="profileForm">
+        </app-additional-profiles>
       </div>
     </form>
   </div>  

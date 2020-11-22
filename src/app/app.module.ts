@@ -13,16 +13,13 @@ import { AppRoutingModule } from './app-routing.module';
 // the plugin exposes the two libraries as well. You can use those:
 // import {FirebaseUIModule, firebase, firebaseui} from 'firebaseui-angular';
 import { AngularFireAuthModule } from '@angular/fire/auth';
-import { AngularFireModule } from '@angular/fire';
 import { AngularFireAnalyticsModule } from '@angular/fire/analytics';
-import { AngularFireStorageModule, BUCKET } from '@angular/fire/storage';
+import { AngularFireStorageModule } from '@angular/fire/storage';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
-import { ToastrModule } from 'ngx-toastr';
 import { NgxAuthFirebaseUIModule } from 'ngx-auth-firebaseui';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatPasswordStrengthModule } from '@angular-material-extensions/password-strength';
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
-// import { NgwWowModule } from 'ngx-wow';
 
 import { EmbededGooglemapModule } from './modules/embeded-googlemap/embeded-googlemap.module';
 
@@ -35,7 +32,6 @@ import { MainComponent } from './main/main.component';
 
 import { SignInComponent } from './sign-in/sign-in.component';
 import { SignUpComponent } from './sign-up/sign-up.component';
-import { PageLoadingComponent } from './page-loading/page-loading.component';
 
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';

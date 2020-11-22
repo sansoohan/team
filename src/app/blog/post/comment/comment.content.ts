@@ -1,17 +1,17 @@
 export class CommentContent {
   id: string;
-  blogId: string;
-  parentCategoryId?: string;
-  categoryTitle: string;
+  postId: string;
+  commentMarkdown: string;
+  likes: any;
   constructor(
     id: string = '',
-    blogId: string = '',
-    parentCategoryId: string = null,
-    categoryTitle: string = '',
+    postId: string = '',
+    commentMarkdown: string = '',
+    likes: any = [],
   ){
     this.id = id;
-    this.blogId = blogId,
-    this.parentCategoryId = parentCategoryId;
-    this.categoryTitle = categoryTitle;
+    this.postId = postId,
+    this.commentMarkdown = commentMarkdown;
+    this.likes = likes;
   }
 }

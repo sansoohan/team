@@ -9,13 +9,19 @@ import { SignInComponent } from './sign-in/sign-in.component';
 import { SignUpComponent } from './sign-up/sign-up.component';
 import { ContactComponent } from './contact/contact.component';
 import { MainComponent } from './main/main.component';
+import { PostComponent } from './blog/post/post.component';
+import { CategoryComponent } from './blog/category/category.component';
 
 const appRoutes: Routes = [
   // { path: '', redirectTo: '/profile', pathMatch: 'full' },
   { path: '', component: MainComponent },
   { path: 'profile', component: ProfileComponent },
   { path: 'profile/:userName', component: ProfileComponent },
-  { path: 'blog', component: BlogComponent },
+  { path: 'blog', component: PostComponent },
+  { path: 'blog/:userName', component: BlogComponent },
+  { path: 'blog/:userName/categories', component: CategoryComponent },
+  { path: 'blog/:userName/categories/:categoryId', component: BlogComponent },
+  { path: 'blog/:userName/post/:postId', component: BlogComponent },
   { path: 'sign-in', component: SignInComponent },
   { path: 'sign-up', component: SignUpComponent },
   { path: 'contact', component: ContactComponent },
