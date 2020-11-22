@@ -10,6 +10,7 @@ import { BlogContent } from './blog.content';
 import Swal from 'sweetalert2';
 import { CategoryContent } from './category/category.content';
 import { AuthService } from 'src/app/services/auth.service';
+import { FormHelper } from '../helper/form.helper';
 
 @Component({
   selector: 'app-blog',
@@ -56,7 +57,7 @@ export class BlogComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private fb: FormBuilder,
+    public formHelper: FormHelper,
     private blogService: BlogService,
     public authService: AuthService,
   ) {
@@ -86,12 +87,15 @@ export class BlogComponent implements OnInit {
             this.isPage = false;
             return;
           }
-          this.categoryContentsForm = this.buildFormRecursively({categoryContents: this.categoryContents});
+          this.categoryContentsForm = this.formHelper.buildFormRecursively({categoryContents: this.categoryContents});
 
           if (params.categoryId){
             this.selectedCategory = this.categoryContentsForm.controls.categoryContents.controls.find((categoryContent) =>
               categoryContent.value.id === this.selectedCategoryId);
-            this.selectedChildCategories = this.getChildCategoriesRecusively(this.selectedCategory);
+            this.selectedChildCategories =
+              this.formHelper.getChildCategoriesRecusively(
+                this.categoryContentsForm.controls.categoryContents.controls, this.selectedCategory
+              );
             const categoryIds = [this.selectedCategory, ...this.selectedChildCategories].map((categoryContent) =>
               categoryContent.value.id
             );
@@ -99,7 +103,7 @@ export class BlogComponent implements OnInit {
             this.postListObserver = this.blogService.getPostListObserver({params}, this.blogId, categoryIds);
             this.postListSub = this.postListObserver.subscribe(postList => {
               this.postList = postList;
-              this.postListForm = this.buildFormRecursively({postList: this.postList});
+              this.postListForm = this.formHelper.buildFormRecursively({postList: this.postList});
             });
             this.isShowingPostList = true;
           }
@@ -113,7 +117,7 @@ export class BlogComponent implements OnInit {
                 return;
               }
               this.postContents[0].postMarkdown = this.postContents[0].postMarkdown.replace(/\\n/g, '\n');
-              this.postContentsForm = this.buildFormRecursively(this.postContents[0]);
+              this.postContentsForm = this.formHelper.buildFormRecursively(this.postContents[0]);
             });
             this.isShowingPostContents = true;
           }
@@ -170,66 +174,8 @@ export class BlogComponent implements OnInit {
     return category.value.categoryTitle;
   }
 
-  toggleCategoryCollapsed(category: FormGroup){
-    const collapsed = !category.controls.collapsed.value;
-    category.controls.collapsed.setValue(collapsed);
-    let childCategories = [];
-    if (!collapsed){
-      childCategories = this.categoryContentsForm.controls.categoryContents.controls
-      .filter((categoryForm) => categoryForm.value.parentCategoryId === category.value.id);
-    } else {
-      childCategories = this.getChildCategoriesRecusively(category);
-    }
-    childCategories.forEach((childCategory) => {
-      childCategory.controls.hidden.setValue(collapsed);
-      childCategory.controls.collapsed.setValue(!collapsed);
-    });
-  }
-
-  getChildCategoriesRecusively(parentCategory: FormGroup): Array<FormGroup>{
-    const childCategories = this.categoryContentsForm.controls.categoryContents.controls
-    .filter((categoryForm) => categoryForm.value.parentCategoryId === parentCategory.value.id);
-    if (childCategories.length === 0){
-      return [];
-    }
-
-    let returnCategories = [...childCategories];
-    for (const childCategory of childCategories){
-      returnCategories = [
-        ...returnCategories,
-        ...this.getChildCategoriesRecusively(childCategory)
-      ];
-    }
-    return returnCategories;
-  }
-
   getPostMarkdownLines(){
     return this.postContentsForm?.controls?.postMarkdown?.value?.match(/\n/g).length + 2 || 3;
-  }
-
-  buildFormRecursively(profileContent: any): AbstractControl{
-    if (profileContent instanceof Date) {
-      return this.fb.control(new Date(profileContent).toISOString().slice(0, -1));
-    }
-    else if (profileContent instanceof Array){
-      const retArray: FormArray = this.fb.array([]);
-      for (const el of profileContent){
-        retArray.push(this.buildFormRecursively(el));
-      }
-      return retArray;
-    }
-    else if (profileContent instanceof Object) {
-      const retHash: FormGroup = this.fb.group({});
-      for (const key in profileContent){
-        if (key){
-          retHash.addControl(key, this.buildFormRecursively(profileContent[key]));
-        }
-      }
-      return retHash;
-    }
-    else {
-      return this.fb.control(profileContent);
-    }
   }
 
   clickCategoryEdit() {
