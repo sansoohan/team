@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Pipe } from '@angular/core';
+import { Component, OnInit, Input, Pipe, Output, EventEmitter } from '@angular/core';
 import { FormControl, FormGroup, FormArray, FormBuilder } from '@angular/forms';
 
 import * as moment from 'moment';
@@ -18,7 +18,12 @@ import { AuthService } from 'src/app/services/auth.service';
   styleUrls: ['../blog.component.css', './category.component.css']
 })
 export class CategoryComponent implements OnInit {
+  @Output() goToPost: EventEmitter<string> = new EventEmitter();
+  @Output() goToCategory: EventEmitter<string> = new EventEmitter();
+
   constructor(
+    private route: ActivatedRoute,
+    private router: Router,
     private fb: FormBuilder,
     private blogService: BlogService,
     public authService: AuthService,

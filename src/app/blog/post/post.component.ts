@@ -1,10 +1,10 @@
-import { Component, OnInit, Input, Pipe } from '@angular/core';
+import { Component, OnInit, Input, Pipe, Output, EventEmitter } from '@angular/core';
 import { FormControl, FormGroup, FormArray, FormBuilder } from '@angular/forms';
 
 import * as moment from 'moment';
 import { PostContent } from './post.content';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { BlogService } from 'src/app/services/blog.service';
 import { BlogContent } from '../blog.content';
 import Swal from 'sweetalert2';
@@ -18,14 +18,25 @@ import { AuthService } from 'src/app/services/auth.service';
   styleUrls: ['../blog.component.css', './post.component.css']
 })
 export class PostComponent implements OnInit {
+  @Output() goToPost: EventEmitter<string> = new EventEmitter();
+  @Output() goToCategory: EventEmitter<string> = new EventEmitter();
+
+  paramSub: Subscription;
+  params: any;
+
   constructor(
+    private route: ActivatedRoute,
+    private router: Router,
     private fb: FormBuilder,
     private blogService: BlogService,
     public authService: AuthService,
   ) {
+    this.paramSub = this.route.params.subscribe(params => {
+
+    });
   }
 
   ngOnInit() {
-
+    this.paramSub?.unsubscribe();
   }
 }
