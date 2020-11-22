@@ -11,6 +11,7 @@ import Swal from 'sweetalert2';
 import { CategoryContent } from './category/category.content';
 import { AuthService } from 'src/app/services/auth.service';
 import { FormHelper } from '../helper/form.helper';
+import { DataTransferHelper } from '../helper/data-transefer.helper';
 
 @Component({
   selector: 'app-blog',
@@ -58,6 +59,7 @@ export class BlogComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     public formHelper: FormHelper,
+    public dataTransferHelper: DataTransferHelper,
     private blogService: BlogService,
     public authService: AuthService,
   ) {
@@ -126,11 +128,7 @@ export class BlogComponent implements OnInit {
     });
   }
 
-  counter(i: number) {
-    return new Array(i);
-  }
-
-  numberToDate(i: number){
+  numberToDateString(i: number){
     const date = new Date(i);
     return `${date.getFullYear()}. ${date.getMonth()}. ${date.getDate()}`;
   }
