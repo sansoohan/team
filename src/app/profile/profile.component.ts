@@ -11,6 +11,7 @@ import Swal from 'sweetalert2';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
 import { AdditaionProfileContent } from './additional-profiles/additional-profile.content';
+import { FormHelper } from '../helper/form.helper';
 
 @Component({
   selector: 'app-profile',
@@ -47,7 +48,7 @@ export class ProfileComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private storage: AngularFireStorage,
-    private fb: FormBuilder,
+    private formHelper: FormHelper,
   ) {
     this.paramSub = this.route.params.subscribe(params => {
       this.isLoading = true;
@@ -74,7 +75,7 @@ export class ProfileComponent implements OnInit {
 
         this.scrollToContactTypes('about');
 
-        this.profileForm = this.buildFormRecursively(this.profileContents[0]);
+        this.profileForm = this.formHelper.buildFormRecursively(this.profileContents[0]);
 
         if (this.profileContents[0].profileImageSrc !== ''){
           this.defaultSrc = this.profileContents[0].profileImageSrc;
@@ -153,7 +154,7 @@ export class ProfileComponent implements OnInit {
 
   addAdditionalProfile(){
     this.profileForm?.controls.additaionProfilesContent.push(
-      this.buildFormRecursively(this.newAdditaionProfileContent)
+      this.formHelper.buildFormRecursively(this.newAdditaionProfileContent)
     );
   }
 
@@ -310,31 +311,6 @@ export class ProfileComponent implements OnInit {
       }
     }
     return profileContent;
-  }
-
-  buildFormRecursively(profileContent: any){
-    if (profileContent instanceof Date) {
-      return this.fb.control(new Date(profileContent).toISOString().slice(0, -1));
-    }
-    else if (profileContent instanceof Array){
-      const retArray: FormArray = this.fb.array([]);
-      for (const el of profileContent){
-        retArray.push(this.buildFormRecursively(el));
-      }
-      return retArray;
-    }
-    else if (profileContent instanceof Object) {
-      const retHash: FormGroup = this.fb.group({});
-      for (const key in profileContent){
-        if (key){
-          retHash.addControl(key, this.buildFormRecursively(profileContent[key]));
-        }
-      }
-      return retHash;
-    }
-    else {
-      return this.fb.control(profileContent);
-    }
   }
 
   scrollToContactTypes(titleName: string) {
