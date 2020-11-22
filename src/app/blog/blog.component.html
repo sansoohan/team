@@ -1,83 +1,180 @@
 <div class="blog-background">
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" id="sideNav">    
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary" id="sideNav">
     <!-- Collapse button -->
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSideCollapse" aria-controls="navbarSideCollapse" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    
-    <!-- Collapsible content -->
-    <div class="collapse navbar-collapse" id="navbarSideCollapse">
-      <ul class="navbar-nav">
-        <li class="nav-item">
-          <Button class="btn btn-sm btn-info" *ngIf="authService.isSignedIn() && !isEditing" (click)="clickEdit()">Edit Post</Button>
-          <Button class="btn btn-sm btn-success" *ngIf="authService.isSignedIn() && isEditing" (click)="clickEditUpdate(blogForm.value)">Update</Button>
-          <Button class="btn btn-sm btn-danger" *ngIf="authService.isSignedIn() && isEditing" (click)="clickEditCancel()">Cancel</Button>
-        </li>
+    <div class="fixed-top" style="background-color: black;">
+      <button class="navbar-toggler nav-collapse-button fixed-top" type="button" data-toggle="collapse" data-target="#navbarSideCollapse" aria-controls="navbarSideCollapse" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>  
+    </div>
 
-        <!-- <li class="nav-item">
-          <a class="nav-link" (click)="scrollToContactTypes('about')">About</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" (click)="scrollToContactTypes('education')">Education</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" (click)="scrollToContactTypes('skills')">Skills</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" (click)="scrollToContactTypes('projects')">Projects</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" (click)="scrollToContactTypes('interests')">Interests</a>
-        </li> -->
-  
-        <!-- <div *ngIf="!isEditing">
-          <li *ngFor="let additaionProfileContent of profileContent.additaionProfilesContent" class="nav-item">
-            <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes(additaionProfileContent.title)">{{additaionProfileContent.title}}</a>
-          </li>
-        </div> -->
-  
-        <!-- <div *ngIf="isEditing">
-          <div formGroupName="additaionProfilesContent">
-            <div *ngFor="let additaionProfile of profileForm.controls.additaionProfilesContent.controls; let i=index">
-              <div class="row" [formGroupName]="i" style="margin: 0;">                    
-                <input type="text" class="form-control col-8" placeholder="Title" formControlName="title">
-                <div class="col-4" style="padding: 0;">
-                  <app-input-add-remove [targetArrayForm]="profileForm.controls.additaionProfilesContent" [targetArrayForm]="i" [newObject]="newAdditaionProfileContent"></app-input-add-remove>
-                  <div class="container">
-                    <div class="row">
-                      <button
-                        class="btn btn-danger col-6"
-                        (click)="removeAdditionalProfile(i)"
-                      >
-                        <i class="fa fa-trash"></i>
-                      </button>
-                      <button
-                        class="btn btn-secondary col-6"
-                        (click)="scrollToContactTypes(additaionProfile.value.title)"
-                      >
-                        <i class="fa fa-arrow-right"></i>
-                      </button>
-                    </div>
+    <div class="collapse navbar-collapse" id="navbarSideCollapse">
+      <ul class="navbar-nav blog-navbar" *ngIf="!isEditingPost">
+        <div class="nav-item">
+          <Button
+            class="btn btn-sm btn-info"
+            *ngIf="authService.isSignedIn() && !isEditingCategory"
+            (click)="clickCategoryEdit()"
+          >Edit Category</Button>
+          <Button
+            class="btn btn-sm btn-success"
+            *ngIf="authService.isSignedIn() && isEditingCategory"
+          >Update</Button>
+          <Button
+            class="btn btn-sm btn-danger"
+            *ngIf="authService.isSignedIn() && isEditingCategory"
+            (click)="clickCategoryEditCancel()"
+          >Cancel</Button>
+        </div>
+
+        <form *ngIf="categoryContentsForm" [formGroup]="categoryContentsForm">
+          <div formArrayName="categoryContents">
+            <div *ngFor="let categoryContent of categoryContentsForm.controls.categoryContents.controls; let i=index">
+              <li *ngIf="!categoryContent.controls.hidden.value" class="nav-item" [formGroupName]="i">            
+                <div class="form-row">
+                  <div *ngFor="let n of counter(categoryContent.controls.deepCount.value) ; let j=index" class="col-1" style="padding:0">
+                    <i *ngIf="j==categoryContent.controls.deepCount.value-1" class="fa fa-chevron-up fa-rotate-225"></i>
                   </div>
+                  <input *ngIf="isEditingCategory" type="text" class="form-control nav-link-edit col-8" formControlName="categoryTitle">
+                  <a *ngIf="!isEditingCategory" class="nav-link col-8 category-link" (click)="goToCategory(categoryContent.controls.id.value)">
+                    <i class="fa fa-caret-right"></i>  {{categoryContent.controls.categoryTitle.value}}
+                  </a>
+                  <div *ngFor="let n of counter(3 - categoryContent.controls.deepCount.value) ; let j=index" class="col-1"></div>
+                  <div
+                    *ngIf="countChildCategory(categoryContent.controls.id.value)!==0"
+                    class="nav-link col-1 category-link"
+                    (click)=toggleCategoryCollapsed(categoryContent)
+                  >
+                    <i *ngIf="categoryContent.controls.collapsed.value" class="fa fa-caret-up"></i>
+                    <i *ngIf="!categoryContent.controls.collapsed.value" class="fa fa-caret-down"></i>
+                  </div>
+                </div>
+              </li>
+            </div>
+          </div>
+        </form>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="blog" *ngIf="!isEditingCategory && isShowingPostList">
+    <section class="post-section p-3 d-flex flex-column">
+      <form *ngIf="postListForm" [formGroup]="postListForm">
+        <div formArrayName="postList">
+          <div class="container-sm">
+            <div class="row category-title-row">
+              <div class="col-12" style="padding:0px">
+                <span class="category-title-col">
+                  {{selectedCategory.value.categoryTitle}}
+                  ({{selectedCategory.value.postCount + countChildPost()}})
+                </span>
+              </div>
+            </div>
+            <div class="row post-title-row">
+              <div class="col-6" style="padding:0px">
+                <span class="post-list-title-col">Title</span>
+              </div>
+              <div class="col-3" style="padding:0px">
+                <span class="post-list-title-col">Category</span>
+              </div>
+              <div class="col-2" style="padding:0px">
+                <span class="post-list-title-col">Date</span>
+              </div>
+              <div class="col-1" style="padding:0px">
+                <div class="post-list-title-col" style="text-align:right">Count</div>
+              </div>
+            </div>
+            <div *ngFor="let postContent of postListForm.controls.postList.controls; let i=index">
+              <div class="row post-list-row">
+                <div class="col-6" style="padding:0px">
+                  <span
+                    class="post-list-col post-link"
+                    (click)="goToPost(postContent.controls.id.value)"
+                  >{{postContent.controls.postTitle.value}}</span>
+                </div>
+                <div class="col-3" style="padding:0px">
+                  <span
+                    class="post-list-title-col post-link"
+                    (click)="goToCategory(postContent.controls.categoryId.value)"
+                  >{{getCategoryTitle(postContent.controls.categoryId.value)}}</span>
+                </div>  
+                <div class="col-2" style="padding:0px">
+                  <span class="post-list-col">{{numberToDate(postContent.controls.createdAt.value)}}</span>
+                </div>
+                <div class="col-1" style="padding:0px">
+                  <div class="post-list-col" style="text-align:right">{{postContent.controls.readCount.value}}</div>
                 </div>
               </div>
             </div>
           </div>
-  
-          <div class="row nav-item">
-            <button
-              class="btn btn-outline-dark btn-circle col-10"
-              (click)="addAdditionalProfile()"
-            >
-              Add New Category  <i class="fa fa-plus"></i>
-            </button>
+        </div>
+      </form>
+    </section>
+  </div>
+
+  <div class="blog" *ngIf="!isEditingCategory && isShowingPostContents">
+    <section class="post-section p-3 d-flex flex-column">
+      <form *ngIf="postContentsForm" [formGroup]="postContentsForm">
+        <div class="nav-item">
+          <Button
+            class="btn btn-sm btn-info"
+            *ngIf="authService.isSignedIn() && !isEditingPost"
+            (click)="clickPostEdit()"
+          >Edit Post</Button>
+          <Button
+            class="btn btn-sm btn-success"
+            *ngIf="authService.isSignedIn() && isEditingPost"
+          >Update</Button>
+          <Button
+            class="btn btn-sm btn-danger"
+            *ngIf="authService.isSignedIn() && isEditingPost"
+            (click)="clickPostEditCancel()"
+          >Cancel</Button>
+        </div>
+
+        <div *ngIf="!isEditingPost">
+          <div class="form-row">
+            <div class="col-10" style="padding:0px">
+              <span
+                class="post-title-col post-link"
+                (click)="goToPost(postContentsForm.controls.id.value)"
+              >
+                {{postContentsForm.controls.postTitle.value}}
+              </span>
+              <span style="color:white">|</span>
+              <span
+                class="post-category-title-col post-link"
+                (click)="goToCategory(postContentsForm.controls.categoryId.value)"
+              >{{getCategoryTitle(postContentsForm.controls.categoryId.value)}}</span>
+            </div>
+            <div class="col-2">
+              <!-- <div class="post-list-title-col" style="text-align:right">Count</div> -->
+              <div style="text-align:right">{{numberToDate(postContentsForm.controls.createdAt.value)}}</div>
+            </div>
           </div>
-        </div> -->
-      </ul>
-    </div>  
-  </nav>
-  <div class="blog">
-    <app-post [isEditing]=isEditing></app-post>
+          <div class="form-row">
+            <div class="col-12" style="padding:0px">
+              <markdown emoji lineNumbers ngPreserveWhitespaces>
+                {{postContentsForm.controls.postMarkdown.value}}
+              </markdown>  
+            </div>
+          </div>
+        </div>
+  
+        <div class="form-row" *ngIf="isEditingPost">
+          <div class="col-6">
+            <input type="text" class="form-control blog-editarea" formControlName="postTitle"/>
+            <textarea class="form-control blog-editarea" rows="{{getPostMarkdownLines()}}" formControlName="postMarkdown"></textarea>
+          </div>
+          
+          <div class="col-6">
+            <span
+              class="post-title-col post-link"
+            >{{postContentsForm.controls.postTitle.value}}</span>
+            <markdown emoji lineNumbers ngPreserveWhitespaces data={{postContentsForm.controls.postMarkdown.value}}>
+            </markdown>
+          </div>  
+        </div>
+      </form>
+    </section>
   </div>
 </div>
-
