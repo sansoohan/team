@@ -77,10 +77,20 @@ export class BlogService {
       .collection<PostContent>('posts', ref => ref.where('id', '==', postId))
       .valueChanges();
   }
-  getPostListObserver({params = null}, blogId: string, categoryIds): Observable<PostContent[]> {
+  getPostListObserver(
+    {params = null},
+    blogId: string,
+    categoryIds: Array<string>
+  ): Observable<PostContent[]> {
     const categoryId = params?.categoryId;
-    if (!blogId || !categoryId){
+    if (!blogId){
       return;
+    }
+    if (!categoryId) {
+      return this.firestore
+      .collection<BlogContent>('blogs').doc(blogId)
+      .collection<PostContent>('posts', ref => ref.orderBy('createdAt', 'desc').limit(10))
+      .valueChanges();
     }
     return this.firestore
       .collection<BlogContent>('blogs').doc(blogId)
@@ -88,11 +98,10 @@ export class BlogService {
       .valueChanges();
   }
 
-  getCategoryContentsObserver({params = null}, blogId: string): Observable<CategoryContent[]> {
+  getCategoryContentsObserver(blogId: string): Observable<CategoryContent[]> {
     if (!blogId){
       return;
     }
-    const categoryId = params?.categoryId;
     const categoryContentsObserver = this.firestore
     .collection<BlogContent>('blogs').doc(blogId)
     .collection<CategoryContent>('categories')

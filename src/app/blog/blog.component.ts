@@ -1,9 +1,7 @@
-import { Component, OnInit, Input, Pipe } from '@angular/core';
-import { FormControl, FormGroup, FormArray, FormBuilder, AbstractControl } from '@angular/forms';
-
-import * as moment from 'moment';
+import { Component, OnInit } from '@angular/core';
+import { FormGroup } from '@angular/forms';
 import { PostContent } from './post/post.content';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { BlogService } from 'src/app/services/blog.service';
 import { BlogContent } from './blog.content';
@@ -58,7 +56,6 @@ export class BlogComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router,
     public formHelper: FormHelper,
     public dataTransferHelper: DataTransferHelper,
     public routerHelper: RouterHelper,

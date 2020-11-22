@@ -9,4 +9,9 @@
     [isEditingCategory]="isEditingCategory"
     [blogContents]="blogContents"
   ></app-category>
+  <app-prologue
+    *ngIf="!params.postId && !params.categoryId"
+    [isEditingPost]="isEditingPost"
+    [blogContents]="blogContents"
+  ></app-prologue>
 </div>
