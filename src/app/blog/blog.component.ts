@@ -12,6 +12,7 @@ import { CategoryContent } from './category/category.content';
 import { AuthService } from 'src/app/services/auth.service';
 import { FormHelper } from '../helper/form.helper';
 import { DataTransferHelper } from '../helper/data-transefer.helper';
+import { RouterHelper } from '../helper/router.helper';
 
 @Component({
   selector: 'app-blog',
@@ -60,6 +61,7 @@ export class BlogComponent implements OnInit {
     private router: Router,
     public formHelper: FormHelper,
     public dataTransferHelper: DataTransferHelper,
+    public routerHelper: RouterHelper,
     private blogService: BlogService,
     public authService: AuthService,
   ) {
@@ -128,11 +130,6 @@ export class BlogComponent implements OnInit {
     });
   }
 
-  numberToDateString(i: number){
-    const date = new Date(i);
-    return `${date.getFullYear()}. ${date.getMonth()}. ${date.getDate()}`;
-  }
-
   countChildCategory(categoryId: string) {
     const count = this.categoryContents.filter((categoryContent) =>
       categoryContent.parentCategoryId === categoryId && categoryContent.id !== categoryId
@@ -146,24 +143,6 @@ export class BlogComponent implements OnInit {
       count += categoryContent.value.postCount;
     });
     return count;
-  }
-
-  goToCategory(categoryId: string) {
-    this.router.onSameUrlNavigation = 'reload';
-    const currentUser = JSON.parse(localStorage.currentUser || null);
-    const queryUser = currentUser?.userName || currentUser?.uid || this.params?.userName;
-    this.router.navigate(['/blog', queryUser, 'categories', categoryId]).finally(() => {
-      this.router.onSameUrlNavigation = 'ignore'; // Restore config after navigation completes
-    });
-  }
-
-  goToPost(postId: string) {
-    this.router.onSameUrlNavigation = 'reload';
-    const currentUser = JSON.parse(localStorage.currentUser || null);
-    const queryUser = currentUser?.userName || currentUser?.uid || this.params?.userName;
-    this.router.navigate(['/blog', queryUser, 'post', postId]).finally(() => {
-      this.router.onSameUrlNavigation = 'ignore'; // Restore config after navigation completes
-    });
   }
 
   getCategoryTitle(categoryId: string): string {

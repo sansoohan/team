@@ -13,6 +13,7 @@ import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
 import { AdditaionProfileContent } from './additional-profiles/additional-profile.content';
 import { FormHelper } from '../helper/form.helper';
 import { DataTransferHelper } from '../helper/data-transefer.helper';
+import { RouterHelper } from '../helper/router.helper';
 
 @Component({
   selector: 'app-profile',
@@ -47,6 +48,7 @@ export class ProfileComponent implements OnInit {
     private storage: AngularFireStorage,
     private formHelper: FormHelper,
     private dataTranseferHelper: DataTransferHelper,
+    public routerHelper: RouterHelper,
   ) {
     this.paramSub = this.route.params.subscribe(params => {
       this.isLoading = true;
@@ -71,7 +73,7 @@ export class ProfileComponent implements OnInit {
           localStorage.setItem('currentUser', JSON.stringify(currentUser));
         }
 
-        this.scrollToContactTypes('about');
+        this.routerHelper.scrollToProfile(this.params, 'about');
 
         this.profileForm = this.formHelper.buildFormRecursively(this.profileContents[0]);
 
@@ -251,14 +253,6 @@ export class ProfileComponent implements OnInit {
     this.isEditing = false;
   }
 
-  scrollToContactTypes(titleName: string) {
-    this.router.onSameUrlNavigation = 'reload';
-    const currentUser = JSON.parse(localStorage.currentUser || null);
-    const queryUser = currentUser?.userName || currentUser?.uid || this.params?.userName;
-    this.router.navigate(['/profile', queryUser], { fragment: titleName }).finally(() => {
-      this.router.onSameUrlNavigation = 'ignore'; // Restore config after navigation completes
-    });
-  }
   ngOnInit(): void {
   }
 

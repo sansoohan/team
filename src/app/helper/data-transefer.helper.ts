@@ -15,7 +15,7 @@ export class DataTransferHelper {
     const date = new Date(input);
     return `${date.getFullYear()}. ${date.getMonth()}. ${date.getDate()}`;
   }
-  replaceToDateRecursively(profileContent: any){
+  replaceToDateRecursively(profileContent: any): any{
     if (profileContent instanceof Array){
       for (let i = 0; i < profileContent.length; i++){
         if (profileContent[i] instanceof firebase.firestore.Timestamp){

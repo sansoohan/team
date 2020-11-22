@@ -35,7 +35,7 @@
                     <i *ngIf="j==categoryContent.controls.deepCount.value-1" class="fa fa-chevron-up fa-rotate-225"></i>
                   </div>
                   <input *ngIf="isEditingCategory" type="text" class="form-control nav-link-edit col-8" formControlName="categoryTitle">
-                  <a *ngIf="!isEditingCategory" class="nav-link col-8 category-link" (click)="goToCategory(categoryContent.controls.id.value)">
+                  <a *ngIf="!isEditingCategory" class="nav-link col-8 category-link" (click)="routerHelper.goToCategory(params,categoryContent.controls.id.value)">
                     <i class="fa fa-caret-right"></i>  {{categoryContent.controls.categoryTitle.value}}
                   </a>
                   <div *ngFor="let n of dataTransferHelper.numberToArray(3 - categoryContent.controls.deepCount.value) ; let j=index" class="col-1"></div>
@@ -88,13 +88,13 @@
                 <div class="col-6" style="padding:0px">
                   <span
                     class="post-list-col post-link"
-                    (click)="goToPost(postContent.controls.id.value)"
+                    (click)="routerHelper.goToPost(params,postContent.controls.id.value)"
                   >{{postContent.controls.postTitle.value}}</span>
                 </div>
                 <div class="col-3" style="padding:0px">
                   <span
                     class="post-list-title-col post-link"
-                    (click)="goToCategory(postContent.controls.categoryId.value)"
+                    (click)="routerHelper.goToCategory(params,postContent.controls.categoryId.value)"
                   >{{getCategoryTitle(postContent.controls.categoryId.value)}}</span>
                 </div>  
                 <div class="col-2" style="padding:0px">
@@ -116,8 +116,8 @@
     [blogContents]="blogContents"
     [isEditingPost]="isEditingPost"
     [postContentsForm]="postContentsForm"
-    (goToPost)="goToPost($event)"
-    (goToCategory)="goToCategory($event)"
+    (routerHelper.goToPost)params,="routerHelper.goToPost(params,$event)"
+    (routerHelper.goToCategory)params,="routerHelper.goToCategory(params,$event)"
   />
   <app-category
     *ngIf="isShowingCategoryContents && !isEditingCategory"
@@ -126,8 +126,8 @@
     [postListForm]="postListForm"
     [selectedChildCategories]="selectedChildCategories"
     [selectedCategory]="selectedCategory"
-    (goToPost)="goToPost($event)"
-    (goToCategory)="goToCategory($event)"
+    (routerHelper.goToPost)params,="routerHelper.goToPost(params,$event)"
+    (routerHelper.goToCategory)params,="routerHelper.goToCategory(params,$event)"
   /> -->
   <div class="blog">
     <section class="post-section p-3 d-flex flex-column">
@@ -154,14 +154,14 @@
             <div class="col-10" style="padding:0px">
               <span
                 class="post-title-col post-link"
-                (click)="goToPost(postContentsForm.controls.id.value)"
+                (click)="routerHelper.goToPost(params,postContentsForm.controls.id.value)"
               >
                 {{postContentsForm.controls.postTitle.value}}
               </span>
               <span style="color:white">|</span>
               <span
                 class="post-category-title-col post-link"
-                (click)="goToCategory(postContentsForm.controls.categoryId.value)"
+                (click)="routerHelper.goToCategory(params,postContentsForm.controls.categoryId.value)"
               >{{getCategoryTitle(postContentsForm.controls.categoryId.value)}}</span>
             </div>
             <div class="col-2">
