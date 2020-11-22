@@ -30,24 +30,24 @@
               <Button class="mx-auto mb-2 btn btn-danger" *ngIf="authService.isSignedIn() && isEditing" (click)="clickEditCancel()">Cancel</Button>
             </li>
             <li class="nav-item">
-              <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes('about')">About</a>
+              <a class="nav-link js-scroll-trigger" (click)="routerHelper.scrollToProfile(params,'about')">About</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes('education')">Education</a>
+              <a class="nav-link js-scroll-trigger" (click)="routerHelper.scrollToProfile(params,'education')">Education</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes('skills')">Skills</a>
+              <a class="nav-link js-scroll-trigger" (click)="routerHelper.scrollToProfile(params,'skills')">Skills</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes('projects')">Projects</a>
+              <a class="nav-link js-scroll-trigger" (click)="routerHelper.scrollToProfile(params,'projects')">Projects</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes('interests')">Interests</a>
+              <a class="nav-link js-scroll-trigger" (click)="routerHelper.scrollToProfile(params,'interests')">Interests</a>
             </li>
 
             <div *ngIf="!isEditing">
               <li *ngFor="let additaionProfileContent of profileContent.additaionProfilesContent" class="nav-item">
-                <a class="nav-link js-scroll-trigger" (click)="scrollToContactTypes(additaionProfileContent.title)">{{additaionProfileContent.title}}</a>
+                <a class="nav-link js-scroll-trigger" (click)="routerHelper.scrollToProfile(params,additaionProfileContent.title)">{{additaionProfileContent.title}}</a>
               </li>  
             </div>
 
@@ -68,7 +68,7 @@
                           </button>
                           <button
                             class="btn btn-secondary col-6"
-                            (click)="scrollToContactTypes(additaionProfile.value.title)"
+                            (click)="routerHelper.scrollToProfile(params,additaionProfile.value.title)"
                           >
                             <i class="fa fa-arrow-right"></i>
                           </button>

@@ -9,7 +9,7 @@ export class FormHelper {
     private fb: FormBuilder,
   ) { }
 
-  buildFormRecursively(profileContent: any): AbstractControl{
+  buildFormRecursively(profileContent: any): AbstractControl {
     if (profileContent instanceof Date) {
       return this.fb.control(new Date(profileContent).toISOString().slice(0, -1));
     }
@@ -54,7 +54,7 @@ export class FormHelper {
     return returnCategories;
   }
 
-  toggleCategoryCollapsed(allCategory: Array<FormGroup>, category: FormGroup){
+  toggleCategoryCollapsed(allCategory: Array<FormGroup>, category: FormGroup): void {
     const collapsed = !category.controls.collapsed.value;
     category.controls.collapsed.setValue(collapsed);
     let childCategories = [];
