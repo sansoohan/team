@@ -81,86 +81,8 @@ export class BlogComponent implements OnInit {
           this.isPage = false;
           return;
         }
-
-        this.categoryContentsObserver = this.blogService.getCategoryContentsObserver({params}, this.blogId);
-        this.categoryContentsSub = this.categoryContentsObserver.subscribe(categoryContents => {
-          this.categoryContents = categoryContents;
-          this.categoryContents.sort((categoryA: CategoryContent, categoryB: CategoryContent) =>
-            categoryA.categoryNumber - categoryB.categoryNumber);
-          if (this.categoryContents.length === 0 || !this.categoryContents){
-            this.isPage = false;
-            return;
-          }
-          this.categoryContentsForm = this.formHelper.buildFormRecursively({categoryContents: this.categoryContents});
-
-          if (params.categoryId){
-            this.selectedCategory = this.categoryContentsForm.controls.categoryContents.controls.find((categoryContent) =>
-              categoryContent.value.id === this.selectedCategoryId);
-            this.selectedChildCategories =
-              this.formHelper.getChildCategoriesRecusively(
-                this.categoryContentsForm.controls.categoryContents.controls, this.selectedCategory
-              );
-            const categoryIds = [this.selectedCategory, ...this.selectedChildCategories].map((categoryContent) =>
-              categoryContent.value.id
-            );
-
-            this.postListObserver = this.blogService.getPostListObserver({params}, this.blogId, categoryIds);
-            this.postListSub = this.postListObserver.subscribe(postList => {
-              this.postList = postList;
-              this.postListForm = this.formHelper.buildFormRecursively({postList: this.postList});
-            });
-            this.isShowingPostList = true;
-          }
-
-          if (params.postId){
-            this.postContentsObserver = this.blogService.getPostContentsObserver({params}, this.blogId);
-            this.postContentsSub = this.postContentsObserver.subscribe(postContents => {
-              this.postContents = postContents;
-              if (this.postContents.length === 0 || !this.postContents){
-                this.isPage = false;
-                return;
-              }
-              this.postContents[0].postMarkdown = this.postContents[0].postMarkdown.replace(/\\n/g, '\n');
-              this.postContentsForm = this.formHelper.buildFormRecursively(this.postContents[0]);
-            });
-            this.isShowingPostContents = true;
-          }
-        });
       });
     });
-  }
-
-  countChildCategory(categoryId: string) {
-    const count = this.categoryContents.filter((categoryContent) =>
-      categoryContent.parentCategoryId === categoryId && categoryContent.id !== categoryId
-    ).length;
-    return count;
-  }
-
-  countChildPost() {
-    let count = 0;
-    this.selectedChildCategories.forEach((categoryContent) => {
-      count += categoryContent.value.postCount;
-    });
-    return count;
-  }
-
-  getCategoryTitle(categoryId: string): string {
-    const category = this.categoryContentsForm.controls.categoryContents.controls.find((categoryContent) =>
-      categoryContent.value.id === categoryId);
-    return category.value.categoryTitle;
-  }
-
-  getPostMarkdownLines(){
-    return this.postContentsForm?.controls?.postMarkdown?.value?.match(/\n/g).length + 2 || 3;
-  }
-
-  clickCategoryEdit() {
-    this.isEditingCategory = true;
-  }
-
-  clickCategoryEditCancel(){
-    this.isEditingCategory = false;
   }
 
   async clickCategoryEditUpdate(content: BlogContent | PostContent | CategoryContent){
@@ -205,13 +127,7 @@ export class BlogComponent implements OnInit {
   }
 
 
-  clickPostEdit() {
-    this.isEditingPost = true;
-  }
 
-  clickPostEditCancel(){
-    this.isEditingPost = false;
-  }
 
   async clickPostEditUpdate(content: BlogContent | PostContent | CategoryContent){
     if (!this.updateOk){
@@ -262,7 +178,5 @@ export class BlogComponent implements OnInit {
   OnDestroy() {
     this.paramSub?.unsubscribe();
     this.blogContensSub?.unsubscribe();
-    this.postListSub?.unsubscribe();
-    this.postListSub?.unsubscribe();
   }
 }

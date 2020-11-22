@@ -76,7 +76,7 @@ export const MY_FORMATS = {
     }),
     NgxAuthFirebaseUIModule.forRoot(
       environment.firebase,
-      () => 'Developers',
+      () => 'developer',
       {
         enableFirestoreSync: true, // enable/disable autosync users with firestore
         toastMessageOnAuthSuccess: false, // whether to open/show a snackbar message on auth success - default : true
