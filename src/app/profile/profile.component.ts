@@ -12,6 +12,7 @@ import { AngularFireStorage } from '@angular/fire/storage';
 import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
 import { AdditaionProfileContent } from './additional-profiles/additional-profile.content';
 import { FormHelper } from '../helper/form.helper';
+import { DataTransferHelper } from '../helper/data-transefer.helper';
 
 @Component({
   selector: 'app-profile',
@@ -20,8 +21,6 @@ import { FormHelper } from '../helper/form.helper';
 })
 export class ProfileComponent implements OnInit {
   profileContentsObserver: Observable<ProfileContent[]>;
-  userEmailValidateObserver: Observable<ProfileContent[]>;
-  userNameValidateObserver: Observable<ProfileContent[]>;
   profileContents: ProfileContent[];
   defaultSrc: any;
   isEditing: boolean;
@@ -35,8 +34,6 @@ export class ProfileComponent implements OnInit {
   validateUserEmail: string;
   paramSub: any;
   profileSub: any;
-  userNameValidateSub: any;
-  userEmailValidateSub: any;
   params: any;
   profileForm: any;
   public newAdditaionProfileContent: AdditaionProfileContent = new AdditaionProfileContent();
@@ -49,6 +46,7 @@ export class ProfileComponent implements OnInit {
     private router: Router,
     private storage: AngularFireStorage,
     private formHelper: FormHelper,
+    private dataTranseferHelper: DataTransferHelper,
   ) {
     this.paramSub = this.route.params.subscribe(params => {
       this.isLoading = true;
@@ -60,7 +58,7 @@ export class ProfileComponent implements OnInit {
       this.params = params;
       this.profileContentsObserver = this.profileService.getProfileContentsObserver({params});
       this.profileSub = this.profileContentsObserver.subscribe(profileContents => {
-        this.profileContents = this.replaceToDateRecursively(profileContents);
+        this.profileContents = this.dataTranseferHelper.replaceToDateRecursively(profileContents);
         if (this.profileContents.length === 0 || !this.profileContents){
           this.isPage = false;
           return;
@@ -185,40 +183,6 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  onUserEmailChange(changedUserEmail){
-    this.hasUserEmailCollision = false;
-    this.updateOk = false;
-    if (this.userEmailValidateSub){
-      this.userEmailValidateSub.unsubscribe();
-    }
-    this.userEmailValidateObserver = this.profileService.getUserEmailCollisionObserver(changedUserEmail);
-    this.userEmailValidateSub = this.userEmailValidateObserver.subscribe(profileContents => {
-      profileContents.forEach(profileContent => {
-        if (this.validateUserEmail !== changedUserEmail){
-          this.hasUserEmailCollision = true;
-        }
-      });
-      this.updateOk = true;
-    });
-  }
-
-  onUserNameChange(changedUserName){
-    this.hasUserNameCollision = false;
-    this.updateOk = false;
-    if (this.userNameValidateSub){
-      this.userNameValidateSub.unsubscribe();
-    }
-    this.userNameValidateObserver = this.profileService.getUserNameCollisionObserver(changedUserName);
-    this.userNameValidateSub = this.userNameValidateObserver.subscribe(profileContents => {
-      profileContents.forEach(profileContent => {
-        if (this.validateUserName !== changedUserName){
-          this.hasUserNameCollision = true;
-        }
-      });
-      this.updateOk = true;
-    });
-  }
-
   clickEdit() {
     this.isEditing = true;
   }
@@ -287,32 +251,6 @@ export class ProfileComponent implements OnInit {
     this.isEditing = false;
   }
 
-  replaceToDateRecursively(profileContent: any){
-    if (profileContent instanceof Array){
-      for (let i = 0; i < profileContent.length; i++){
-        if (profileContent[i] instanceof firebase.firestore.Timestamp){
-          profileContent[i] = profileContent[i].toDate();
-        }
-        else{
-          this.replaceToDateRecursively(profileContent[i]);
-        }
-      }
-    }
-    else if (profileContent instanceof Object) {
-      for (const key in profileContent){
-        if (key){
-          if (profileContent[key] instanceof firebase.firestore.Timestamp){
-            profileContent[key] = profileContent[key].toDate();
-          }
-          else{
-            this.replaceToDateRecursively(profileContent[key]);
-          }
-        }
-      }
-    }
-    return profileContent;
-  }
-
   scrollToContactTypes(titleName: string) {
     this.router.onSameUrlNavigation = 'reload';
     const currentUser = JSON.parse(localStorage.currentUser || null);
@@ -327,11 +265,5 @@ export class ProfileComponent implements OnInit {
   OnDestroy() {
     this.paramSub.unsubscribe();
     this.profileSub.unsubscribe();
-    if (this.userNameValidateSub){
-      this.userNameValidateSub.unsubscribe();
-    }
-    if (this.userEmailValidateSub){
-      this.userEmailValidateSub.unsubscribe();
-    }
   }
 }
