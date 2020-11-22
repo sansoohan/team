@@ -1,19 +1,14 @@
-import { Component, OnInit, Input, Pipe, Output, EventEmitter } from '@angular/core';
-import { FormControl, FormGroup, FormArray, FormBuilder } from '@angular/forms';
-
-import * as moment from 'moment';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { PostContent } from './post.content';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { BlogService } from 'src/app/services/blog.service';
 import { BlogContent } from '../blog.content';
-import Swal from 'sweetalert2';
 import { CategoryContent } from '../category/category.content';
 import { AuthService } from 'src/app/services/auth.service';
 import { RouterHelper } from 'src/app/helper/router.helper';
 import { FormHelper } from 'src/app/helper/form.helper';
 import { DataTransferHelper } from 'src/app/helper/data-transefer.helper';
-// import 'moment/locale/de';
 
 @Component({
   selector: 'app-post',
@@ -75,7 +70,7 @@ export class PostComponent implements OnInit {
     this._blogContents = blogContents;
     this.blogId = blogContents[0].id;
 
-    this.categoryContentsObserver = this.blogService.getCategoryContentsObserver({params: this.params}, this.blogId);
+    this.categoryContentsObserver = this.blogService.getCategoryContentsObserver(this.blogId);
     this.categoryContentsSub = this.categoryContentsObserver.subscribe(categoryContents => {
       if (!categoryContents || categoryContents.length === 0){
         this.isPage = false;

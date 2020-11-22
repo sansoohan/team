@@ -4,6 +4,8 @@ import { FormGroup } from '@angular/forms';
 import { DataTransferHelper } from 'src/app/helper/data-transefer.helper';
 import { RouterHelper } from 'src/app/helper/router.helper';
 import { FormHelper } from 'src/app/helper/form.helper';
+import { Subscription } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-left-sidebar',
@@ -15,12 +17,20 @@ export class LeftSidebarComponent implements OnInit {
   @Input() isEditingCategory: boolean;
   @Input() categoryContentsForm: FormGroup;
 
+  paramSub: Subscription;
+  params: any;
+
   constructor(
+    private route: ActivatedRoute,
     public authService: AuthService,
     public dataTransferHelper: DataTransferHelper,
     public routerHelper: RouterHelper,
     public formHelper: FormHelper,
-  ) { }
+  ) {
+    this.paramSub = this.route.params.subscribe(params => {
+      this.params = params;
+    });
+  }
 
   countChildCategory(categoryId: string) {
     const count = this.categoryContentsForm.controls.categoryContents.value.filter((categoryContent) =>

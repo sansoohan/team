@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { PostContent } from '../post/post.content';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { BlogService } from 'src/app/services/blog.service';
 import { BlogContent } from '../blog.content';
@@ -10,13 +10,14 @@ import { AuthService } from 'src/app/services/auth.service';
 import { RouterHelper } from 'src/app/helper/router.helper';
 import { FormHelper } from 'src/app/helper/form.helper';
 import { DataTransferHelper } from 'src/app/helper/data-transefer.helper';
+// import 'moment/locale/de';
 
 @Component({
-  selector: 'app-category',
-  templateUrl: './category.component.html',
-  styleUrls: ['../blog.component.css', './category.component.css']
+  selector: 'app-prologue',
+  templateUrl: './prologue.component.html',
+  styleUrls: ['../blog.component.css', './prologue.component.css']
 })
-export class CategoryComponent implements OnInit {
+export class PrologueComponent implements OnInit {
   categoryContentsObserver: Observable<CategoryContent[]>;
   categoryContents: CategoryContent[];
   categoryContentsSub: Subscription;
@@ -85,18 +86,8 @@ export class CategoryComponent implements OnInit {
         categoryA.categoryNumber - categoryB.categoryNumber);
       this.categoryContentsForm = this.formHelper.buildFormRecursively({categoryContents: this.categoryContents});
 
-      if (this.params.categoryId){
-        this.selectedCategory =
-          this.categoryContentsForm.controls.categoryContents.controls.find((categoryContent) =>
-          categoryContent.value.id === this.params.categoryId);
-        this.selectedChildCategories =
-          this.formHelper.getChildCategoriesRecusively(
-            this.categoryContentsForm.controls.categoryContents.controls, this.selectedCategory
-          );
-        const categoryIds = [this.selectedCategory, ...this.selectedChildCategories].map((categoryContent) =>
-          categoryContent.value.id
-        );
-
+      if (!this.params.categoryId){
+        const categoryIds = [];
         this.postListObserver = this.blogService.getPostListObserver({params: this.params}, this.blogId, categoryIds);
         this.postListSub = this.postListObserver.subscribe(postList => {
           this.postList = postList;

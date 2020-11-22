@@ -7,6 +7,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { PostComponent } from './post/post.component';
 import { CategoryComponent } from './category/category.component';
 import { LeftSidebarComponent } from './left-sidebar/left-sidebar.component';
+import { PrologueComponent } from './prologue/prologue.component';
 
 @NgModule({
   declarations: [
@@ -15,6 +16,7 @@ import { LeftSidebarComponent } from './left-sidebar/left-sidebar.component';
     CategoryComponent,
     CommentComponent,
     LeftSidebarComponent,
+    PrologueComponent,
   ],
   imports: [
     CommonModule,
