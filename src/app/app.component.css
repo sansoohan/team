@@ -1,3 +1,9 @@
+.top-nav-block{
+  height: 56px;
+  width: 100%;
+  background-color: #BD5D38;
+}
+
 .app-navbar {
   margin-left: 80px;
 }

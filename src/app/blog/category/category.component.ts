@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { PostContent } from '../post/post.content';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { BlogService } from 'src/app/services/blog.service';
 import { BlogContent } from '../blog.content';
@@ -66,6 +66,7 @@ export class CategoryComponent implements OnInit {
   @Input()
   get blogContents(): Array<BlogContent> { return this._blogContents; }
   set blogContents(blogContents: Array<BlogContent>) {
+    this.isPage = true;
     if (!blogContents || blogContents.length === 0){
       this.isPage = false;
       return;
@@ -90,7 +91,7 @@ export class CategoryComponent implements OnInit {
           this.categoryContentsForm.controls.categoryContents.controls.find((categoryContent) =>
           categoryContent.value.id === this.params.categoryId);
         this.selectedChildCategories =
-          this.formHelper.getChildCategoriesRecusively(
+          this.formHelper.getChildContentsRecusively(
             this.categoryContentsForm.controls.categoryContents.controls, this.selectedCategory
           );
         const categoryIds = [this.selectedCategory, ...this.selectedChildCategories].map((categoryContent) =>

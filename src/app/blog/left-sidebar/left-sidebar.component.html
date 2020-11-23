@@ -28,7 +28,7 @@
       <form *ngIf="categoryContentsForm" [formGroup]="categoryContentsForm">
         <div formArrayName="categoryContents">
           <div *ngFor="let categoryContent of categoryContentsForm.controls.categoryContents['controls']; let i=index">
-            <li *ngIf="!categoryContent.controls.hidden.value" class="nav-item" [formGroupName]="i">            
+            <li *ngIf="!categoryContent.controls.hidden.value" class="nav-item" [formGroupName]="i">
               <div class="form-row">
                 <div *ngFor="let n of dataTransferHelper.numberToArray(categoryContent.controls.deepCount.value) ; let j=index" class="col-1" style="padding:0">
                   <i *ngIf="j==categoryContent.controls.deepCount.value-1" class="fa fa-chevron-up fa-rotate-225"></i>
@@ -39,9 +39,9 @@
                 </a>
                 <div *ngFor="let n of dataTransferHelper.numberToArray(3 - categoryContent.controls.deepCount.value) ; let j=index" class="col-1"></div>
                 <div
-                  *ngIf="countChildCategory(categoryContent.controls.id.value)!==0"
+                  *ngIf="formHelper.countChildContent(categoryContentsForm.controls.categoryContents['controls'],categoryContent)!==0"
                   class="nav-link col-1 category-link"
-                  (click)="formHelper.toggleCategoryCollapsed(categoryContentsForm.controls.categoryContents['controls'],categoryContent)"
+                  (click)="formHelper.toggleCollapse(categoryContentsForm.controls.categoryContents['controls'],categoryContent)"
                 >
                   <i *ngIf="categoryContent.controls.collapsed.value" class="fa fa-caret-up"></i>
                   <i *ngIf="!categoryContent.controls.collapsed.value" class="fa fa-caret-down"></i>

@@ -19,6 +19,7 @@ export class LeftSidebarComponent implements OnInit {
 
   paramSub: Subscription;
   params: any;
+  isPage: boolean;
 
   constructor(
     private route: ActivatedRoute,
@@ -28,15 +29,9 @@ export class LeftSidebarComponent implements OnInit {
     public formHelper: FormHelper,
   ) {
     this.paramSub = this.route.params.subscribe(params => {
+      this.isPage = true;
       this.params = params;
     });
-  }
-
-  countChildCategory(categoryId: string) {
-    const count = this.categoryContentsForm.controls.categoryContents.value.filter((categoryContent) =>
-      categoryContent.parentCategoryId === categoryId && categoryContent.id !== categoryId
-    ).length;
-    return count;
   }
 
   clickCategoryEdit() {

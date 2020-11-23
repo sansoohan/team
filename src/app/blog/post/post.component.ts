@@ -9,6 +9,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { RouterHelper } from 'src/app/helper/router.helper';
 import { FormHelper } from 'src/app/helper/form.helper';
 import { DataTransferHelper } from 'src/app/helper/data-transefer.helper';
+import { AbstractControl } from '@angular/forms';
 
 @Component({
   selector: 'app-post',
@@ -35,7 +36,6 @@ export class PostComponent implements OnInit {
   postListObserver: Observable<PostContent[]>;
   postList: PostContent[];
   postListForm: any;
-  isShowingPostList: boolean;
 
   blogId: string;
   isPage: boolean;
@@ -63,6 +63,7 @@ export class PostComponent implements OnInit {
   @Input()
   get blogContents(): Array<BlogContent> { return this._blogContents; }
   set blogContents(blogContents: Array<BlogContent>) {
+    this.isPage = true;
     if (!blogContents || blogContents.length === 0){
       this.isPage = false;
       return;

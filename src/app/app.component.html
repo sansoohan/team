@@ -1,4 +1,4 @@
-<router-outlet></router-outlet>
+<div class="top-nav-block"></div>
 <nav class="app-navbar navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
   <div class="collapse navbar-collapse" id="navbarsExampleDefault">
     <a *ngIf="!authService.isSignedIn()" class="navbar-brand" href="/">Startup</a>
@@ -28,3 +28,4 @@
     <button *ngIf="!authService.isSignedIn()" routerLink="/sign-in" routerLinkActive="active" class="btn btn-outline-success my-2 my-sm-0">Sign In</button>
   </form>
 </nav>
+<router-outlet></router-outlet>

@@ -10,10 +10,9 @@ export class PostContent {
   selectedIamgeIndex?: number;
   likes: any;
   constructor(
-    id: string = '',
     categoryId: string = '',
     commentCount: number = 0,
-    createdAt: number = null,
+    createdAt: number = Number(new Date()),
     postTitle: string = '',
     postMarkdown: string = '',
     postImageSrcs: any = [],
@@ -21,7 +20,6 @@ export class PostContent {
     selectedIamgeIndex: number = null,
     likes: any = [],
   ){
-    this.id = id;
     this.categoryId = categoryId;
     this.commentCount = commentCount;
     this.createdAt = createdAt,

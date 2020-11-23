@@ -63,6 +63,7 @@ export class BlogComponent implements OnInit {
     public authService: AuthService,
   ) {
     this.paramSub = this.route.params.subscribe(params => {
+      this.isPage = true;
       this.isShowingPostList = false;
       this.isShowingPostContents = false;
       this.isEditingCategory = false;

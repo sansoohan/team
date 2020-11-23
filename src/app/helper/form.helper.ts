@@ -34,39 +34,47 @@ export class FormHelper {
     }
   }
 
-  getChildCategoriesRecusively(
-    allCategory: Array<FormGroup>,
-    parentCategory: FormGroup
+  getChildContentsRecusively(
+    allContent: Array<FormGroup>,
+    parentContent: FormGroup
   ): Array<FormGroup>{
-    const childCategories = allCategory
-    .filter((categoryForm) => categoryForm.value.parentCategoryId === parentCategory.value.id);
-    if (childCategories.length === 0){
+    const childContents = allContent
+    .filter((categoryForm) => categoryForm.value.parentId === parentContent.value.id);
+    if (childContents.length === 0){
       return [];
     }
 
-    let returnCategories = [...childCategories];
-    for (const childCategory of childCategories){
-      returnCategories = [
-        ...returnCategories,
-        ...this.getChildCategoriesRecusively(allCategory, childCategory)
+    let returnContents = [...childContents];
+    for (const childContent of childContents){
+      returnContents = [
+        ...returnContents,
+        ...this.getChildContentsRecusively(allContent, childContent)
       ];
     }
-    return returnCategories;
+    return returnContents;
   }
 
-  toggleCategoryCollapsed(allCategory: Array<FormGroup>, category: FormGroup): void {
-    const collapsed = !category.controls.collapsed.value;
-    category.controls.collapsed.setValue(collapsed);
-    let childCategories = [];
+  toggleCollapse(allContents: Array<FormGroup>, toggleTarget: FormGroup): void {
+    const collapsed = !toggleTarget.controls.collapsed.value;
+    toggleTarget.controls.collapsed.setValue(collapsed);
+    let childContents = [];
     if (!collapsed){
-      childCategories = allCategory
-      .filter((categoryForm) => categoryForm.value.parentCategoryId === category.value.id);
+      childContents = allContents
+      .filter((categoryForm) => categoryForm.value.parentId === toggleTarget.value.id);
     } else {
-      childCategories = this.getChildCategoriesRecusively(allCategory, category);
+      childContents = this.getChildContentsRecusively(allContents, toggleTarget);
     }
-    childCategories.forEach((childCategory) => {
+    childContents.forEach((childCategory) => {
       childCategory.controls.hidden.setValue(collapsed);
       childCategory.controls.collapsed.setValue(!collapsed);
     });
+  }
+
+  countChildContent(allContents: Array<FormGroup>, parentContent: FormGroup) {
+    const count = allContents.filter((content) =>
+      parentContent.controls.id.value === content.value.parentId &&
+      parentContent.controls.id.value !== content.value.id
+    ).length;
+    return count;
   }
 }
