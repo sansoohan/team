@@ -1,70 +1,80 @@
-<app-left-sidebar
-  [isEditingPost]="isEditingPost"
-  [isEditingCategory]="isEditingCategory"
-  [categoryContentsForm]="categoryContentsForm"
-></app-left-sidebar>
-<div class="blog">
-  <section class="post-section p-3 d-flex flex-column">
-    <form *ngIf="postContentsForm" [formGroup]="postContentsForm">
-      <div class="nav-item">
-        <Button
-          class="btn btn-sm btn-info"
-          *ngIf="authService.isSignedIn() && !isEditingPost"
-          (click)="clickPostEdit()"
-        >Edit Post</Button>
-        <Button
-          class="btn btn-sm btn-success"
-          *ngIf="authService.isSignedIn() && isEditingPost"
-        >Update</Button>
-        <Button
-          class="btn btn-sm btn-danger"
-          *ngIf="authService.isSignedIn() && isEditingPost"
-          (click)="clickPostEditCancel()"
-        >Cancel</Button>
-      </div>
-
-      <div *ngIf="!isEditingPost">
-        <div class="form-row">
-          <div class="col-10" style="padding:0px">
+<div *ngIf="!isPage">
+  <app-not-found></app-not-found>
+</div>
+<div *ngIf="isPage">
+  <app-left-sidebar
+    [isEditingPost]="isEditingPost"
+    [isEditingCategory]="isEditingCategory"
+    [categoryContentsForm]="categoryContentsForm"
+  ></app-left-sidebar>
+  <div class="blog" style="background-color:#333333;">
+    <section class="post-section p-3 d-flex flex-column">
+      <form *ngIf="postContentsForm" [formGroup]="postContentsForm">
+        <div class="nav-item">
+          <Button
+            class="btn btn-sm btn-info"
+            *ngIf="authService.isSignedIn() && !isEditingPost"
+            (click)="clickPostEdit()"
+          >Edit Post</Button>
+          <Button
+            class="btn btn-sm btn-success"
+            *ngIf="authService.isSignedIn() && isEditingPost"
+          >Update</Button>
+          <Button
+            class="btn btn-sm btn-danger"
+            *ngIf="authService.isSignedIn() && isEditingPost"
+            (click)="clickPostEditCancel()"
+          >Cancel</Button>
+        </div>
+  
+        <div *ngIf="!isEditingPost">
+          <div class="form-row">
+            <div class="col-9" style="padding:0px">
+              <span
+                class="post-title-col post-link"
+                (click)="routerHelper.goToPost(params,postContentsForm.controls.id.value)"
+              >
+                {{postContentsForm.controls.postTitle.value}}
+              </span>
+              <span style="color:white">|</span>
+              <span
+                class="post-category-title-col post-link"
+                (click)="routerHelper.goToCategory(params,postContentsForm.controls.categoryId.value)"
+              >{{getCategoryTitle(postContentsForm.controls.categoryId.value)}}</span>
+            </div>
+            <div class="col-3">
+              <div style="text-align:right">{{dataTransferHelper.numberToDateString(postContentsForm.controls.createdAt.value)}}</div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="col-12" style="padding:0px">
+              <markdown emoji lineNumbers ngPreserveWhitespaces>
+                {{postContentsForm.controls.postMarkdown.value}}
+              </markdown>  
+            </div>
+          </div>
+        </div>
+  
+        <div class="form-row" *ngIf="isEditingPost">
+          <div class="col-6">
+            <input type="text" class="form-control blog-editarea" formControlName="postTitle"/>
+            <textarea class="form-control blog-editarea" rows="{{getPostMarkdownLines()}}" formControlName="postMarkdown"></textarea>
+          </div>
+          
+          <div class="col-6">
             <span
               class="post-title-col post-link"
-              (click)="routerHelper.goToPost(params,postContentsForm.controls.id.value)"
-            >
-              {{postContentsForm.controls.postTitle.value}}
-            </span>
-            <span style="color:white">|</span>
-            <span
-              class="post-category-title-col post-link"
-              (click)="routerHelper.goToCategory(params,postContentsForm.controls.categoryId.value)"
-            >{{getCategoryTitle(postContentsForm.controls.categoryId.value)}}</span>
-          </div>
-          <div class="col-2">
-            <div style="text-align:right">{{dataTransferHelper.numberToDateString(postContentsForm.controls.createdAt.value)}}</div>
+            >{{postContentsForm.controls.postTitle.value}}</span>
+            <markdown emoji lineNumbers ngPreserveWhitespaces data={{postContentsForm.controls.postMarkdown.value}}>
+            </markdown>
           </div>
         </div>
-        <div class="form-row">
-          <div class="col-12" style="padding:0px">
-            <markdown emoji lineNumbers ngPreserveWhitespaces>
-              {{postContentsForm.controls.postMarkdown.value}}
-            </markdown>  
-          </div>
-        </div>
-      </div>
-
-      <div class="form-row" *ngIf="isEditingPost">
-        <div class="col-6">
-          <input type="text" class="form-control blog-editarea" formControlName="postTitle"/>
-          <textarea class="form-control blog-editarea" rows="{{getPostMarkdownLines()}}" formControlName="postMarkdown"></textarea>
-        </div>
-        
-        <div class="col-6">
-          <span
-            class="post-title-col post-link"
-          >{{postContentsForm.controls.postTitle.value}}</span>
-          <markdown emoji lineNumbers ngPreserveWhitespaces data={{postContentsForm.controls.postMarkdown.value}}>
-          </markdown>
-        </div>
-      </div>
-    </form>
-  </section>
+      </form>
+    </section>
+  </div>
+  <app-comment
+    *ngIf="params.postId"
+    [isEditingPost]="isEditingPost"
+    [blogContents]="blogContents"
+  ></app-comment>
 </div>

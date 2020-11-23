@@ -7,6 +7,7 @@ import { BlogContent } from '../blog/blog.content';
 import * as firebase from 'firebase';
 import { PostContent } from '../blog/post/post.content';
 import { CategoryContent } from '../blog/category/category.content';
+import { CommentContent } from '../blog/post/comment/comment.content';
 
 @Injectable({
   providedIn: 'root'
@@ -105,6 +106,20 @@ export class BlogService {
     const categoryContentsObserver = this.firestore
     .collection<BlogContent>('blogs').doc(blogId)
     .collection<CategoryContent>('categories')
+    .valueChanges();
+    return categoryContentsObserver;
+  }
+
+  getCommentContentsObserver(
+    blogId: string,
+    postId: string,
+  ): Observable<CommentContent[]> {
+    if (!blogId || !postId){
+      return;
+    }
+    const categoryContentsObserver = this.firestore
+    .collection<BlogContent>('blogs').doc(blogId)
+    .collection<CommentContent>('comments', ref => ref.where('postId', '==', postId))
     .valueChanges();
     return categoryContentsObserver;
   }

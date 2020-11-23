@@ -1,0 +1,49 @@
+<div *ngIf="!isEditingPost">
+  <div class="blog" *ngIf="!isEditingPost && isShowingComment">
+    <section class="post-section p-3 d-flex flex-column">
+      <h4>Comments</h4>
+      <form *ngIf="commentContentsForm" [formGroup]="commentContentsForm">
+        <div formArrayName="commentContents">
+          <div
+            *ngFor="let commentContent of commentContentsForm.controls.commentContents.controls; let i=index"
+          >
+            <div
+              *ngIf="!commentContent.controls.hidden.value"
+              class="comment-list-row d-flex flex-row"
+            >
+              <div
+                *ngFor="let n of dataTransferHelper.numberToArray(commentContent.controls.deepCount.value) ; let j=index"
+                class="child-comment-tab"
+              ></div>
+              <div class="container-sm">
+                <div class="row">
+                  <span class="col-9">{{commentContent.value.writerName}}</span>
+                  <span class="col-3" style="text-align: right;">
+                    {{dataTransferHelper.numberToDateString(commentContent.value.createdAt)}}
+                  </span>
+                </div>
+                <div class="row">
+                  <div class="col-12 comment-list-col">
+                    <markdown
+                      emoji
+                      lineNumbers
+                      ngPreserveWhitespaces
+                      data={{commentContent.controls.commentMarkdown.value}}>
+                    </markdown>
+                  </div>
+                </div>
+              </div>
+              <div
+                *ngIf="formHelper.countChildContent(commentContentsForm.controls.commentContents['controls'],commentContent)!==0"
+                (click)="formHelper.toggleCollapse(commentContentsForm.controls.commentContents['controls'],commentContent)"
+              >
+                <i *ngIf="commentContent.controls.collapsed.value" class="fa fa-caret-up"></i>
+                <i *ngIf="!commentContent.controls.collapsed.value" class="fa fa-caret-down"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </section>
+  </div>
+</div>
