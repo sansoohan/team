@@ -1,21 +1,21 @@
 <div *ngIf="!isPage">
   <app-not-found></app-not-found>
 </div>
-
+<app-header></app-header>
 <div *ngIf="isPage" class="blog-background">
-  <app-post
+  <app-blog-post
     *ngIf="params.postId"
     [isEditingPost]="isEditingPost"
     [blogContents]="blogContents"
-  ></app-post>
-  <app-category
+  ></app-blog-post>
+  <app-blog-category
     *ngIf="params.categoryId"
     [isEditingCategory]="isEditingCategory"
     [blogContents]="blogContents"
-  ></app-category>
-  <app-prologue
+  ></app-blog-category>
+  <app-blog-prologue
     *ngIf="!params.postId && !params.categoryId"
     [isEditingPost]="isEditingPost"
     [blogContents]="blogContents"
-  ></app-prologue>
+  ></app-blog-prologue>
 </div>

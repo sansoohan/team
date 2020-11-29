@@ -12,7 +12,7 @@ import { DataTransferHelper } from 'src/app/helper/data-transefer.helper';
 import { AbstractControl } from '@angular/forms';
 
 @Component({
-  selector: 'app-post',
+  selector: 'app-blog-post',
   templateUrl: './post.component.html',
   styleUrls: ['../blog.component.css', './post.component.css']
 })

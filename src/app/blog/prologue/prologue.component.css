@@ -1,0 +1,67 @@
+.blog-prologue {
+  font-family: 'Open Sans', serif;
+  padding: 1rem;
+  color: white;
+  background-color: #333333;
+  border-bottom: 1px solid #dee2e6;
+  min-height: calc(100vh - 56px);
+}
+
+@media (min-width: 992px) {
+  .blog-prologue {
+    padding-left: 18rem;
+  }
+}
+
+section.prologue-section {
+  margin-left: 0px;
+}
+
+@media (min-width: 992px) {
+  section.prologue-section {
+    width: 700px;
+  }
+}
+
+@media (min-width: 1200px) {
+  section.prologue-section {
+    width: 900px;
+  }
+}
+
+
+.prologue-title-row {
+  margin-bottom: 0.3rem;
+  padding-bottom: 0.3rem;
+}
+
+.prologue-title-col {
+  margin: 0;
+  padding: 0;
+  font-size: 1.5rem;
+}
+
+.prologue-top-row {
+  margin-bottom: 0.3rem;
+  padding-bottom: 0.3rem;
+  border-bottom: grey solid 0.15rem;
+}
+
+.prologue-top-col {
+  margin: 0;
+  padding: 0;
+  font-size: 0.8rem;
+}
+
+.prologue-post-list-row {
+  margin-bottom: 0.3rem;
+  padding-bottom: 0.3rem;
+  border-bottom: grey solid 0.1rem;
+}
+
+.prologue-post-list-col {
+  margin: 0;
+  padding: 0;
+  color: white;
+  font-size: 0.8rem;
+}

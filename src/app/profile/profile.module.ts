@@ -14,6 +14,7 @@ import { InputAddRemoveModule } from '../modules/user-form/input-add-remove/inpu
 import { NotFoundComponent } from '../not-found/not-found.component';
 import { PageLoadingComponent } from '../page-loading/page-loading.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { HeaderComponent } from './header/header.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     ProjectsComponent,
     AdditionalProfilesComponent,
     NotFoundComponent,
-    PageLoadingComponent
+    PageLoadingComponent,
+    HeaderComponent
   ],
   imports: [
     CommonModule,

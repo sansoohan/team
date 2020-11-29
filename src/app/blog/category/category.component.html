@@ -1,64 +1,44 @@
-<div *ngIf="!isPage">
+<div *ngIf=!isPage>
   <app-not-found></app-not-found>
 </div>
 <div>
-  <app-left-sidebar
+  <app-blog-left-sidebar
     [isEditingPost]="isEditingPost"
     [isEditingCategory]="isEditingCategory"
     [categoryContentsForm]="categoryContentsForm"
-  ></app-left-sidebar>
-  <div class="blog" *ngIf="!isEditingCategory && isShowingPostList">
-    <section class="post-section p-3 d-flex flex-column">
-      <form *ngIf="postListForm" [formGroup]="postListForm">
-        <div formArrayName="postList">
-          <div class="container-sm">
-            <div class="row category-title-row">
-              <div class="col-12" style="padding:0px">
-                <span class="category-title-col">
-                  {{selectedCategory.value.categoryTitle}}
-                  ({{selectedCategory.value.postCount + countChildPost()}})
-                </span>
-              </div>
-            </div>
-            <div class="row post-title-row">
-              <div class="col-6" style="padding:0px">
-                <span class="post-list-title-col">Title</span>
-              </div>
-              <div class="col-3" style="padding:0px">
-                <span class="post-list-title-col">Category</span>
-              </div>
-              <div class="col-2" style="padding:0px">
-                <span class="post-list-title-col">Date</span>
-              </div>
-              <div class="col-1" style="padding:0px">
-                <div class="post-list-title-col" style="text-align:right">Count</div>
-              </div>
-            </div>
-            <div *ngFor="let postContent of postListForm.controls.postList.controls; let i=index">
-              <div class="row post-list-row">
-                <div class="col-6" style="padding:0px">
-                  <span
-                    class="post-list-col post-link"
-                    (click)="routerHelper.goToPost(params,postContent.controls.id.value)"
-                  >{{postContent.controls.postTitle.value}}</span>
-                </div>
-                <div class="col-3" style="padding:0px">
-                  <span
-                    class="post-list-title-col post-link"
-                    (click)="routerHelper.goToCategory(params,postContent.controls.categoryId.value)"
-                  >{{getCategoryTitle(postContent.controls.categoryId.value)}}</span>
-                </div>  
-                <div class="col-2" style="padding:0px">
-                  <span class="post-list-col">{{dataTransferHelper.numberToDateString(postContent.controls.createdAt.value)}}</span>
-                </div>
-                <div class="col-1" style="padding:0px">
-                  <div class="post-list-col" style="text-align:right">{{postContent.controls.readCount.value}}</div>
-                </div>
-              </div>
+  ></app-blog-left-sidebar>
+  <div class="blog-category" *ngIf="!isEditingCategory && isShowingPostList">
+    <form *ngIf="postListForm" [formGroup]="postListForm">
+      <div formArrayName="postList">
+        <section class="container category-section">
+          <div class="row category-title-row">
+            <span class="col-12 category-title-col">
+              {{selectedCategory.value.categoryTitle}}
+              ({{selectedCategory.value.postCount + countChildPost()}})
+            </span>
+          </div>
+          <div class="row category-top-row">
+            <span class="col-6 category-top-col">Title</span>
+            <span class="col-3 category-top-col">Category</span>
+            <span class="col-2 category-top-col">Date</span>
+            <div class="col-1 category-top-col" style="text-align:right">Count</div>
+          </div>
+          <div *ngFor="let postContent of postListForm.controls.postList.controls; let i=index">
+            <div class="row category-post-list-row">
+              <span
+                class="col-6 category-post-list-col blog-link"
+                (click)="routerHelper.goToBlogPost(params,postContent.controls.id.value)"
+              >{{postContent.controls.postTitle.value}}</span>
+              <span
+                class="col-3 category-post-list-col blog-link"
+                (click)="routerHelper.goToBlogCategory(params,postContent.controls.categoryId.value)"
+              >{{getCategoryTitle(postContent.controls.categoryId.value)}}</span>
+              <span class="col-2 category-post-list-col">{{dataTransferHelper.numberToDateString(postContent.controls.createdAt.value)}}</span>
+              <span class="col-1 category-post-list-col" style="text-align:right">{{postContent.controls.readCount.value}}</span>
             </div>
           </div>
-        </div>
-      </form>
-    </section>
+        </section>
+      </div>
+    </form>
   </div>
 </div>

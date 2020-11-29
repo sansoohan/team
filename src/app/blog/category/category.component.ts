@@ -12,7 +12,7 @@ import { FormHelper } from 'src/app/helper/form.helper';
 import { DataTransferHelper } from 'src/app/helper/data-transefer.helper';
 
 @Component({
-  selector: 'app-category',
+  selector: 'app-blog-category',
   templateUrl: './category.component.html',
   styleUrls: ['../blog.component.css', './category.component.css']
 })

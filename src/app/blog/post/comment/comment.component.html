@@ -1,5 +1,5 @@
 <div *ngIf="!isEditingPost">
-  <div class="blog" *ngIf="!isEditingPost && isShowingComment">
+  <div class="blog-comment" *ngIf="!isEditingPost && isShowingComment">
     <section class="post-section p-3 d-flex flex-column">
       <h4>Comments</h4>
       <form *ngIf="commentContentsForm" [formGroup]="commentContentsForm">
@@ -15,10 +15,10 @@
                 *ngFor="let n of dataTransferHelper.numberToArray(commentContent.controls.deepCount.value) ; let j=index"
                 class="child-comment-tab"
               ></div>
-              <div class="container-sm">
+              <div class="container comment-list-col-container">
                 <div class="row">
-                  <span class="col-9">{{commentContent.value.writerName}}</span>
-                  <span class="col-3" style="text-align: right;">
+                  <span class="col-8">{{commentContent.value.writerName}}</span>
+                  <span class="col-4" style="text-align: right;">
                     {{dataTransferHelper.numberToDateString(commentContent.value.createdAt)}}
                   </span>
                 </div>
@@ -35,6 +35,7 @@
               </div>
               <div
                 *ngIf="formHelper.countChildContent(commentContentsForm.controls.commentContents['controls'],commentContent)!==0"
+                class="blog-link"
                 (click)="formHelper.toggleCollapse(commentContentsForm.controls.commentContents['controls'],commentContent)"
               >
                 <i *ngIf="commentContent.controls.collapsed.value" class="fa fa-caret-up"></i>

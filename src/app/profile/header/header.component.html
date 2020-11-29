@@ -1,0 +1,29 @@
+<nav class="app-navbar navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+  <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+    <a *ngIf="!authService.isSignedIn()" class="navbar-brand" href="/">Startup</a>
+    <a *ngIf="authService.isSignedIn()" class="navbar-brand" href="/#/profile">Profile</a>
+    <a *ngIf="authService.isSignedIn()" class="navbar-brand" href="/#/blog">Blog</a>  
+    <form class="form-inline">
+      <input class="form-control mr-sm-2" type="search" list="staticUserIds" placeholder="Search Profile" aria-label="Search"
+        [value]="searchValue"
+        (keyup)="changeSearch($event)"
+      >
+      <datalist id="staticUserIds">
+        <option *ngFor="let result of results | async" [value]="result.aboutContent.email"><i class="fa fa-car"></i>({{result.userName}})</option>
+      </datalist>
+      <button class="btn btn-outline-success mr-sm-2">Search</button>
+    </form>  
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <form class="form-inline">
+    <ngx-auth-firebaseui-avatar *ngIf="authService.isSignedIn()"
+      (onSignOut)="onSignOut()"
+      [canEditAccount]="true"
+    ></ngx-auth-firebaseui-avatar>
+    <button *ngIf="!authService.isSignedIn()" routerLink="/sign-in" routerLinkActive="active" class="btn btn-outline-success my-2 my-sm-0">Sign In</button>
+  </form>
+</nav>

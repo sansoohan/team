@@ -1,0 +1,45 @@
+.blog-comment {
+  font-family: 'Open Sans', serif;
+  padding: 1rem;
+  color: white;
+  background-color: #333333;
+  border-bottom: 1px solid #dee2e6;
+}
+
+
+@media (min-width: 992px) {
+  .blog-comment {
+    padding-left: 18rem;
+  }
+}
+
+h4 {
+  color: white;
+}
+
+.comment-list-row {
+  margin-top: 1rem;
+}
+
+.comment-list-col-container {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.comment-list-col {
+  margin: 0.3rem 1rem 0rem 1rem;
+  border-bottom: grey solid 0.1rem;
+}
+
+.child-comment-tab {
+  width: 2rem;
+}
+
+.fa-rotate-225 {
+  color: black;
+  -webkit-transform: rotate(225deg);
+  -moz-transform: rotate(225deg);
+  -ms-transform: rotate(225deg);
+  -o-transform: rotate(225deg);
+  transform: rotate(225deg);
+}

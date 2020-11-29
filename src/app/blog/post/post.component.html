@@ -2,44 +2,41 @@
   <app-not-found></app-not-found>
 </div>
 <div *ngIf="isPage">
-  <app-left-sidebar
+  <app-blog-left-sidebar
     [isEditingPost]="isEditingPost"
     [isEditingCategory]="isEditingCategory"
     [categoryContentsForm]="categoryContentsForm"
-  ></app-left-sidebar>
-  <div class="blog" style="background-color:#333333;">
-    <section class="post-section p-3 d-flex flex-column">
-      <form *ngIf="postContentsForm" [formGroup]="postContentsForm">
-        <div class="nav-item">
-          <Button
-            class="btn btn-sm btn-info"
-            *ngIf="authService.isSignedIn() && !isEditingPost"
-            (click)="clickPostEdit()"
-          >Edit Post</Button>
-          <Button
-            class="btn btn-sm btn-success"
-            *ngIf="authService.isSignedIn() && isEditingPost"
-          >Update</Button>
-          <Button
-            class="btn btn-sm btn-danger"
-            *ngIf="authService.isSignedIn() && isEditingPost"
-            (click)="clickPostEditCancel()"
-          >Cancel</Button>
-        </div>
-  
+  ></app-blog-left-sidebar>
+  <div class="blog-post">
+    <form *ngIf="postContentsForm" [formGroup]="postContentsForm">
+      <section class="post-showing-section">
+        <Button
+          class="btn btn-sm btn-info"
+          *ngIf="authService.isSignedIn() && !isEditingPost"
+          (click)="clickPostEdit()"
+        >Edit Post</Button>
+        <Button
+          class="btn btn-sm btn-success"
+          *ngIf="authService.isSignedIn() && isEditingPost"
+        >Update</Button>
+        <Button
+          class="btn btn-sm btn-danger"
+          *ngIf="authService.isSignedIn() && isEditingPost"
+          (click)="clickPostEditCancel()"
+        >Cancel</Button>
         <div *ngIf="!isEditingPost">
           <div class="form-row">
-            <div class="col-9" style="padding:0px">
+            <div class="col-9">
               <span
-                class="post-title-col post-link"
-                (click)="routerHelper.goToPost(params,postContentsForm.controls.id.value)"
+                class="post-title-col blog-link"
+                (click)="routerHelper.goToBlogPost(params,postContentsForm.controls.id.value)"
               >
                 {{postContentsForm.controls.postTitle.value}}
               </span>
-              <span style="color:white">|</span>
+              <span>| </span>
               <span
-                class="post-category-title-col post-link"
-                (click)="routerHelper.goToCategory(params,postContentsForm.controls.categoryId.value)"
+                class="post-title-category-col blog-link"
+                (click)="routerHelper.goToBlogCategory(params,postContentsForm.controls.categoryId.value)"
               >{{getCategoryTitle(postContentsForm.controls.categoryId.value)}}</span>
             </div>
             <div class="col-3">
@@ -54,14 +51,16 @@
             </div>
           </div>
         </div>
-  
-        <div class="form-row" *ngIf="isEditingPost">
-          <div class="col-6">
-            <input type="text" class="form-control blog-editarea" formControlName="postTitle"/>
-            <textarea class="form-control blog-editarea" rows="{{getPostMarkdownLines()}}" formControlName="postMarkdown"></textarea>
+      </section>
+
+      <section class="post-editing-section">
+        <div class="d-flex flex-wrap" *ngIf="isEditingPost">
+          <div class="post-edit-col">
+            <input type="text" class="form-control post-editarea" formControlName="postTitle"/>
+            <textarea class="form-control post-editarea" rows="{{getPostMarkdownLines()}}" formControlName="postMarkdown"></textarea>
           </div>
           
-          <div class="col-6">
+          <div class="post-show-col">
             <span
               class="post-title-col post-link"
             >{{postContentsForm.controls.postTitle.value}}</span>
@@ -69,8 +68,8 @@
             </markdown>
           </div>
         </div>
-      </form>
-    </section>
+      </section>
+    </form>
   </div>
   <app-comment
     *ngIf="params.postId"

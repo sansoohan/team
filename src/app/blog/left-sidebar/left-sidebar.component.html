@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary" id="sideNav">
   <!-- Collapse button -->
-  <div class="fixed-top" style="background-color: black;">
+  <div class="fixed-top">
     <button class="navbar-toggler nav-collapse-button fixed-top" type="button" data-toggle="collapse" data-target="#navbarSideCollapse" aria-controls="navbarSideCollapse" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>  
@@ -34,13 +34,13 @@
                   <i *ngIf="j==categoryContent.controls.deepCount.value-1" class="fa fa-chevron-up fa-rotate-225"></i>
                 </div>
                 <input *ngIf="isEditingCategory" type="text" class="form-control nav-link-edit col-8" formControlName="categoryTitle">
-                <a *ngIf="!isEditingCategory" class="nav-link col-8 category-link" (click)="routerHelper.goToCategory(params,categoryContent.controls.id.value)">
+                <a *ngIf="!isEditingCategory" class="nav-link col-8 blog-link" (click)="routerHelper.goToBlogCategory(params,categoryContent.controls.id.value)">
                   <i class="fa fa-caret-right"></i>  {{categoryContent.controls.categoryTitle.value}}
                 </a>
                 <div *ngFor="let n of dataTransferHelper.numberToArray(3 - categoryContent.controls.deepCount.value) ; let j=index" class="col-1"></div>
                 <div
                   *ngIf="formHelper.countChildContent(categoryContentsForm.controls.categoryContents['controls'],categoryContent)!==0"
-                  class="nav-link col-1 category-link"
+                  class="nav-link col-1 blog-link"
                   (click)="formHelper.toggleCollapse(categoryContentsForm.controls.categoryContents['controls'],categoryContent)"
                 >
                   <i *ngIf="categoryContent.controls.collapsed.value" class="fa fa-caret-up"></i>

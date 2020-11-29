@@ -13,7 +13,7 @@ import { DataTransferHelper } from 'src/app/helper/data-transefer.helper';
 // import 'moment/locale/de';
 
 @Component({
-  selector: 'app-prologue',
+  selector: 'app-blog-prologue',
   templateUrl: './prologue.component.html',
   styleUrls: ['../blog.component.css', './prologue.component.css']
 })
