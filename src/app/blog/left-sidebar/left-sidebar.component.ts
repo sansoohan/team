@@ -8,7 +8,7 @@ import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
-  selector: 'app-left-sidebar',
+  selector: 'app-blog-left-sidebar',
   templateUrl: './left-sidebar.component.html',
   styleUrls: ['../blog.component.css', './left-sidebar.component.css']
 })

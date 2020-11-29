@@ -8,6 +8,7 @@ import { PostComponent } from './post/post.component';
 import { CategoryComponent } from './category/category.component';
 import { LeftSidebarComponent } from './left-sidebar/left-sidebar.component';
 import { PrologueComponent } from './prologue/prologue.component';
+import { HeaderComponent } from './header/header.component';
 
 @NgModule({
   declarations: [
@@ -17,6 +18,7 @@ import { PrologueComponent } from './prologue/prologue.component';
     CommentComponent,
     LeftSidebarComponent,
     PrologueComponent,
+    HeaderComponent,
   ],
   imports: [
     CommonModule,

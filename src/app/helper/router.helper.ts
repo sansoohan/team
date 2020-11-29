@@ -9,16 +9,34 @@ export class RouterHelper {
     private router: Router,
   ) { }
 
-  goToCategory(params: any, categoryId: string): void {
+  goToProfile(params: any): void {
     this.router.onSameUrlNavigation = 'reload';
     const currentUser = JSON.parse(localStorage.currentUser || null);
     const queryUser = currentUser?.userName || currentUser?.uid || params?.userName;
-    this.router.navigate(['/blog', queryUser, 'categories', categoryId]).finally(() => {
+    this.router.navigate(['/profile', queryUser]).finally(() => {
       this.router.onSameUrlNavigation = 'ignore'; // Restore config after navigation completes
     });
   }
 
-  goToPost(params: any, postId: string): void {
+  goToBlogPrologue(params: any): void {
+    this.router.onSameUrlNavigation = 'reload';
+    const currentUser = JSON.parse(localStorage.currentUser || null);
+    const queryUser = currentUser?.userName || currentUser?.uid || params?.userName;
+    this.router.navigate(['/blog', queryUser]).finally(() => {
+      this.router.onSameUrlNavigation = 'ignore'; // Restore config after navigation completes
+    });
+  }
+
+  goToBlogCategory(params: any, categoryId: string): void {
+    this.router.onSameUrlNavigation = 'reload';
+    const currentUser = JSON.parse(localStorage.currentUser || null);
+    const queryUser = currentUser?.userName || currentUser?.uid || params?.userName;
+    this.router.navigate(['/blog', queryUser, 'category', categoryId]).finally(() => {
+      this.router.onSameUrlNavigation = 'ignore'; // Restore config after navigation completes
+    });
+  }
+
+  goToBlogPost(params: any, postId: string): void {
     this.router.onSameUrlNavigation = 'reload';
     const currentUser = JSON.parse(localStorage.currentUser || null);
     const queryUser = currentUser?.userName || currentUser?.uid || params?.userName;

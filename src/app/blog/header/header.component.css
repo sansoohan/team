@@ -1,0 +1,16 @@
+.top-nav-block{
+  height: 56px;
+  width: 100%;
+  background-color: #BD5D38;
+}
+
+.header-navbar {
+  margin-left: 80px;
+}
+
+
+@media (min-width: 992px) {
+  .header-navbar {
+    margin-left: 0px;
+  }
+}
