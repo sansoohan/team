@@ -1,4 +1,4 @@
-<section *ngIf="!isEditing" class="resume-section p-3 p-lg-5 d-flex d-column" id="about">
+<section *ngIf="!isEditing" class="profile-section p-3 p-lg-5 d-flex d-column" id="about">
   <div class="my-auto container-flow">
     <h1 class="mb-0">{{aboutContent.firstName}}
       <span class="text-primary">{{aboutContent.lastName}}</span>
@@ -22,7 +22,7 @@
   </div>
 </section>
 
-<section *ngIf="isEditing" class="resume-section p-3 p-lg-5 d-flex d-column" id="about" [formGroup]="profileForm">
+<section *ngIf="isEditing" class="profile-section p-3 p-lg-5 d-flex d-column" id="about" [formGroup]="profileForm">
   <div class="my-auto container" formGroupName="aboutContent">
     <div class="row">
       <div class="col-4">First Name</div>

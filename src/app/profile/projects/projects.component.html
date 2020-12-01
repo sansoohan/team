@@ -1,16 +1,16 @@
-<section class="resume-section p-3 p-lg-5 d-flex flex-column" id="projects">
+<section class="profile-section p-3 p-lg-5 d-flex flex-column" id="projects">
   <div class="my-auto">
     <h2 class="mb-5">Projects</h2>
     <div *ngIf="!isEditing">
-      <div *ngFor="let project of projectsContent.projects" class="resume-item d-flex flex-column flex-md-row mb-5">
-        <div class="resume-content mr-auto">
+      <div *ngFor="let project of projectsContent.projects" class="profile-item d-flex flex-column flex-md-row mb-5">
+        <div class="profile-content mr-auto">
           <h3 class="mb-0">{{project.organization}}</h3>
           <div class="subheading mb-3 mt-3">{{project.projectName}}</div>
           <div>Members: {{project.memberNum}}</div>
           <div>Position: {{project.position}}</div>
           <div *ngFor="let taskDescription of project.taskDescriptions; index as i">Task Description{{i+1}}: {{taskDescription}}</div>
         </div>
-        <div class="resume-date text-md-right">
+        <div class="profile-date text-md-right">
           <span class="text-primary">
             {{project.startedAt ? project.startedAt.toLocaleString('en-us',{month:'short', year:'numeric'}) : 'None'}}
              - 
