@@ -42,12 +42,9 @@ export class ProfileComponent implements OnInit {
   constructor(
     public profileService: ProfileService,
     public authService: AuthService,
-    private domSanitizer: DomSanitizer,
     private route: ActivatedRoute,
-    private router: Router,
     private storage: AngularFireStorage,
     private formHelper: FormHelper,
-    private dataTranseferHelper: DataTransferHelper,
     public routerHelper: RouterHelper,
   ) {
     this.paramSub = this.route.params.subscribe(params => {
@@ -60,7 +57,7 @@ export class ProfileComponent implements OnInit {
       this.params = params;
       this.profileContentsObserver = this.profileService.getProfileContentsObserver({params});
       this.profileSub = this.profileContentsObserver.subscribe(profileContents => {
-        this.profileContents = this.dataTranseferHelper.replaceToDateRecursively(profileContents);
+        this.profileContents = profileContents;
         if (this.profileContents.length === 0 || !this.profileContents){
           this.isPage = false;
           return;
@@ -74,33 +71,13 @@ export class ProfileComponent implements OnInit {
         }
 
         this.routerHelper.scrollToProfile(this.params, 'about');
-
         this.profileForm = this.formHelper.buildFormRecursively(this.profileContents[0]);
-
-        if (this.profileContents[0].profileImageSrc !== ''){
-          this.defaultSrc = this.profileContents[0].profileImageSrc;
-        }
-        else {
-          const hash = this.profileContents[0].ownerId;
-          const options = {
-            // foreground: [0, 0, 0, 255],               // rgba black
-            background: [230, 230, 230, 230],         // rgba white
-            margin: 0.2,                              // 20% margin
-            size: 420,                                // 420px square
-            format: 'png'                             // use SVG instead of PNG
-          };
-          const data = new Identicon(hash, options).toString();
-          this.defaultSrc = this.domSanitizer.bypassSecurityTrustUrl(`data:image/png;base64,${data}`);
-        }
-
-        setTimeout(() => {
-          this.isLoading = false;
-        }, 500);
+        this.isLoading = false;
       });
     });
   }
 
-  async uploadProfileImageSrc(profileContent) {
+  async handleClickStartUploadProfileImageSrc() {
     await Swal.fire({
       title: 'Select Your Profile Image',
       input: 'file',
@@ -126,8 +103,8 @@ export class ProfileComponent implements OnInit {
         task
         .then(() => {
           fileRef.getDownloadURL().subscribe(imageUrl => {
-            profileContent.profileImageSrc = imageUrl;
-            this.profileService.updateProfile(profileContent, this.profileContentsObserver);
+            this.profileForm.controls.profileImageSrc.setValue(imageUrl);
+            this.profileService.updateProfile(this.profileForm.value, this.profileContentsObserver);
             Swal.fire({
               icon: 'success',
               title: 'Your Profile Image is uploaded!',
@@ -140,8 +117,8 @@ export class ProfileComponent implements OnInit {
       }
       else if (data.dismiss === Swal.DismissReason.cancel) {
         fileRef.delete();
-        profileContent.profileImageSrc = null;
-        this.profileService.updateProfile(profileContent, this.profileContentsObserver);
+        this.profileForm.controls.profileImageSrc.setValue(null);
+        this.profileService.updateProfile(this.profileForm.value, this.profileContentsObserver);
         Swal.fire({
           icon: 'success',
           title: 'Your Profile Image is uploaded!',
@@ -152,13 +129,13 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  addAdditionalProfile(){
+  handleAddAdditionalProfile(){
     this.profileForm?.controls.additaionProfilesContent.push(
       this.formHelper.buildFormRecursively(this.newAdditaionProfileContent)
     );
   }
 
-  removeAdditionalProfile(index){
+  handleRemoveAdditionalProfile(index){
     const swalWithBootstrapButtons = Swal.mixin({
       customClass: {
         confirmButton: 'btn btn-success',
@@ -185,11 +162,15 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  clickEdit() {
+  handleClickEditProfileStart() {
     this.isEditing = true;
   }
 
-  async clickEditUpdate(profileContent: ProfileContent){
+  handleClickEditProfileAbort() {
+    this.isEditing = false;
+  }
+
+  async handleClickEditProfileUpdate() {
     if (!this.updateOk){
       Swal.fire({
         icon: 'warning',
@@ -239,7 +220,7 @@ export class ProfileComponent implements OnInit {
     }).then((result) => {
       if (result.value) {
         if (this.isEditing){
-          this.profileService.updateProfile(profileContent, this.profileContentsObserver);
+          this.profileService.updateProfile(this.profileForm.value, this.profileContentsObserver);
         }
         this.isEditing = false;
       }
@@ -247,10 +228,6 @@ export class ProfileComponent implements OnInit {
 
       }
     });
-  }
-
-  clickEditCancel(){
-    this.isEditing = false;
   }
 
   ngOnInit(): void {

@@ -1,15 +1,16 @@
-.top-nav-block{
+.top-nav-block {
   height: 56px;
   width: 100%;
   background-color: #BD5D38;
+  z-index: 100;
 }
 
-.app-navbar {
+.header-navbar {
   margin-left: 80px;
 }
 
 @media (min-width: 992px) {
-  .app-navbar {
+  .header-navbar {
     margin-left: 0px;
   }
 }

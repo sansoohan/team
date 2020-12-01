@@ -1,7 +1,7 @@
+<app-header></app-header>
 <div *ngIf="!isPage">
   <app-not-found></app-not-found>
 </div>
-<app-header></app-header>
 <div *ngIf="isPage" class="blog-background">
   <app-blog-post
     *ngIf="params.postId"

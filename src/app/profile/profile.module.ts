@@ -15,6 +15,7 @@ import { NotFoundComponent } from '../not-found/not-found.component';
 import { PageLoadingComponent } from '../page-loading/page-loading.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HeaderComponent } from './header/header.component';
+import { LeftSidebarComponent } from './left-sidebar/left-sidebar.component';
 
 @NgModule({
   declarations: [
@@ -27,6 +28,7 @@ import { HeaderComponent } from './header/header.component';
     AdditionalProfilesComponent,
     NotFoundComponent,
     PageLoadingComponent,
+    LeftSidebarComponent,
     HeaderComponent
   ],
   imports: [
