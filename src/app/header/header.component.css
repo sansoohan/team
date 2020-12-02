@@ -1,3 +1,12 @@
+.header-link {
+  opacity: 0.5;
+}
+
+.header-link:hover {
+  cursor: pointer;
+  opacity: 1;
+}
+
 .top-nav-block{
   height: 56px;
   width: 100%;
@@ -6,6 +15,7 @@
 
 .header-navbar {
   margin-left: 80px;
+  position: fixed;
 }
 
 @media (min-width: 992px) {
@@ -13,3 +23,11 @@
     margin-left: 0px;
   }
 }
+
+.search-navbar {
+  top: 0;
+  right: 0;
+  position: fixed;
+  z-index: 1050;
+}
+

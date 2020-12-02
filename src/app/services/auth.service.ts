@@ -7,7 +7,6 @@ import { ProfileService } from './profile.service';
   providedIn: 'root'
 })
 export class AuthService {
-
   constructor(
     private router: Router,
     private message: MessageService,
@@ -76,5 +75,10 @@ export class AuthService {
     else{
       this.signUpSuccess();
     }
+  }
+
+  onSignOut(): void{
+    localStorage.removeItem('currentUser');
+    this.router.navigate(['/sign-in']);
   }
 }

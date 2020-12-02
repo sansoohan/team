@@ -1,0 +1,64 @@
+<div class="top-nav-block"></div>
+
+<nav class="header-navbar navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTopCollapse" aria-controls="navbarTopCollapse" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarTopCollapse">
+    <a *ngIf="!authService.isSignedIn()" class="navbar-brand header-link" href="/">Startup</a>
+    <a
+      *ngIf="authService.isSignedIn()"
+      class="navbar-brand header-link"
+      (click)="routerHelper.goToProfile(params)"
+    >Profile</a>
+    <a
+      *ngIf="authService.isSignedIn()"
+      class="navbar-brand header-link"
+      (click)="routerHelper.goToBlogPrologue(params)"
+    >Blog</a>
+  </div>
+</nav>
+
+<nav class="search-navbar navbar navbar-expand-lg navbar-dark bg-dark">
+  <form>
+    <div class="input-group">
+      <input
+        [value]="searchValue"
+        (keyup)="changeSearch($event)"
+        class="form-control"
+        type="search"
+        list="staticUserIds"
+        placeholder="Search"
+        aria-label="Search"
+      >
+      <button
+        type="button"
+        class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split mr-2"
+        data-toggle="dropdown"
+        aria-haspopup="true"
+        aria-expanded="false"
+      ></button>
+      <div class="dropdown-menu">
+        <a class="dropdown-item" href="#">'s Profile</a>
+        <a class="dropdown-item" href="#">'s Blog</a>
+      </div>
+      <datalist id="staticUserIds">
+        <option *ngFor="let result of results | async" [value]="result.aboutContent.email"><i class="fa fa-car"></i>({{result.userName}})</option>
+      </datalist>
+
+      <ngx-auth-firebaseui-avatar
+        *ngIf="authService.isSignedIn()"
+        (onSignOut)="authService.onSignOut()"
+        [canEditAccount]="true"
+      ></ngx-auth-firebaseui-avatar>
+
+      <button
+        *ngIf="!authService.isSignedIn()"
+        routerLink="/sign-in"
+        routerLinkActive="active"
+        class="btn btn-secondary my-2 my-sm-0"
+      >Sign In</button>
+    </div>
+  </form>
+</nav>
