@@ -41,7 +41,7 @@ import { MatChipsModule } from '@angular/material/chips';
 
 import { MarkdownModule } from 'ngx-markdown';
 import { BlogModule } from './blog/blog.module';
-import { HeaderComponent } from './main/header/header.component';
+import { HeaderComponent } from './header/header.component';
 
 // See the Moment.js docs for the meaning of these formats:
 // https://momentjs.com/docs/#/displaying/format/

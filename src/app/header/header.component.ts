@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Router, ActivatedRoute } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from '../services/auth.service';
 import * as firebase from 'firebase';
 import { Subscription } from 'rxjs';
 import { RouterHelper } from 'src/app/helper/router.helper';

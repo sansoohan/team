@@ -14,7 +14,6 @@ import { InputAddRemoveModule } from '../modules/user-form/input-add-remove/inpu
 import { NotFoundComponent } from '../not-found/not-found.component';
 import { PageLoadingComponent } from '../page-loading/page-loading.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { HeaderComponent } from './header/header.component';
 import { LeftSidebarComponent } from './left-sidebar/left-sidebar.component';
 
 @NgModule({
@@ -29,7 +28,6 @@ import { LeftSidebarComponent } from './left-sidebar/left-sidebar.component';
     NotFoundComponent,
     PageLoadingComponent,
     LeftSidebarComponent,
-    HeaderComponent
   ],
   imports: [
     CommonModule,
