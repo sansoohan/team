@@ -26,25 +26,37 @@
       <input
         [value]="searchValue"
         (keyup)="changeSearch($event)"
-        class="form-control"
+        (change)="changeSearch($event)"
+        class="form-control mr-2"
         type="search"
         list="staticUserIds"
         placeholder="Search"
         aria-label="Search"
       >
-      <button
-        type="button"
-        class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split mr-2"
-        data-toggle="dropdown"
-        aria-haspopup="true"
-        aria-expanded="false"
-      ></button>
-      <div class="dropdown-menu">
-        <a class="dropdown-item" href="#">'s Profile</a>
-        <a class="dropdown-item" href="#">'s Blog</a>
+
+      <div [class]="isSearchValueSelected?'dropdown-menu show':'dropdown-menu'">
+        <a
+          class="dropdown-item"
+          (click)="routerHelper.goToProfile({userName:searchValue})"
+        >{{searchValue}}'s Profile</a>
+        <a
+          class="dropdown-item"
+          (click)="routerHelper.goToBlogPrologue({userName:searchValue})"
+        >{{searchValue}}'s Blog</a>
+        <a
+          class="dropdown-item"
+          (click)="closeLinkDropDown()"
+        >Close</a>
       </div>
       <datalist id="staticUserIds">
-        <option *ngFor="let result of results | async" [value]="result.aboutContent.email"><i class="fa fa-car"></i>({{result.userName}})</option>
+        <option
+          *ngFor="let result of results | async"
+          [value]="result.aboutContent.userName"
+        >
+          <i
+            class="fa fa-car"
+          ></i>({{result.aboutContent.email}})
+        </option>
       </datalist>
 
       <ngx-auth-firebaseui-avatar
