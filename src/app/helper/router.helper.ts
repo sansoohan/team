@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { ViewportScroller } from '@angular/common';
 
 @Injectable({
   providedIn: 'root'
@@ -7,6 +8,7 @@ import { Router } from '@angular/router';
 export class RouterHelper {
   constructor(
     private router: Router,
+    private viewportScroller: ViewportScroller,
   ) { }
 
   goToProfile(params: any): void {
@@ -48,8 +50,10 @@ export class RouterHelper {
     this.router.onSameUrlNavigation = 'reload';
     const currentUser = JSON.parse(localStorage.currentUser || null);
     const queryUser = currentUser?.userName || currentUser?.uid || params?.userName;
-    this.router.navigate(['/profile', queryUser], { fragment: profileTitle }).finally(() => {
-      this.router.onSameUrlNavigation = 'ignore'; // Restore config after navigation completes
-    });
+    this.viewportScroller.scrollToAnchor(profileTitle);
+
+    // this.router.navigate(['/profile', queryUser], { fragment: profileTitle }).finally(() => {
+    //   this.router.onSameUrlNavigation = 'ignore'; // Restore config after navigation completes
+    // });
   }
 }
