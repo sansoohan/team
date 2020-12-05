@@ -1,10 +1,8 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
-import { profileDefault } from '../profile/profile.default';
 import { ToastHelper } from '../helper/toast.helper';
 import { BlogContent } from '../blog/blog.content';
-import * as firebase from 'firebase';
 import { PostContent } from '../blog/post/post.content';
 import { CategoryContent } from '../blog/category/category.content';
 import { CommentContent } from '../blog/post/comment/comment.content';
@@ -93,35 +91,20 @@ export class BlogService {
     return categoryContentsObserver;
   }
 
-  async updateBlog(updatedBlogContent: BlogContent): Promise<void> {
-    return this.firestore.doc(`blogs/${updatedBlogContent.id}`).update(updatedBlogContent);
-  }
-  async updateCategory(blogId: string, updatedCategoryContent: CategoryContent): Promise<void> {
-    return this.firestore
-    .doc(`blogs/${blogId}/comments/${updatedCategoryContent.id}`)
-    .update(updatedCategoryContent);
-  }
-  async updatePost(blogId: string, updatedPostContent: PostContent): Promise<void> {
-    return this.firestore
-    .doc(`blogs/${blogId}/posts/${updatedPostContent.id}`)
-    .update(updatedPostContent);
-  }
-  async updateComment(blogId: string, updatedCommentContent: CommentContent): Promise<void> {
-    return this.firestore
-    .doc(`blogs/${blogId}/comments/${updatedCommentContent.id}`)
-    .update(updatedCommentContent);
+  async create(path: string, contentForm: any): Promise<void> {
+    console.log(path, contentForm);
+    return this.firestore.collection(path).add(contentForm.value)
+    .then(async (collection) => {
+      console.log(collection);
+      contentForm.controls.id.setValue(collection.id);
+      collection.update(contentForm.value);
+    });
   }
 
-  deleteBlog(blogId): void {
-    this.firestore.doc(`blogs/${blogId}`).delete();
+  async update(path: string, updated: any): Promise<void> {
+    return this.firestore.doc(path).update(updated);
   }
-  deleteCategory(blogId, categoryId): void {
-    this.firestore.doc(`blogs/${blogId}/categories/${categoryId}`).delete();
-  }
-  deletePost(blogId, postId): void {
-    this.firestore.doc(`blogs/${blogId}/posts/${postId}`).delete();
-  }
-  deleteComment(blogId, commentId): void {
-    this.firestore.doc(`blogs/${blogId}/comments/${commentId}`).delete();
+  async delete(path: string): Promise<void> {
+    return this.firestore.doc(path).delete();
   }
 }

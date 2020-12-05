@@ -10,6 +10,7 @@ export class CategoryContent {
   postCount: number;
   hidden: boolean;
   constructor(
+    id: string = '',
     blogId: string = null,
     categoryNumber: number = null,
     categoryTitle: string = '',
@@ -20,6 +21,7 @@ export class CategoryContent {
     postCount: number = 0,
     hidden: boolean = false,
   ){
+    this.id = id;
     this.blogId = blogId;
     this.categoryNumber = categoryNumber;
     this.categoryTitle = categoryTitle;

@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { PostContent } from './post.content';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { BlogService } from 'src/app/services/blog.service';
 import { BlogContent } from '../blog.content';
@@ -9,7 +9,9 @@ import { AuthService } from 'src/app/services/auth.service';
 import { RouterHelper } from 'src/app/helper/router.helper';
 import { FormHelper } from 'src/app/helper/form.helper';
 import { DataTransferHelper } from 'src/app/helper/data-transefer.helper';
-import { AbstractControl } from '@angular/forms';
+import { ProfileService } from 'src/app/services/profile.service';
+import { ToastHelper } from 'src/app/helper/toast.helper';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-blog-post',
@@ -20,6 +22,7 @@ export class PostComponent implements OnInit {
   @Output() goToPost: EventEmitter<string> = new EventEmitter();
   @Output() goToCategory: EventEmitter<string> = new EventEmitter();
   @Input() isEditingPost;
+  @Input() isCreatingPost;
 
   categoryContentsObserver: Observable<CategoryContent[]>;
   categoryContents: CategoryContent[];
@@ -32,6 +35,7 @@ export class PostComponent implements OnInit {
   postContentsSub: Subscription;
   postContentsForm: any;
   isShowingPostContents: boolean;
+  hasNullPostTitleError: boolean;
 
   postListObserver: Observable<PostContent[]>;
   postList: PostContent[];
@@ -46,6 +50,8 @@ export class PostComponent implements OnInit {
   params: any;
 
   constructor(
+    public profileService: ProfileService,
+    private toastHelper: ToastHelper,
     private route: ActivatedRoute,
     private blogService: BlogService,
     public authService: AuthService,
@@ -54,6 +60,9 @@ export class PostComponent implements OnInit {
     public dataTransferHelper: DataTransferHelper,
   ) {
     this.paramSub = this.route.params.subscribe(params => {
+      this.postContents = [new PostContent()];
+      this.postContentsForm = this.formHelper.buildFormRecursively(this.postContents[0]);
+      this.hasNullPostTitleError = false;
       this.isShowingPostContents = false;
       this.isEditingCategory = false;
       this.params = params;
@@ -103,9 +112,9 @@ export class PostComponent implements OnInit {
   private _blogContents: Array<BlogContent>;
 
   getCategoryTitle(categoryId: string): string {
-    const category = this.categoryContentsForm.controls.categoryContents.controls.find((categoryContent) =>
+    const category = this.categoryContentsForm?.controls.categoryContents.controls.find((categoryContent) =>
       categoryContent.value.id === categoryId);
-    return category.value.categoryTitle;
+    return category?.value.categoryTitle;
   }
 
   clickPostEdit() {
@@ -117,7 +126,72 @@ export class PostComponent implements OnInit {
   }
 
   getPostMarkdownLines(){
-    return this.postContentsForm?.controls?.postMarkdown?.value?.match(/\n/g).length + 2 || 3;
+    return this.postContentsForm?.controls?.postMarkdown?.value?.match(/\n/g)?.length + 2 || 3;
+  }
+
+  handleClickEditPostCreateUpdate() {
+    if (this.isEditingPost){
+      this.hasNullPostTitleError = false;
+      if (!this.postContentsForm.value.postTitle){
+        this.hasNullPostTitleError = true;
+        return;
+      }
+
+      this.postContentsForm.controls.categoryId.setValue(this.params.categoryId);
+      this.postContentsForm.controls.ownerId.setValue(JSON.parse(localStorage.currentUser).uid);
+      this.blogService
+      .create(
+        `blogs/${this.blogContents[0].id}/posts`,
+        this.postContentsForm
+      )
+      .then(() => {
+        this.toastHelper.showSuccess('Post Update', 'Success!');
+        this.routerHelper.goToBlogPost(this.params, this.postContentsForm.value.id);
+      })
+      .catch(e => {
+        this.toastHelper.showWarning('Post Update Failed.', e);
+      });
+    }
+  }
+
+  handleClickEditPostCreateCancel() {
+    this.routerHelper.goToBlogCategory(this.params, this.params.categoryId);
+  }
+
+  async handleClickEditPostUpdate() {
+    if (this.isEditingPost){
+      this.blogService
+      .update(
+        `blogs/${this.blogContents[0].id}/posts/${this.postContentsForm.value.id}`,
+        this.postContentsForm.value
+      )
+      .then(() => {
+        this.toastHelper.showSuccess('Post Update', 'Success!');
+      })
+      .catch(e => {
+        this.toastHelper.showWarning('Post Update Failed.', e);
+      });
+    }
+    this.isEditingPost = false;
+  }
+
+  async handleClickEditPostDelete() {
+    this.toastHelper.askYesNo('Remove Profile Category', 'Are you sure?').then((result) => {
+      if (result.value) {
+        this.blogService.delete(
+          `blogs/${this.blogContents[0].id}/posts/${this.postContentsForm.value.id}`,
+        )
+        .then(() => {
+          this.toastHelper.showSuccess('Post Delete', 'OK');
+          this.routerHelper.goToBlogCategory(this.params, this.postContentsForm.value.categoryId);
+        })
+        .catch(e => {
+          this.toastHelper.showWarning('Post Delete Failed.', e);
+        });
+      }
+      else if (result.dismiss === Swal.DismissReason.cancel) {
+      }
+    });
   }
 
   ngOnInit() {

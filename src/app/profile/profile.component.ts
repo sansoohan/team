@@ -1,18 +1,12 @@
-import { Component, OnInit, OnDestroy  } from '@angular/core';
-import * as firebase from 'firebase/app';
-import { Observable, Subscription } from 'rxjs';
-import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
 import { ProfileService } from '../services/profile.service';
-import Identicon from 'identicon.js';
-import { DomSanitizer } from '@angular/platform-browser';
 import { AuthService } from '../services/auth.service';
 import { ProfileContent } from './profile.content';
 import Swal from 'sweetalert2';
-import { AngularFireStorage } from '@angular/fire/storage';
-import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
 import { AdditaionProfileContent } from './additional-profiles/additional-profile.content';
 import { FormHelper } from '../helper/form.helper';
-import { DataTransferHelper } from '../helper/data-transefer.helper';
 import { RouterHelper } from '../helper/router.helper';
 import { ToastHelper } from '../helper/toast.helper';
 
@@ -83,24 +77,7 @@ export class ProfileComponent implements OnInit {
   }
 
   handleRemoveAdditionalProfile(index){
-    const swalWithBootstrapButtons = Swal.mixin({
-      customClass: {
-        confirmButton: 'btn btn-success',
-        cancelButton: 'btn btn-danger'
-      },
-      buttonsStyling: false
-    });
-
-    swalWithBootstrapButtons.fire({
-      title: 'Are you sure?',
-      // tslint:disable-next-line:quotemark
-      text: "Remove this data",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'No, cancel!',
-      reverseButtons: true
-    }).then((result) => {
+    this.toastHelper.askYesNo('Remove Profile Category', 'Are you sure?').then((result) => {
       if (result.value) {
         this.profileForm?.controls.additaionProfilesContent.removeAt(index);
       }
@@ -131,7 +108,10 @@ export class ProfileComponent implements OnInit {
       if (result.value) {
         if (this.isEditing){
           this.profileService
-          .updateProfile(this.profileForm.value)
+          .update(
+            `profiles/${this.profileForm.value.id}`,
+            this.profileForm.value
+          )
           .then(() => {
             this.toastHelper.showSuccess('Profile Update', 'Success!');
           })

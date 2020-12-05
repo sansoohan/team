@@ -1,21 +1,39 @@
 <div *ngIf=!isPage>
   <app-not-found></app-not-found>
 </div>
-<div>
+
+<app-blog-category-new-post
+  *ngIf="isCreatingPost"
+  [isEditingPost]="true"
+  [isCreatingPost]="true"
+  [blogContents]="blogContents"
+></app-blog-category-new-post>
+
+<div *ngIf="!isCreatingPost">
   <app-blog-left-sidebar
     [isEditingPost]="isEditingPost"
     [isEditingCategory]="isEditingCategory"
     [categoryContentsForm]="categoryContentsForm"
   ></app-blog-left-sidebar>
-  <div class="blog-category" *ngIf="!isEditingCategory && isShowingPostList">
+  <div
+    *ngIf="!isEditingCategory && isShowingPostList"
+    class="blog-category"
+  >
     <form *ngIf="postListForm" [formGroup]="postListForm">
       <div formArrayName="postList">
         <section class="container category-section">
           <div class="row category-title-row">
-            <span class="col-12 category-title-col">
+            <span class="col-8 category-title-col">
               {{selectedCategory.value.categoryTitle}}
               ({{selectedCategory.value.postCount + countChildPost()}})
             </span>
+            <div style="margin-left:auto;">
+              <span
+                class="btn btn-sm btn-info"
+                *ngIf="authService.isSignedIn() && !isEditingPost"
+                (click)="routerHelper.goToBlogCategoryNewPost(params,params.categoryId)"
+              >Create New Post</span>
+            </div>
           </div>
           <div class="row category-top-row">
             <span class="col-6 category-top-col">Title</span>

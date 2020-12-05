@@ -38,14 +38,37 @@ section.post-editing-section {
   padding-bottom: 0.3rem;
 }
 
-.post-title-col {
+.post-show-title-col {
   margin: 0;
   padding: 0;
   font-size: 1.5rem;
   color: yellow;
 }
 
-.post-title-category-col {
+.post-show-title-date {
+  text-align:right;
+  padding-top:0.7rem;
+}
+
+.post-edit-title-col-null-error {  
+  color: red;
+}
+
+.post-edit-title-col {
+  margin: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 1.5rem;
+  color: yellow;
+  background-color: #222222;
+}
+
+.post-edit-content-col {
+  margin: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: #222222;
+}
+
+.post-show-title-category-col {
   font-size: 0.8rem;
   color: grey;
 }
@@ -54,7 +77,7 @@ section.post-editing-section {
   color: white;
   font-size: 0.8rem;
   border: solid #222222;
-  background-color: #222222; 
+  background-color: #222222;
   margin-top: 10px;
 }
 
@@ -63,7 +86,7 @@ section.post-editing-section {
   padding-right: 1rem;
 }
 
-.post-show-col {
+.post-edit-preview-col {
   width: 100%;
 }
 
@@ -73,7 +96,7 @@ section.post-editing-section {
     padding-right: 1rem;
   }
   
-  .post-show-col {
+  .post-edit-preview-col {
     width: 50%;
   }
 }

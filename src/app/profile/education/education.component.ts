@@ -1,9 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { FormControl } from '@angular/forms';
 import { EducationsContent, EducationContent } from './educations.content';
-
-import * as moment from 'moment';
-// import 'moment/locale/de';
 
 @Component({
   selector: 'app-education',
@@ -27,10 +23,5 @@ export class EducationComponent implements OnInit {
 
   ngOnInit() {
 
-  }
-
-  onChange(event) {
-    // console.log(event);
-    // console.warn(this.selectedYearAsText, this.selectedMonthAsText, `(month index: ${this.selectedMonthIndex})`)
   }
 }

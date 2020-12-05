@@ -12,6 +12,7 @@ export class CommentContent {
   collapsed: boolean;
   deepCount?: number;
   hidden: boolean;
+  ownerId: string;
   constructor(
     postId: string = null,
     writerId: string = '',
@@ -25,6 +26,7 @@ export class CommentContent {
     collapsed: boolean = false,
     deepCount: number = null,
     hidden: boolean = false,
+    ownerId: string = '',
   ){
     this.postId = postId;
     this.writerId = writerId;
@@ -38,5 +40,6 @@ export class CommentContent {
     this.collapsed = collapsed;
     this.deepCount = deepCount;
     this.hidden = hidden;
+    this.ownerId = ownerId;
   }
 }

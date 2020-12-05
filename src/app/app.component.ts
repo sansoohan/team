@@ -2,7 +2,8 @@ import { Component } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { AuthService } from './services/auth.service';
-import * as firebase from 'firebase';
+import * as firebase from 'firebase/app';
+import FieldPath = firebase.firestore.FieldPath;
 
 @Component({
   selector: 'app-root',
@@ -40,7 +41,7 @@ export class AppComponent {
       }
       else{
         this.results = this.firestore.collection('profiles', ref => ref
-        .orderBy(new firebase.firestore.FieldPath('aboutContent', 'email'))
+        .orderBy(new FieldPath('aboutContent', 'email'))
         .limit(10)
         .startAt(this.searchValue)
         .endAt(this.searchValue + '\uf8ff'))

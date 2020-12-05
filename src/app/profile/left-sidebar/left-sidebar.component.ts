@@ -8,7 +8,6 @@ import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import Identicon from 'identicon.js';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { ProfileComponent } from '../profile.component';
 import { ProfileContent } from '../profile.content';
 import Swal from 'sweetalert2';
 import { ProfileService } from 'src/app/services/profile.service';
