@@ -18,5 +18,4 @@ export class AdditionalProfilesComponent implements OnInit {
   ngOnInit() {
 
   }
-
 }

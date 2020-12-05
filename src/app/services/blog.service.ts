@@ -1,10 +1,8 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
-import { profileDefault } from '../profile/profile.default';
 import { ToastHelper } from '../helper/toast.helper';
 import { BlogContent } from '../blog/blog.content';
-import * as firebase from 'firebase';
 import { PostContent } from '../blog/post/post.content';
 import { CategoryContent } from '../blog/category/category.content';
 import { CommentContent } from '../blog/post/comment/comment.content';

@@ -4,8 +4,9 @@ import { Observable } from 'rxjs';
 import { profileDefault } from '../profile/profile.default';
 import { ToastHelper } from '../helper/toast.helper';
 import { ProfileContent } from '../profile/profile.content';
-import * as firebase from 'firebase';
 import { AngularFireStorage } from '@angular/fire/storage';
+import * as firebase from 'firebase/app';
+import FieldPath = firebase.firestore.FieldPath;
 
 @Injectable({
   providedIn: 'root'
@@ -53,7 +54,7 @@ export class ProfileService {
     let userEmailCollisionObserver: Observable<ProfileContent[]>;
     userEmailCollisionObserver = this.firestore
     .collection<ProfileContent>('profiles', ref => ref
-    .where(new firebase.firestore.FieldPath('aboutContent', 'email'), '==', userEmail))
+    .where(new FieldPath('aboutContent', 'email'), '==', userEmail))
     .valueChanges();
     return userEmailCollisionObserver;
   }
@@ -62,7 +63,7 @@ export class ProfileService {
     let userNameCollisionObserver: Observable<ProfileContent[]>;
     userNameCollisionObserver = this.firestore
     .collection<ProfileContent>('profiles', ref => ref
-    .where(new firebase.firestore.FieldPath('aboutContent', 'userName'), '==', userName))
+    .where(new FieldPath('aboutContent', 'userName'), '==', userName))
     .valueChanges();
     return userNameCollisionObserver;
   }
@@ -74,7 +75,7 @@ export class ProfileService {
     if (queryUserName){
       profileContentsObserver = this.firestore
       .collection<ProfileContent>('profiles', ref => ref
-      .where(new firebase.firestore.FieldPath('aboutContent', 'userName'), '==', queryUserName))
+      .where(new FieldPath('aboutContent', 'userName'), '==', queryUserName))
       .valueChanges();
     }
     else if (currentUser?.uid){

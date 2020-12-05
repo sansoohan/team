@@ -18,5 +18,4 @@ export class InterestsComponent implements OnInit {
 
   ngOnInit() {
   }
-
 }
