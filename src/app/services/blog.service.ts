@@ -20,7 +20,7 @@ export class BlogService {
 
   constructor(private firestore: AngularFirestore, private toast: ToastHelper) { }
 
-  updateBlog(updatedBlogContent: BlogContent, blogContentsObserver: Observable<BlogContent[]>) {
+  updateBlog(updatedBlogContent: BlogContent): void {
     this.firestore.collection('profiles').doc(updatedBlogContent.id)
     .update(updatedBlogContent)
     .then(() => {
