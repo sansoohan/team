@@ -6,7 +6,7 @@ import SweetAlertIcon from 'sweetalert2';
   providedIn: 'root'
 })
 
-export class MessageService {
+export class ToastHelper {
   private message: string;
 
   constructor() { }

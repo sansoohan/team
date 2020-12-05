@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-import { MessageService } from '../services/message.service';
 
 @Component({
   selector: 'app-sign-in',
@@ -13,7 +12,6 @@ export class SignInComponent implements OnInit {
   // tslint:disable-next-line:no-shadowed-variable
   constructor(
     private router: Router,
-    private message: MessageService,
     public authService: AuthService
   ) {
     if (this.authService.isSignedIn()){
