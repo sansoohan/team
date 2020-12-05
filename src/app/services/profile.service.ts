@@ -5,6 +5,7 @@ import { profileDefault } from '../profile/profile.default';
 import { ToastHelper } from '../helper/toast.helper';
 import { ProfileContent } from '../profile/profile.content';
 import * as firebase from 'firebase';
+import { AngularFireStorage } from '@angular/fire/storage';
 
 @Injectable({
   providedIn: 'root'
@@ -12,19 +13,11 @@ import * as firebase from 'firebase';
 export class ProfileService {
   profileUpdateState: string = null;
 
-  constructor(private firestore: AngularFirestore, private toast: ToastHelper) { }
-
-  updateProfile(updatedProfileContent: ProfileContent, profileContentsObserver: Observable<ProfileContent[]>) {
-    this.firestore.collection('profiles').doc(updatedProfileContent.id)
-    .update(updatedProfileContent)
-    .then(() => {
-      this.toast.showSuccess('Profile Update', 'Success!');
-    })
-    .catch(e => {
-      console.error(e);
-      this.toast.showWarning('Profile Update Failed.', e);
-    });
-  }
+  constructor(
+    private firestore: AngularFirestore,
+    private toastHelper: ToastHelper,
+    private storage: AngularFireStorage,
+  ) { }
 
   createNewProfile(): void {
     if (this.profileUpdateState !== 'deleteProfile'){
@@ -46,7 +39,7 @@ export class ProfileService {
 
       this.getProfileContentsObserver({}).subscribe(profileContents => {
         if (localStorage.currentUser && profileContents.length === 0){
-          this.firestore.collection('profiles').add(profileDefault)
+          this.firestore.collection<ProfileContent>('profiles').add(profileDefault)
           .then(doc => {
             profileDefault.id = doc.id;
             doc.update(profileDefault);
@@ -91,6 +84,40 @@ export class ProfileService {
     }
 
     return profileContentsObserver;
+  }
+
+  async uploadProfileImage(file: File, profileContent: ProfileContent) {
+    const filePath = `profile/${JSON.parse(localStorage.currentUser).uid}/profileImage/${file.name}`;
+    const MB = 1024 * 1024;
+    if (file.size > 4 * MB) {
+      this.toastHelper.showError('Profile Image', 'Please Upload under 4MB');
+      return;
+    }
+
+    const fileRef = this.storage.ref(filePath);
+    await this.storage.upload(filePath, file);
+    const fileRefSubscribe = fileRef.getDownloadURL().subscribe(imageUrl => {
+      profileContent.profileImageSrc = imageUrl;
+      this.updateProfile(profileContent);
+      this.toastHelper.showSuccess('Profile Image', 'Your Profile Image is uploaded!');
+      fileRefSubscribe.unsubscribe();
+    });
+  }
+
+  async removeProfileImage(profileContent: ProfileContent) {
+    const dirPath = `profile/${JSON.parse(localStorage.currentUser).uid}/profileImage`;
+    const dirRef = this.storage.ref(dirPath);
+    const dirRefSubscribe = dirRef.listAll().subscribe(dir => {
+      dir.items.forEach(item => item.delete());
+      profileContent.profileImageSrc = '';
+      this.updateProfile(profileContent);
+      this.toastHelper.showInfo('Profile Image', 'Your Profile Image is removed!');
+      dirRefSubscribe.unsubscribe();
+    });
+  }
+
+  async updateProfile(updatedProfileContent: ProfileContent): Promise<void> {
+    return this.firestore.doc(`profiles/${updatedProfileContent.id}`).update(updatedProfileContent);
   }
 
   deleteProfile(updatedProfileContent): void {

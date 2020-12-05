@@ -14,6 +14,7 @@ import { AdditaionProfileContent } from './additional-profiles/additional-profil
 import { FormHelper } from '../helper/form.helper';
 import { DataTransferHelper } from '../helper/data-transefer.helper';
 import { RouterHelper } from '../helper/router.helper';
+import { ToastHelper } from '../helper/toast.helper';
 
 @Component({
   selector: 'app-profile',
@@ -29,7 +30,6 @@ export class ProfileComponent implements OnInit {
   isLoading: boolean;
   hasUserNameCollision: boolean;
   hasUserEmailCollision: boolean;
-  updateOk: boolean;
   userEmail: string;
   validateUserName: string;
   validateUserEmail: string;
@@ -41,9 +41,9 @@ export class ProfileComponent implements OnInit {
 
   constructor(
     public profileService: ProfileService,
+    private toastHelper: ToastHelper,
     public authService: AuthService,
     private route: ActivatedRoute,
-    private storage: AngularFireStorage,
     private formHelper: FormHelper,
     public routerHelper: RouterHelper,
   ) {
@@ -53,7 +53,6 @@ export class ProfileComponent implements OnInit {
       this.isPage = true;
       this.hasUserNameCollision = false;
       this.hasUserEmailCollision = false;
-      this.updateOk = true;
       this.params = params;
       this.profileContentsObserver = this.profileService.getProfileContentsObserver({params});
       this.profileSub = this.profileContentsObserver.subscribe(profileContents => {
@@ -74,58 +73,6 @@ export class ProfileComponent implements OnInit {
         this.profileForm = this.formHelper.buildFormRecursively(this.profileContents[0]);
         this.isLoading = false;
       });
-    });
-  }
-
-  async handleClickStartUploadProfileImageSrc() {
-    await Swal.fire({
-      title: 'Select Your Profile Image',
-      input: 'file',
-      showConfirmButton: true,
-      showCancelButton: true,
-      showCloseButton: true,
-      confirmButtonText: 'Update Image',
-      cancelButtonText: 'Remove Image',
-      cancelButtonColor: '#d33',
-      inputAttributes: {
-        // tslint:disable-next-line:object-literal-key-quotes
-        'accept': 'image/*',
-        'aria-label': 'Upload your profile picture'
-      }
-    }).then(data => {
-      const filePath = `profile/${JSON.parse(localStorage.currentUser).uid}/about/profileImage`;
-      const fileRef = this.storage.ref(filePath);
-
-      if (data.value) {
-        const file = data.value;
-        const task = this.storage.upload(filePath, file);
-
-        task
-        .then(() => {
-          fileRef.getDownloadURL().subscribe(imageUrl => {
-            this.profileForm.controls.profileImageSrc.setValue(imageUrl);
-            this.profileService.updateProfile(this.profileForm.value, this.profileContentsObserver);
-            Swal.fire({
-              icon: 'success',
-              title: 'Your Profile Image is uploaded!',
-              showConfirmButton: false,
-              timer: 1500
-            });
-          });
-        })
-        .catch(e => console.error(e));
-      }
-      else if (data.dismiss === Swal.DismissReason.cancel) {
-        fileRef.delete();
-        this.profileForm.controls.profileImageSrc.setValue(null);
-        this.profileService.updateProfile(this.profileForm.value, this.profileContentsObserver);
-        Swal.fire({
-          icon: 'success',
-          title: 'Your Profile Image is uploaded!',
-          showConfirmButton: false,
-          timer: 1500
-        });
-      }
     });
   }
 
@@ -170,57 +117,28 @@ export class ProfileComponent implements OnInit {
     this.isEditing = false;
   }
 
+  handleKeyupUserName(hasCollision: boolean) {
+    this.hasUserNameCollision = hasCollision;
+  }
+
   async handleClickEditProfileUpdate() {
-    if (!this.updateOk){
-      Swal.fire({
-        icon: 'warning',
-        title: 'Upate Fail',
-        text: 'Checking User Email and Name',
-        showCancelButton: false
-      });
-      return;
-    }
+    this.toastHelper.askYesNo('Update Profile', 'Are you sure?').then((result) => {
+      if (this.hasUserNameCollision) {
+        this.toastHelper.showError('Upate Fail', 'User Name is already registered.');
+        return;
+      }
 
-    if (this.hasUserEmailCollision){
-      Swal.fire({
-        icon: 'warning',
-        title: 'Upate Fail',
-        text: 'User Email is already registered.',
-        showCancelButton: false
-      });
-      return;
-    }
-    else if (this.hasUserNameCollision){
-      Swal.fire({
-        icon: 'warning',
-        title: 'Upate Fail',
-        text: 'User Name is already registered.',
-        showCancelButton: false
-      });
-      return;
-    }
-
-    const swalWithBootstrapButtons = Swal.mixin({
-      customClass: {
-        confirmButton: 'btn btn-success',
-        cancelButton: 'btn btn-danger'
-      },
-      buttonsStyling: false
-    });
-
-    await swalWithBootstrapButtons.fire({
-      title: 'Updating...',
-      // tslint:disable-next-line:quotemark
-      text: "Are you sure?",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, update it!',
-      cancelButtonText: 'No, cancel!',
-      reverseButtons: true
-    }).then((result) => {
       if (result.value) {
         if (this.isEditing){
-          this.profileService.updateProfile(this.profileForm.value, this.profileContentsObserver);
+          this.profileService
+          .updateProfile(this.profileForm.value)
+          .then(() => {
+            this.toastHelper.showSuccess('Profile Update', 'Success!');
+          })
+          .catch(e => {
+            console.error(e);
+            this.toastHelper.showWarning('Profile Update Failed.', e);
+          });
         }
         this.isEditing = false;
       }

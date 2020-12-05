@@ -1,14 +1,14 @@
 <div class="container">
   <div class="row">
     <button
-      class="btn btn-outline-secondary col-6"
+      class="btn btn-outline-secondary col-6 add-remove-button"
       (click)="removeInput()"
       *ngIf="targetArrayForm.length !== 0"
     >
       <i class="fa fa-trash"></i>
     </button>
     <button
-      class="btn btn-outline-success col-6"
+      class="btn btn-outline-success col-6 add-remove-button"
       (click)="addInput()"
       *ngIf="targetArrayForm.length-1 === targetArrayIndex || targetArrayForm.length === 0"
     >

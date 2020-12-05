@@ -8,6 +8,11 @@ import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import Identicon from 'identicon.js';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { ProfileComponent } from '../profile.component';
+import { ProfileContent } from '../profile.content';
+import Swal from 'sweetalert2';
+import { ProfileService } from 'src/app/services/profile.service';
+import { ToastHelper } from 'src/app/helper/toast.helper';
 
 @Component({
   selector: 'app-profile-left-sidebar',
@@ -20,7 +25,6 @@ export class LeftSidebarComponent implements OnInit {
   @Output() clickEditProfileAbort: EventEmitter<null> = new EventEmitter();
   @Output() clickAddAdditionalProfile: EventEmitter<null> = new EventEmitter();
   @Output() clickRemoveAdditionalProfile: EventEmitter<number> = new EventEmitter();
-  @Output() clickStartUploadProfileImageSrc: EventEmitter<number> = new EventEmitter();
   @Input() isEditing: boolean;
 
   paramSub: Subscription;
@@ -28,8 +32,11 @@ export class LeftSidebarComponent implements OnInit {
   isPage: boolean;
   isLoading: boolean;
   defaultSrc: string | SafeUrl;
+  profileContent: ProfileContent;
 
   constructor(
+    public profileService: ProfileService,
+    private toastHelper: ToastHelper,
     private route: ActivatedRoute,
     private domSanitizer: DomSanitizer,
     public authService: AuthService,
@@ -51,6 +58,7 @@ export class LeftSidebarComponent implements OnInit {
   get profileForm(): FormGroup { return this._profileForm; }
   set profileForm(profileForm: FormGroup) {
     this._profileForm = profileForm;
+    this.profileContent = profileForm.value;
     if (profileForm.value.profileImageSrc !== ''){
       this.defaultSrc = profileForm.value.profileImageSrc;
     }
@@ -70,7 +78,6 @@ export class LeftSidebarComponent implements OnInit {
   // tslint:disable-next-line: variable-name
   _profileForm: FormGroup;
 
-  @Output() addOops: EventEmitter<string> = new EventEmitter(); // 追加
   handleClickEditProfileStart() {
     this.clickEditProfileStart.emit();
   }
@@ -91,8 +98,28 @@ export class LeftSidebarComponent implements OnInit {
     this.clickRemoveAdditionalProfile.emit(index);
   }
 
-  handleClickStartUploadProfileImageSrc(){
-    this.clickStartUploadProfileImageSrc.emit();
+  handleClickStartUploadProfileImageSrc() {
+    this.toastHelper.uploadImage('Select Your Profile Image').then(async (data) => {
+      if (data.value) {
+        this.profileService.uploadProfileImage(data.value, this.profileContent);
+      }
+      else if (data.dismiss === Swal.DismissReason.cancel) {
+        this.toastHelper.askYesNo('Remove Profile Image', 'Are you sure?').then(result => {
+          if (result.value) {
+            this.profileService.removeProfileImage(this.profileContent)
+            .then(() => {
+              this.toastHelper.showSuccess('Profile Image Remove', 'Success!');
+            })
+            .catch(e => {
+              this.toastHelper.showWarning('Profile Image Remove Failed.', e);
+            });
+          }
+          else if (result.dismiss === Swal.DismissReason.cancel){
+
+          }
+        });
+      }
+    });
   }
 
   ngOnInit(): void {
