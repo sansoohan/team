@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { profileDefault } from '../profile/profile.default';
-import { MessageService } from './message.service';
+import { ToastHelper } from '../helper/toast.helper';
 import { BlogContent } from '../blog/blog.content';
 import * as firebase from 'firebase';
 import { PostContent } from '../blog/post/post.content';
@@ -18,17 +18,17 @@ export class BlogService {
   profileUpdateState: string = null;
   userName: string = null;
 
-  constructor(private firestore: AngularFirestore, private message: MessageService) { }
+  constructor(private firestore: AngularFirestore, private toast: ToastHelper) { }
 
   updateBlog(updatedBlogContent: BlogContent, blogContentsObserver: Observable<BlogContent[]>) {
     this.firestore.collection('profiles').doc(updatedBlogContent.id)
     .update(updatedBlogContent)
     .then(() => {
-      this.message.showSuccess('Profile Update', 'Success!');
+      this.toast.showSuccess('Profile Update', 'Success!');
     })
     .catch(e => {
       console.error(e);
-      this.message.showWarning('Profile Update Failed.', e);
+      this.toast.showWarning('Profile Update Failed.', e);
     });
   }
 

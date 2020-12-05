@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { profileDefault } from '../profile/profile.default';
-import { MessageService } from './message.service';
+import { ToastHelper } from '../helper/toast.helper';
 import { ProfileContent } from '../profile/profile.content';
 import * as firebase from 'firebase';
 
@@ -12,17 +12,17 @@ import * as firebase from 'firebase';
 export class ProfileService {
   profileUpdateState: string = null;
 
-  constructor(private firestore: AngularFirestore, private message: MessageService) { }
+  constructor(private firestore: AngularFirestore, private toast: ToastHelper) { }
 
   updateProfile(updatedProfileContent: ProfileContent, profileContentsObserver: Observable<ProfileContent[]>) {
     this.firestore.collection('profiles').doc(updatedProfileContent.id)
     .update(updatedProfileContent)
     .then(() => {
-      this.message.showSuccess('Profile Update', 'Success!');
+      this.toast.showSuccess('Profile Update', 'Success!');
     })
     .catch(e => {
       console.error(e);
-      this.message.showWarning('Profile Update Failed.', e);
+      this.toast.showWarning('Profile Update Failed.', e);
     });
   }
 

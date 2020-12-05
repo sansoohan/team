@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { MessageService } from '../services/message.service';
+import { ToastHelper } from '../helper/toast.helper';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { ProfileService } from './profile.service';
 @Injectable({
@@ -9,7 +9,7 @@ import { ProfileService } from './profile.service';
 export class AuthService {
   constructor(
     private router: Router,
-    private message: MessageService,
+    private toast: ToastHelper,
     private afAuth: AngularFireAuth,
     private profileService: ProfileService
   ) { }
@@ -19,13 +19,13 @@ export class AuthService {
    * @param email email of the user
    */
   resetPassword() {
-    this.message.showPrompt('Reset Password', 'Please Enter your email').then(email => {
+    this.toast.showPrompt('Reset Password', 'Please Enter your email').then(email => {
       this.afAuth.sendPasswordResetEmail(`${email}`, { url: `${window.location.origin}/sign-in` })
       .then(
         () => alert('A password reset link has been sent to your email address'),
-        (rejectionReason) => this.message.showError('An error occurred while attempting to reset your password', rejectionReason))
+        (rejectionReason) => this.toast.showError('An error occurred while attempting to reset your password', rejectionReason))
       .catch(e => {
-        this.message.showError('An error occurred while attempting to reset your password', e);
+        this.toast.showError('An error occurred while attempting to reset your password', e);
       });
     });
   }
@@ -50,7 +50,7 @@ export class AuthService {
       uid: event.uid
     };
     localStorage.setItem('currentUser', JSON.stringify(currentUser));
-    this.message.showSuccess(`Hello ${currentUser.displayName ? currentUser.displayName : currentUser.email}`, null);
+    this.toast.showSuccess(`Hello ${currentUser.displayName ? currentUser.displayName : currentUser.email}`, null);
     this.profileService.createNewProfile();
     this.router.navigate(['/profile']);
   }
@@ -60,17 +60,17 @@ export class AuthService {
   }
 
   signInFailed(event): void {
-    this.message.showError('Sign In failed', event.message);
+    this.toast.showError('Sign In failed', event.toast);
   }
 
   signUpSuccess(): void {
-    this.message.showSuccess('Sign Up Success', null);
+    this.toast.showSuccess('Sign Up Success', null);
     this.router.navigate(['/sign-in']);
   }
 
   signUpFailed(event): void {
     if (event.code){
-      this.message.showError('Sign up failed', event.message);
+      this.toast.showError('Sign up failed', event.toast);
     }
     else{
       this.signUpSuccess();
