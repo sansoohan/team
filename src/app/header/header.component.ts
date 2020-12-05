@@ -3,8 +3,10 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import * as firebase from 'firebase';
+import Identicon from 'identicon.js';
 import { Subscription } from 'rxjs';
 import { RouterHelper } from 'src/app/helper/router.helper';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-header',
@@ -28,6 +30,7 @@ export class HeaderComponent {
     private route: ActivatedRoute,
     public authService: AuthService,
     public routerHelper: RouterHelper,
+    private domSanitizer: DomSanitizer,
   ) {
     this.searchValue = '';
     this.isSearchValueSelected = false;
@@ -37,12 +40,42 @@ export class HeaderComponent {
     });
   }
 
-  closeLinkDropDown(){
+  closeSearchListDropDown() {
+    this.searchValue = '';
+    this.isSearchValueSelected = false;
+  }
+  closeProfileLinkDropDown() {
     this.searchValue = '';
     this.isSearchValueSelected = false;
   }
 
+  async setSearchValue(searchValue) {
+    this.isSearchValueSelected = true;
+    this.searchValue = searchValue;
+  }
+
+  getSearchProfileImage(searchProfile) {
+    let profileImageSrc;
+    if (searchProfile.profileImageSrc !== '') {
+      profileImageSrc = searchProfile.profileImageSrc;
+    }
+    else {
+      const hash = searchProfile.ownerId;
+      const options = {
+        // foreground: [0, 0, 0, 255],               // rgba black
+        background: [230, 230, 230, 230],         // rgba white
+        margin: 0.2,                              // 20% margin
+        size: 420,                                // 420px square
+        format: 'png'                             // use SVG instead of PNG
+      };
+      const data = new Identicon(hash, options).toString();
+      profileImageSrc = this.domSanitizer.bypassSecurityTrustUrl(`data:image/png;base64,${data}`);
+    }
+    return profileImageSrc;
+  }
+
   changeSearch(event: any): void{
+    console.log(event, 'hello');
     this.isSearchValueSelected = false;
     if (!event.key){
       this.isSearchValueSelected = true;

@@ -6,7 +6,6 @@
   </button>
 
   <div class="collapse navbar-collapse" id="navbarTopCollapse">
-    <a *ngIf="!authService.isSignedIn()" class="navbar-brand header-link" href="/">Startup</a>
     <a
       *ngIf="authService.isSignedIn()"
       class="navbar-brand header-link"
@@ -23,18 +22,39 @@
 <nav class="search-navbar navbar navbar-expand-lg navbar-dark bg-dark">
   <form>
     <div class="input-group">
+      <!-- 1. Input Search -->
       <input
         [value]="searchValue"
         (keyup)="changeSearch($event)"
-        (change)="changeSearch($event)"
         class="form-control mr-2"
         type="search"
         list="staticUserIds"
         placeholder="Search"
         aria-label="Search"
       >
+      
+      <!-- 2. Select User -->
+      <div [class]="searchValue&&!isSearchValueSelected?'dropdown-menu show':'dropdown-menu'">
+        <div
+          *ngFor="let result of results | async"
+          class="d-flex mr-2"
+          (click)="setSearchValue(result.aboutContent.userName)"
+        >
+          <img class="rounded-circle search-profile" [src]="getSearchProfileImage(result)">
+          <a>
+            {{result.aboutContent.userName}}
+            <br>
+            ({{result.aboutContent.email}})
+          </a>
+        </div>
+        <a
+          class="dropdown-item"
+          (click)="closeSearchListDropDown()"
+        >Close</a>
+      </div>
 
-      <div [class]="isSearchValueSelected?'dropdown-menu show':'dropdown-menu'">
+      <!-- 3. Go to User page -->
+      <div [class]="searchValue&&isSearchValueSelected?'dropdown-menu show':'dropdown-menu'">
         <a
           class="dropdown-item"
           (click)="routerHelper.goToProfile({userName:searchValue})"
@@ -45,19 +65,9 @@
         >{{searchValue}}'s Blog</a>
         <a
           class="dropdown-item"
-          (click)="closeLinkDropDown()"
+          (click)="closeProfileLinkDropDown()"
         >Close</a>
       </div>
-      <datalist id="staticUserIds">
-        <option
-          *ngFor="let result of results | async"
-          [value]="result.aboutContent.userName"
-        >
-          <i
-            class="fa fa-car"
-          ></i>({{result.aboutContent.email}})
-        </option>
-      </datalist>
 
       <ngx-auth-firebaseui-avatar
         *ngIf="authService.isSignedIn()"
