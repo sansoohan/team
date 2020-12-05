@@ -15,7 +15,6 @@
     (clickEditProfileUpdate)="handleClickEditProfileUpdate()"
     (clickAddAdditionalProfile)="handleAddAdditionalProfile()"
     (clickRemoveAdditionalProfile)="handleRemoveAdditionalProfile($event)"
-    (clickStartUploadProfileImageSrc)="handleClickStartUploadProfileImageSrc()"
   ></app-profile-left-sidebar>
   <div *ngFor="let profileContent of profileContents">
     <div class="profiles">
@@ -23,6 +22,7 @@
         [isEditing]="isEditing"
         [aboutContent]="profileContent.aboutContent"
         [profileForm]="profileForm"
+        (keyupUserName)="handleKeyupUserName($event)"
       ></app-about>
       <app-education
         [isEditing]="isEditing"

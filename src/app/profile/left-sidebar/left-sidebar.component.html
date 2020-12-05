@@ -91,6 +91,7 @@
 
             <div class="nav-item">
               <button
+                *ngIf="isEditing"
                 class="btn btn-outline-dark btn-circle col-10"
                 (click)="handleAddAdditionalProfile()"
               >

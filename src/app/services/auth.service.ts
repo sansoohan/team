@@ -9,7 +9,7 @@ import { ProfileService } from './profile.service';
 export class AuthService {
   constructor(
     private router: Router,
-    private toast: ToastHelper,
+    private toastHelper: ToastHelper,
     private afAuth: AngularFireAuth,
     private profileService: ProfileService
   ) { }
@@ -19,13 +19,13 @@ export class AuthService {
    * @param email email of the user
    */
   resetPassword() {
-    this.toast.showPrompt('Reset Password', 'Please Enter your email').then(email => {
+    this.toastHelper.showPrompt('Reset Password', 'Please Enter your email').then(email => {
       this.afAuth.sendPasswordResetEmail(`${email}`, { url: `${window.location.origin}/sign-in` })
       .then(
-        () => alert('A password reset link has been sent to your email address'),
-        (rejectionReason) => this.toast.showError('An error occurred while attempting to reset your password', rejectionReason))
+        () => this.toastHelper.showInfo('Reset Password', 'A password reset link has been sent to your email address'),
+        (rejectionReason) => this.toastHelper.showError('An error occurred while attempting to reset your password', rejectionReason))
       .catch(e => {
-        this.toast.showError('An error occurred while attempting to reset your password', e);
+        this.toastHelper.showError('An error occurred while attempting to reset your password', e);
       });
     });
   }
@@ -50,7 +50,7 @@ export class AuthService {
       uid: event.uid
     };
     localStorage.setItem('currentUser', JSON.stringify(currentUser));
-    this.toast.showSuccess(`Hello ${currentUser.displayName ? currentUser.displayName : currentUser.email}`, null);
+    this.toastHelper.showSuccess(`Hello ${currentUser.displayName ? currentUser.displayName : currentUser.email}`, null);
     this.profileService.createNewProfile();
     this.router.navigate(['/profile']);
   }
@@ -60,17 +60,17 @@ export class AuthService {
   }
 
   signInFailed(event): void {
-    this.toast.showError('Sign In failed', event.toast);
+    this.toastHelper.showError('Sign In failed', event.toast);
   }
 
   signUpSuccess(): void {
-    this.toast.showSuccess('Sign Up Success', null);
+    this.toastHelper.showSuccess('Sign Up Success', null);
     this.router.navigate(['/sign-in']);
   }
 
   signUpFailed(event): void {
     if (event.code){
-      this.toast.showError('Sign up failed', event.toast);
+      this.toastHelper.showError('Sign up failed', event.toast);
     }
     else{
       this.signUpSuccess();

@@ -20,42 +20,11 @@ export class BlogService {
 
   constructor(private firestore: AngularFirestore, private toast: ToastHelper) { }
 
-  updateBlog(updatedBlogContent: BlogContent): void {
-    this.firestore.collection('profiles').doc(updatedBlogContent.id)
-    .update(updatedBlogContent)
-    .then(() => {
-      this.toast.showSuccess('Profile Update', 'Success!');
-    })
-    .catch(e => {
-      console.error(e);
-      this.toast.showWarning('Profile Update Failed.', e);
-    });
-  }
-
-  // getUserEmailCollisionObserver(userEmail: string){
-  //   let userEmailCollisionObserver: Observable<BlogContent[]>;
-  //   userEmailCollisionObserver = this.firestore
-  //   .collection<BlogContent>('profiles', ref => ref
-  //   .where(new firebase.firestore.FieldPath('aboutContent', 'email'), '==', userEmail))
-  //   .valueChanges();
-  //   return userEmailCollisionObserver;
-  // }
-
-  // getUserNameCollisionObserver(userName: string){
-  //   let userNameCollisionObserver: Observable<BlogContent[]>;
-  //   userNameCollisionObserver = this.firestore
-  //   .collection<BlogContent>('profiles', ref => ref
-  //   .where(new firebase.firestore.FieldPath('aboutContent', 'userName'), '==', userName))
-  //   .valueChanges();
-  //   return userNameCollisionObserver;
-  // }
-
-  getCategoryPost(blogId, categoryIds: Array<number>): Observable<PostContent[]> {
-    this.postContentsObserver = this.firestore
+  getCategoryPost(blogId: string, categoryIds: Array<number>): Observable<PostContent[]> {
+    return this.firestore
     .collection<BlogContent>('blogs').doc(blogId)
     .collection<PostContent>('posts', ref => ref.where('categoryId', 'in', categoryIds))
     .valueChanges();
-    return this.postContentsObserver;
   }
 
   getBlogContentsObserver({params = null}): Observable<BlogContent[]> {
@@ -122,6 +91,25 @@ export class BlogService {
     .collection<CommentContent>('comments', ref => ref.where('postId', '==', postId))
     .valueChanges();
     return categoryContentsObserver;
+  }
+
+  async updateBlog(updatedBlogContent: BlogContent): Promise<void> {
+    return this.firestore.doc(`blogs/${updatedBlogContent.id}`).update(updatedBlogContent);
+  }
+  async updateCategory(blogId: string, updatedCategoryContent: CategoryContent): Promise<void> {
+    return this.firestore
+    .doc(`blogs/${blogId}/comments/${updatedCategoryContent.id}`)
+    .update(updatedCategoryContent);
+  }
+  async updatePost(blogId: string, updatedPostContent: PostContent): Promise<void> {
+    return this.firestore
+    .doc(`blogs/${blogId}/posts/${updatedPostContent.id}`)
+    .update(updatedPostContent);
+  }
+  async updateComment(blogId: string, updatedCommentContent: CommentContent): Promise<void> {
+    return this.firestore
+    .doc(`blogs/${blogId}/comments/${updatedCommentContent.id}`)
+    .update(updatedCommentContent);
   }
 
   deleteBlog(blogId): void {
