@@ -75,7 +75,7 @@
 
       <button
         *ngIf="!authService.isSignedIn()"
-        (click)="routerHelper.goToSignIn()"
+        routerLink="/sign-in"
         routerLinkActive="active"
         class="btn btn-secondary my-2 my-sm-0"
       >Sign In</button>
