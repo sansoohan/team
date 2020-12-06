@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
-import { profileDefault } from '../profile/profile.default';
+import { profileDefault } from '../view/profile/profile.default';
 import { ToastHelper } from '../helper/toast.helper';
-import { ProfileContent } from '../profile/profile.content';
+import { ProfileContent } from '../view/profile/profile.content';
 import { AngularFireStorage } from '@angular/fire/storage';
 import * as firebase from 'firebase/app';
 import FieldPath = firebase.firestore.FieldPath;

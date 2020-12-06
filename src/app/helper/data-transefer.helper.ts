@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import * as firebase from 'firebase/app';
-import { MatchMedia } from '@angular/flex-layout/core/typings/match-media';
 
 @Injectable({
   providedIn: 'root'

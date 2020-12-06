@@ -1,6 +1,5 @@
-import { Component, Injectable, Inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import Swal, { SweetAlertResult } from 'sweetalert2';
-import SweetAlertIcon from 'sweetalert2';
 
 @Injectable({
   providedIn: 'root'

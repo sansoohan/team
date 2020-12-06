@@ -1,61 +1,45 @@
+// Angular core
 import {APP_BASE_HREF} from '@angular/common';
-import { environment } from '../environments/environment';
-
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, SecurityContext } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-import { AppRoutingModule } from './app-routing.module';
-
-// import * as firebase from 'firebase/app';
-// currently there is a bug while building the app with --prod
-// - https://github.com/RaphaelJenni/FirebaseUI-Angular/issues/76
-// the plugin exposes the two libraries as well. You can use those:
-// import {FirebaseUIModule, firebase, firebaseui} from 'firebaseui-angular';
-import { AngularFireAuthModule } from '@angular/fire/auth';
-import { AngularFireAnalyticsModule } from '@angular/fire/analytics';
-import { AngularFireStorageModule } from '@angular/fire/storage';
-import { AngularFirestoreModule } from '@angular/fire/firestore';
-import { NgxAuthFirebaseUIModule } from 'ngx-auth-firebaseui';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatPasswordStrengthModule } from '@angular-material-extensions/password-strength';
-import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
+import { AppRoutingModule } from 'src/app/app-routing.module';
 
-import { EmbededGooglemapModule } from './modules/embeded-googlemap/embeded-googlemap.module';
-
-
-import { AppComponent } from './app.component';
-
-import { ProfileModule } from './profile/profile.module';
-import { ContactComponent } from './contact/contact.component';
-import { MainComponent } from './main/main.component';
-
-import { SignInComponent } from './sign-in/sign-in.component';
-import { SignUpComponent } from './sign-up/sign-up.component';
-
+// Angular Material
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipsModule } from '@angular/material/chips';
 
-import { MarkdownModule } from 'ngx-markdown';
-import { BlogModule } from './blog/blog.module';
-import { HeaderComponent } from './header/header.component';
+// Firebase
+import { AngularFireAuthModule } from '@angular/fire/auth';
+import { AngularFireAnalyticsModule } from '@angular/fire/analytics';
+import { AngularFireStorageModule } from '@angular/fire/storage';
+import { AngularFirestoreModule } from '@angular/fire/firestore';
+import { NgxAuthFirebaseUIModule } from 'ngx-auth-firebaseui';
+import { environment } from 'src/environments/environment';
 
-// See the Moment.js docs for the meaning of these formats:
-// https://momentjs.com/docs/#/displaying/format/
-export const MY_FORMATS = {
-  parse: {
-    dateInput: 'MM/YYYY',
-  },
-  display: {
-    dateInput: 'MM/YYYY',
-    monthYearLabel: 'MMM YYYY',
-    dateA11yLabel: 'LL',
-    monthYearA11yLabel: 'MMMM YYYY',
-  },
-};
+// ngx module
+import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
+import { MarkdownModule } from 'ngx-markdown';
+
+// View
+import { AppComponent } from 'src/app/app.component';
+import { BlogModule } from 'src/app/view/blog/blog.module';
+import { ContactComponent } from 'src/app/view/contact/contact.component';
+import { MainComponent } from 'src/app/view/main/main.component';
+import { ProfileModule } from 'src/app/view/profile/profile.module';
+import { SignInComponent } from 'src/app/view/sign-in/sign-in.component';
+import { SignUpComponent } from 'src/app/view/sign-up/sign-up.component';
+
+// Moudles
+import { EmbededGooglemapModule } from 'src/app/modules/embeded-googlemap/embeded-googlemap.module';
+import { HeaderModule } from 'src/app/modules/header/header.module';
+import { NotFoundModule } from 'src/app/modules/not-found/not-found.module';
 
 @NgModule({
   declarations: [
@@ -64,7 +48,6 @@ export const MY_FORMATS = {
     SignUpComponent,
     ContactComponent,
     MainComponent,
-    HeaderComponent,
   ],
   imports: [
     BrowserModule,
@@ -109,7 +92,9 @@ export const MY_FORMATS = {
     MatButtonModule,
     MatCheckboxModule,
     MatChipsModule,
-    EmbededGooglemapModule
+    EmbededGooglemapModule,
+    HeaderModule,
+    NotFoundModule,
   ],
   providers: [
     {provide: APP_BASE_HREF, useValue: '/'}
