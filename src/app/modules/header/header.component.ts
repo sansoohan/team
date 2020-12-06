@@ -81,7 +81,6 @@ export class HeaderComponent {
   }
 
   changeSearch(event: any): void{
-    console.log(event, 'hello');
     this.isSearchValueSelected = false;
     if (!event.key){
       this.isSearchValueSelected = true;

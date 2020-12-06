@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
-import { ToastHelper } from 'src/app/helper/toast.helper';
 import { BlogContent } from '../view/blog/blog.content';
 import { PostContent } from '../view/blog/post/post.content';
 import { CategoryContent } from '../view/blog/category/category.content';
 import { CommentContent } from '../view/blog/post/comment/comment.content';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +16,10 @@ export class BlogService {
   profileUpdateState: string = null;
   userName: string = null;
 
-  constructor(private firestore: AngularFirestore, private toast: ToastHelper) { }
+  constructor(
+    private firestore: AngularFirestore,
+    private authService: AuthService,
+  ) { }
 
   getCategoryPost(blogId: string, categoryIds: Array<number>): Observable<PostContent[]> {
     return this.firestore
@@ -28,7 +31,7 @@ export class BlogService {
   getBlogContentsObserver({params = null}): Observable<BlogContent[]> {
     if (!this.blogContentsObserver){
       const currentUser = JSON.parse(localStorage.currentUser || null);
-      const queryUserName = currentUser?.userName || params?.userName;
+      const queryUserName = currentUser?.userName || params?.userName || 'sansoohan';
       this.blogContentsObserver = this.firestore
       .collection<BlogContent>('blogs', ref => ref.where('userName', '==', queryUserName))
       .valueChanges();
@@ -92,8 +95,13 @@ export class BlogService {
   }
 
   async create(path: string, contentForm: any): Promise<void> {
+    if (!this.authService.isSignedIn()) {
+      return null;
+    }
+
     return this.firestore.collection(path).add(contentForm.value)
     .then(async (collection) => {
+      contentForm.controls.ownerId.setValue(JSON.parse(localStorage.currentUser).uid);
       contentForm.controls.id.setValue(collection.id);
       collection.update(contentForm.value);
     });

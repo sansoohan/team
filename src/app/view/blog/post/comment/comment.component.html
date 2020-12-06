@@ -1,6 +1,10 @@
 <div *ngIf="!isEditingPost">
   <div class="blog-comment" *ngIf="!isEditingPost && isShowingComment">
-    <section class="post-section p-3 d-flex flex-column">
+    <section
+      class="p-3 d-flex flex-column"
+      [class.comment-section]="isEditingCommentIds.length===0"
+      [class.comment-editing-section]="isEditingCommentIds.length!==0"
+    >
       <h4>Comments</h4>
       <form *ngIf="commentContentsForm" [formGroup]="commentContentsForm">
         <div formArrayName="commentContents">
@@ -9,37 +13,92 @@
           >
             <div
               *ngIf="!commentContent.controls.hidden.value"
-              class="comment-list-row d-flex flex-row"
+              class="comment-list-row"
+              [formGroupName]="i"
             >
               <div
-                *ngFor="let n of dataTransferHelper.numberToArray(commentContent.controls.deepCount.value) ; let j=index"
-                class="child-comment-tab"
-              ></div>
-              <div class="container comment-list-col-container">
+                class="container-flex comment-list-col-container"
+                [style]="'margin-left:'+commentContent.controls.deepCount.value*1.5+'rem'"
+              >
                 <div class="row">
-                  <span class="col-8">{{commentContent.value.writerName}}</span>
+                  <span class="col-7">{{commentContent.value.writerName}}
+                    <span
+                      *ngIf="!isEditingCommentIds.includes(commentContent.value.id) && isOwner(commentContent.value.ownerId)"
+                      (click)="clickCommentEdit(commentContent.value.id)"
+                      class="btn btn-outline-secondary comment-edit-button"
+                    >Edit</span>
+                    <span
+                      *ngIf="isEditingCommentIds.includes(commentContent.value.id)"
+                      (click)="handleClickEditCommentUpdate(commentContent)"
+                      class="btn btn-outline-secondary comment-edit-button"
+                    >Update</span>
+                    <span
+                      *ngIf="isEditingCommentIds.includes(commentContent.value.id)"
+                      (click)="clickCommentEditCancel(commentContent.value.id)"
+                      class="btn btn-outline-secondary comment-edit-button"
+                    >Cancel</span>
+                    <span
+                      *ngIf="isEditingCommentIds.includes(commentContent.value.id)"
+                      (click)="handleClickEditCommentDelete(commentContent)"
+                      class="btn btn-outline-secondary comment-edit-button"
+                    >Delete</span>
+                  </span>
                   <span class="col-4" style="text-align: right;">
                     {{dataTransferHelper.numberToDateString(commentContent.value.createdAt)}}
                   </span>
+                  
+                  <div
+                    *ngIf="formHelper.countChildContent(commentContentsForm.controls.commentContents['controls'],commentContent)!==0"
+                    class="blog-link col-1"
+                    (click)="formHelper.toggleCollapse(commentContentsForm.controls.commentContents['controls'],commentContent)"
+                  >
+                    <i *ngIf="commentContent.controls.collapsed.value" class="fa fa-caret-up"></i>
+                    <i *ngIf="!commentContent.controls.collapsed.value" class="fa fa-caret-down"></i>
+                  </div>
+
                 </div>
                 <div class="row">
                   <div class="col-12 comment-list-col">
                     <markdown
+                      *ngIf=!isEditingCommentIds.includes(commentContent.value.id)
                       emoji
                       lineNumbers
                       ngPreserveWhitespaces
                       data={{commentContent.controls.commentMarkdown.value}}>
                     </markdown>
                   </div>
+
+                  <div
+                    *ngIf="isEditingCommentIds.includes(commentContent.value.id)"
+                    class="d-flex flex-wrap"
+                    style="width:100%"
+                  >
+                    <div class="comment-edit-col">
+                      <div
+                        *ngIf="hasNullCommentContentError"
+                        class="comment-edit-title-col-null-error mt-3"
+                      >Please Insert Comment</div>
+                      <textarea
+                        class="form-control comment-editarea"
+                        rows="{{getCommentMarkdownLines(commentContent)}}"
+                        formControlName="commentMarkdown"
+                        placeholder="Content"
+                      ></textarea>
+                    </div>
+
+                    <div class="comment-edit-preview-col">
+                      <div class="comment-edit-content-col">
+                        <markdown
+                          emoji
+                          lineNumbers
+                          ngPreserveWhitespaces
+                          data={{commentContent.controls.commentMarkdown.value}}
+                        >
+                        </markdown>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div
-                *ngIf="formHelper.countChildContent(commentContentsForm.controls.commentContents['controls'],commentContent)!==0"
-                class="blog-link"
-                (click)="formHelper.toggleCollapse(commentContentsForm.controls.commentContents['controls'],commentContent)"
-              >
-                <i *ngIf="commentContent.controls.collapsed.value" class="fa fa-caret-up"></i>
-                <i *ngIf="!commentContent.controls.collapsed.value" class="fa fa-caret-down"></i>
               </div>
             </div>
           </div>
