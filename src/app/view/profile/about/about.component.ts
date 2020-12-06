@@ -3,7 +3,7 @@ import { AboutContent, AboutSocial } from './about.content';
 import { ProfileService } from 'src/app/services/profile.service';
 
 @Component({
-  selector: 'app-about',
+  selector: 'app-profile-about',
   templateUrl: './about.component.html',
   styleUrls: ['../profile.component.css', './about.component.css']
 })

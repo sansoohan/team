@@ -3,7 +3,7 @@ import * as moment from 'moment';
 import { FormControl } from '@angular/forms';
 
 @Component({
-  selector: 'app-monthpicker',
+  selector: 'app-modules-monthpicker',
   templateUrl: './monthpicker.component.html',
   styleUrls: ['./monthpicker.component.css']
 })

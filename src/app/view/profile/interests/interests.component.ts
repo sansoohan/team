@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { InterestsContent } from './interests.content';
 
 @Component({
-  selector: 'app-interests',
+  selector: 'app-profile-interests',
   templateUrl: './interests.component.html',
   styleUrls: ['../profile.component.css', '../profile.component.css']
 })

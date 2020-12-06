@@ -63,14 +63,20 @@
           <input type="text" class="form-control col-4" placeholder="Icon" formControlName="faIcon">
           <input type="text" class="form-control col-7" placeholder="Url" formControlName="socialUrl">
           <div class="col-1" style="padding: 0;">
-            <app-input-add-remove [targetArrayForm]="profileForm.controls.aboutContent.controls.social" [targetArrayIndex]="i" [newObject]="newAboutSocial"></app-input-add-remove>
+            <app-modules-user-form-input-add-remove
+              [targetArrayForm]="profileForm.controls.aboutContent.controls.social"
+              [targetArrayIndex]="i"
+              [newObject]="newAboutSocial"
+            ></app-modules-user-form-input-add-remove>
           </div>
         </div>
       </div>
       <div class="row" *ngIf="profileForm.controls.aboutContent.controls.social.length === 0">
         <div class="col-11"></div>
         <div class="col-1" style="padding: 0;">
-          <app-input-add-remove [targetArrayForm]="profileForm.controls.aboutContent.controls.social" [newObject]="newAboutSocial"></app-input-add-remove>
+          <app-modules-user-form-input-add-remove
+            [targetArrayForm]="profileForm.controls.aboutContent.controls.social" 
+            newObject]="newAboutSocial"></app-modules-user-form-input-add-remove>
         </div>
       </div>
     </div>

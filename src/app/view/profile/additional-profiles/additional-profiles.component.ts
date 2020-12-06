@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { AdditaionProfileContent, LargeGroup, SmallGroup, SmallGroupDescription } from './additional-profile.content';
 
 @Component({
-  selector: 'app-additional-profiles',
+  selector: 'app-profile-additional-profiles',
   templateUrl: './additional-profiles.component.html',
   styleUrls: ['../profile.component.css', './additional-profiles.component.css']
 })

@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { EducationsContent, EducationContent } from './educations.content';
 
 @Component({
-  selector: 'app-education',
+  selector: 'app-profile-education',
   templateUrl: './education.component.html',
   styleUrls: ['../profile.component.css', './education.component.css']
 })
