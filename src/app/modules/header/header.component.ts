@@ -9,7 +9,7 @@ import { RouterHelper } from 'src/app/helper/router.helper';
 import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
-  selector: 'app-header',
+  selector: 'app-modules-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css']
 })
