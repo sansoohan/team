@@ -61,14 +61,8 @@ export class RouterHelper {
       this.router.onSameUrlNavigation = 'ignore'; // Restore config after navigation completes
     });
   }
-  scrollToProfile(params: any , profileTitle: string): void {
-    this.router.onSameUrlNavigation = 'reload';
-    const currentUser = JSON.parse(localStorage.currentUser || null);
-    const queryUser = currentUser?.userName || currentUser?.uid || params?.userName;
-    this.viewportScroller.scrollToAnchor(profileTitle);
 
-    // this.router.navigate(['/profile', queryUser], { fragment: profileTitle }).finally(() => {
-    //   this.router.onSameUrlNavigation = 'ignore'; // Restore config after navigation completes
-    // });
+  scrollToIdElement(profileTitle: string): void {
+    this.viewportScroller.scrollToAnchor(profileTitle);
   }
 }

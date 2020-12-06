@@ -138,7 +138,6 @@ export class PostComponent implements OnInit {
       }
 
       this.postContentsForm.controls.categoryId.setValue(this.params.categoryId);
-      this.postContentsForm.controls.ownerId.setValue(JSON.parse(localStorage.currentUser).uid);
       this.blogService
       .create(
         `blogs/${this.blogContents[0].id}/posts`,
