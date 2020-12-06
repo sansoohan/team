@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { ProjectsContent, ProjectDescription } from './projects.content';
 
 @Component({
-  selector: 'app-projects',
+  selector: 'app-profile-projects',
   templateUrl: './projects.component.html',
   styleUrls: ['../profile.component.css', './projects.component.css']
 })

@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { SkillsContent, SkillGroup, SkillDescription } from './skills.content';
 
 @Component({
-  selector: 'app-skills',
+  selector: 'app-profile-skills',
   templateUrl: './skills.component.html',
   styleUrls: ['../profile.component.css', './skills.component.css']
 })

@@ -30,7 +30,10 @@
             <div class="row">
               <div class="col-11"></div>
               <div class="col-1" style="padding: 0;">
-                <app-input-add-remove [targetArrayForm]="profileForm.controls.skillsContent.controls.skillGroups" [newObject]="newSkillGroup"></app-input-add-remove>
+                <app-modules-user-form-input-add-remove
+                  [targetArrayForm]="profileForm.controls.skillsContent.controls.skillGroups"
+                  [newObject]="newSkillGroup"
+                ></app-modules-user-form-input-add-remove>
               </div>
             </div>
           </div>
@@ -40,7 +43,11 @@
               <div class="row">
                 <input type="text" class="form-control col-11" placeholder="Recipient's username" formControlName="skillGroupName">
                 <div class="col-1" style="padding: 0;">
-                  <app-input-add-remove [targetArrayForm]="profileForm.controls.skillsContent.controls.skillGroups" [targetArrayIndex]="i" [newObject]="newSkillGroup"></app-input-add-remove>
+                  <app-modules-user-form-input-add-remove
+                    [targetArrayForm]="profileForm.controls.skillsContent.controls.skillGroups"
+                    [targetArrayIndex]="i"
+                    [newObject]="newSkillGroup"
+                  ></app-modules-user-form-input-add-remove>
                 </div>
               </div>
               <div formArrayName='skills'>
@@ -49,7 +56,10 @@
                   <div class="row">
                     <div class="col-11"></div>
                     <div class="col-1" style="padding: 0;">
-                      <app-input-add-remove [targetArrayForm]="skillGroup.controls.skills" [newObject]="newSkillDescription"></app-input-add-remove>
+                      <app-modules-user-form-input-add-remove
+                        [targetArrayForm]="skillGroup.controls.skills"
+                        [newObject]="newSkillDescription"
+                      ></app-modules-user-form-input-add-remove>
                     </div>
                   </div>
                 </div>
@@ -61,7 +71,11 @@
                     <input type="text" class="form-control col-3" placeholder="Skill" formControlName="skillName">
                     <input type="text" class="form-control col-2" placeholder="Term" formControlName="term">
                     <div class="col-1" style="padding: 0;">
-                      <app-input-add-remove [targetArrayForm]="skillGroup.controls.skills" [targetArrayIndex]="j" [newObject]="newSkillDescription"></app-input-add-remove>
+                      <app-modules-user-form-input-add-remove
+                        [targetArrayForm]="skillGroup.controls.skills"
+                        [targetArrayIndex]="j"
+                        [newObject]="newSkillDescription"
+                      ></app-modules-user-form-input-add-remove>
                     </div>
                   </div>
                 </div>

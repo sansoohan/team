@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { SafeUrl, DomSanitizer } from '@angular/platform-browser';
 
 @Component({
-  selector: 'app-embeded-googlemap',
+  selector: 'app-modules-embeded-googlemap',
   templateUrl: './embeded-googlemap.component.html',
   styleUrls: ['./embeded-googlemap.component.css']
 })

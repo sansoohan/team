@@ -3,7 +3,7 @@ import Swal from 'sweetalert2';
 import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
 
 @Component({
-  selector: 'app-input-add-remove',
+  selector: 'app-modules-user-form-input-add-remove',
   templateUrl: './input-add-remove.component.html',
   styleUrls: ['./input-add-remove.component.css']
 })
