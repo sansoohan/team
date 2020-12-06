@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
-import { ToastHelper } from '../helper/toast.helper';
-import { BlogContent } from '../blog/blog.content';
-import { PostContent } from '../blog/post/post.content';
-import { CategoryContent } from '../blog/category/category.content';
-import { CommentContent } from '../blog/post/comment/comment.content';
+import { ToastHelper } from 'src/app/helper/toast.helper';
+import { BlogContent } from '../view/blog/blog.content';
+import { PostContent } from '../view/blog/post/post.content';
+import { CategoryContent } from '../view/blog/category/category.content';
+import { CommentContent } from '../view/blog/post/comment/comment.content';
 
 @Injectable({
   providedIn: 'root'
@@ -92,10 +92,8 @@ export class BlogService {
   }
 
   async create(path: string, contentForm: any): Promise<void> {
-    console.log(path, contentForm);
     return this.firestore.collection(path).add(contentForm.value)
     .then(async (collection) => {
-      console.log(collection);
       contentForm.controls.id.setValue(collection.id);
       collection.update(contentForm.value);
     });

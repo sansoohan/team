@@ -8,9 +8,9 @@ import { BlogContent } from './blog.content';
 import Swal from 'sweetalert2';
 import { CategoryContent } from './category/category.content';
 import { AuthService } from 'src/app/services/auth.service';
-import { FormHelper } from '../helper/form.helper';
-import { DataTransferHelper } from '../helper/data-transefer.helper';
-import { RouterHelper } from '../helper/router.helper';
+import { FormHelper } from 'src/app/helper/form.helper';
+import { DataTransferHelper } from 'src/app/helper/data-transefer.helper';
+import { RouterHelper } from 'src/app/helper/router.helper';
 
 @Component({
   selector: 'app-blog',

@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
-import { ProfileService } from '../services/profile.service';
-import { AuthService } from '../services/auth.service';
+import { ProfileService } from 'src/app/services/profile.service';
+import { AuthService } from 'src/app/services/auth.service';
 import { ProfileContent } from './profile.content';
 import Swal from 'sweetalert2';
 import { AdditaionProfileContent } from './additional-profiles/additional-profile.content';
-import { FormHelper } from '../helper/form.helper';
-import { RouterHelper } from '../helper/router.helper';
-import { ToastHelper } from '../helper/toast.helper';
+import { FormHelper } from 'src/app/helper/form.helper';
+import { RouterHelper } from 'src/app/helper/router.helper';
+import { ToastHelper } from 'src/app/helper/toast.helper';
 
 @Component({
   selector: 'app-profile',
