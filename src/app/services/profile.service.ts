@@ -71,7 +71,7 @@ export class ProfileService {
   getProfileContentsObserver({params = null}): Observable<ProfileContent[]> {
     let profileContentsObserver: Observable<ProfileContent[]>;
     const currentUser = JSON.parse(localStorage.currentUser || null);
-    const queryUserName = currentUser?.userName || params?.userName || 'sansoohan';
+    const queryUserName = currentUser?.userName || params?.userName;
     if (queryUserName){
       profileContentsObserver = this.firestore
       .collection<ProfileContent>('profiles', ref => ref

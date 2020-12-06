@@ -23,7 +23,7 @@ export class RouterHelper {
   goToBlogPrologue(params: any): void {
     this.router.onSameUrlNavigation = 'reload';
     const currentUser = JSON.parse(localStorage.currentUser || null);
-    const queryUser = currentUser?.userName || currentUser?.uid || params?.userName || 'sansoohan';
+    const queryUser = currentUser?.userName || currentUser?.uid || params?.userName;
     this.router.navigate(['/blog', queryUser]).finally(() => {
       this.router.onSameUrlNavigation = 'ignore'; // Restore config after navigation completes
     });
@@ -58,21 +58,11 @@ export class RouterHelper {
     const currentUser = JSON.parse(localStorage.currentUser || null);
     const queryUser = currentUser?.userName || currentUser?.uid || params?.userName;
     this.router.navigate(['/blog', queryUser, 'post', postId]).finally(() => {
-      this.router.onSameUrlNavigation = 'ignore';
+      this.router.onSameUrlNavigation = 'ignore'; // Restore config after navigation completes
     });
   }
 
-  goToSignIn(){
-    this.router.onSameUrlNavigation = 'reload';
-    this.router.navigate(['/sign-in'],
-    {
-      queryParams: {},
-    }).finally(() => {
-      this.router.onSameUrlNavigation = 'ignore';
-    });
-  }
-
-  scrollToProfile(params: any , profileTitle: string): void {
+  scrollToIdElement(profileTitle: string): void {
     this.viewportScroller.scrollToAnchor(profileTitle);
   }
 }

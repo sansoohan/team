@@ -31,7 +31,7 @@ export class BlogService {
   getBlogContentsObserver({params = null}): Observable<BlogContent[]> {
     if (!this.blogContentsObserver){
       const currentUser = JSON.parse(localStorage.currentUser || null);
-      const queryUserName = currentUser?.userName || params?.userName || 'sansoohan';
+      const queryUserName = currentUser?.userName || params?.userName;
       this.blogContentsObserver = this.firestore
       .collection<BlogContent>('blogs', ref => ref.where('userName', '==', queryUserName))
       .valueChanges();

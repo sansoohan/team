@@ -63,7 +63,6 @@ export class ProfileComponent implements OnInit {
           localStorage.setItem('currentUser', JSON.stringify(currentUser));
         }
 
-        this.routerHelper.scrollToProfile(this.params, 'about');
         this.profileForm = this.formHelper.buildFormRecursively(this.profileContents[0]);
         this.isLoading = false;
       });

@@ -29,6 +29,7 @@ import { MarkdownModule } from 'ngx-markdown';
 
 // View
 import { AppComponent } from 'src/app/app.component';
+import { HeaderComponent } from './header/header.component';
 import { BlogModule } from 'src/app/view/blog/blog.module';
 import { ContactComponent } from 'src/app/view/contact/contact.component';
 import { MainComponent } from 'src/app/view/main/main.component';
@@ -38,7 +39,6 @@ import { SignUpComponent } from 'src/app/view/sign-up/sign-up.component';
 
 // Moudles
 import { EmbededGooglemapModule } from 'src/app/modules/embeded-googlemap/embeded-googlemap.module';
-import { HeaderModule } from 'src/app/modules/header/header.module';
 import { NotFoundModule } from 'src/app/modules/not-found/not-found.module';
 
 @NgModule({
@@ -48,6 +48,7 @@ import { NotFoundModule } from 'src/app/modules/not-found/not-found.module';
     SignUpComponent,
     ContactComponent,
     MainComponent,
+    HeaderComponent,
   ],
   imports: [
     BrowserModule,
@@ -93,7 +94,6 @@ import { NotFoundModule } from 'src/app/modules/not-found/not-found.module';
     MatCheckboxModule,
     MatChipsModule,
     EmbededGooglemapModule,
-    HeaderModule,
     NotFoundModule,
   ],
   providers: [
