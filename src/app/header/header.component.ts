@@ -16,7 +16,6 @@ import { DomSanitizer } from '@angular/platform-browser';
 export class HeaderComponent {
   searchValue: string;
   results: any;
-  exampleUserName: string;
 
   isPage: boolean;
   params: any;
@@ -34,15 +33,10 @@ export class HeaderComponent {
     private domSanitizer: DomSanitizer,
   ) {
     this.searchValue = '';
-    this.exampleUserName = 'sansoohan';
     this.isSearchValueSelected = false;
     this.paramSub = this.route.params.subscribe(params => {
       this.isPage = true;
-      if (this.authService.isSignedIn()) {
-        this.params = params;
-      } else {
-        this.params = { userName: 'sansoohan' };
-      }
+      this.params = params;
     });
   }
 

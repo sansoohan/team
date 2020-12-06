@@ -14,7 +14,7 @@ export class RouterHelper {
   goToProfile(params: any): void {
     this.router.onSameUrlNavigation = 'reload';
     const currentUser = JSON.parse(localStorage.currentUser || null);
-    const queryUser = currentUser?.userName || currentUser?.uid || params?.userName;
+    const queryUser = currentUser?.userName || currentUser?.uid || params?.userName || 'sansoohan';
     this.router.navigate(['/profile', queryUser]).finally(() => {
       this.router.onSameUrlNavigation = 'ignore'; // Restore config after navigation completes
     });
@@ -23,7 +23,7 @@ export class RouterHelper {
   goToBlogPrologue(params: any): void {
     this.router.onSameUrlNavigation = 'reload';
     const currentUser = JSON.parse(localStorage.currentUser || null);
-    const queryUser = currentUser?.userName || currentUser?.uid || params?.userName;
+    const queryUser = currentUser?.userName || currentUser?.uid || params?.userName || 'sansoohan';
     this.router.navigate(['/blog', queryUser]).finally(() => {
       this.router.onSameUrlNavigation = 'ignore'; // Restore config after navigation completes
     });
