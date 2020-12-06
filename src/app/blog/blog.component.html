@@ -6,11 +6,13 @@
   <app-blog-post
     *ngIf="params.postId"
     [isEditingPost]="isEditingPost"
+    [isCreatingPost]="false"
     [blogContents]="blogContents"
   ></app-blog-post>
   <app-blog-category
     *ngIf="params.categoryId"
     [isEditingCategory]="isEditingCategory"
+    [isEditingPost]="isEditingPost"
     [blogContents]="blogContents"
   ></app-blog-category>
   <app-blog-prologue

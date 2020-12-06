@@ -28,6 +28,7 @@ export class CategoryComponent implements OnInit {
   postContentsForm: any;
   isShowingCategoryContents: boolean;
   isEditingPost: boolean;
+  isCreatingPost: boolean;
 
   postListObserver: Observable<PostContent[]>;
   postList: PostContent[];
@@ -43,6 +44,7 @@ export class CategoryComponent implements OnInit {
   newPostConent = new PostContent();
   paramSub: Subscription;
   params: any;
+  queryParams: any;
   selectedCategory: FormGroup;
   selectedChildCategories: Array<FormGroup>;
   selectedCategoryId: string;
@@ -60,6 +62,10 @@ export class CategoryComponent implements OnInit {
       this.isShowingCategoryContents = false;
       this.isEditingCategory = false;
       this.params = params;
+    });
+    this.route.queryParams.subscribe(queryParams => {
+      this.queryParams = queryParams;
+      this.isCreatingPost = !!queryParams.isCreatingPost;
     });
   }
 

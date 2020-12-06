@@ -99,7 +99,10 @@ export class ProfileService {
     await this.storage.upload(filePath, file);
     const fileRefSubscribe = fileRef.getDownloadURL().subscribe(imageUrl => {
       profileContent.profileImageSrc = imageUrl;
-      this.updateProfile(profileContent);
+      this.update(
+        `profiles/${profileContent.id}`,
+        profileContent
+      );
       this.toastHelper.showSuccess('Profile Image', 'Your Profile Image is uploaded!');
       fileRefSubscribe.unsubscribe();
     });
@@ -111,17 +114,19 @@ export class ProfileService {
     const dirRefSubscribe = dirRef.listAll().subscribe(dir => {
       dir.items.forEach(item => item.delete());
       profileContent.profileImageSrc = '';
-      this.updateProfile(profileContent);
+      this.update(
+        `profiles/${profileContent.id}`,
+        profileContent
+      );
       this.toastHelper.showInfo('Profile Image', 'Your Profile Image is removed!');
       dirRefSubscribe.unsubscribe();
     });
   }
 
-  async updateProfile(updatedProfileContent: ProfileContent): Promise<void> {
-    return this.firestore.doc(`profiles/${updatedProfileContent.id}`).update(updatedProfileContent);
+  async update(path: string, updated: any): Promise<void> {
+    return this.firestore.doc(path).update(updated);
   }
-
-  deleteProfile(updatedProfileContent): void {
-    this.firestore.doc(`profiles/${updatedProfileContent.id}`).delete();
+  async delete(path: string): Promise<void> {
+    return this.firestore.doc(path).delete();
   }
 }

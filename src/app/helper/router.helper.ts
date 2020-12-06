@@ -38,6 +38,21 @@ export class RouterHelper {
     });
   }
 
+  goToBlogCategoryNewPost(params: any, categoryId: string): void {
+    this.router.onSameUrlNavigation = 'reload';
+    const currentUser = JSON.parse(localStorage.currentUser || null);
+    const queryUser = currentUser?.userName || currentUser?.uid || params?.userName;
+    this.router.navigate(
+      ['/blog', queryUser, 'category', categoryId],
+      {
+        queryParams: { isCreatingPost: 'true' },
+      }
+      ).finally(() => {
+        this.router.onSameUrlNavigation = 'ignore'; // Restore config after navigation completes
+      }
+    );
+  }
+
   goToBlogPost(params: any, postId: string): void {
     this.router.onSameUrlNavigation = 'reload';
     const currentUser = JSON.parse(localStorage.currentUser || null);

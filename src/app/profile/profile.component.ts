@@ -108,7 +108,10 @@ export class ProfileComponent implements OnInit {
       if (result.value) {
         if (this.isEditing){
           this.profileService
-          .updateProfile(this.profileForm.value)
+          .update(
+            `profiles/${this.profileForm.value.id}`,
+            this.profileForm.value
+          )
           .then(() => {
             this.toastHelper.showSuccess('Profile Update', 'Success!');
           })

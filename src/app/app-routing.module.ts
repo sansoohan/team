@@ -17,6 +17,7 @@ const appRoutes: Routes = [
   { path: 'blog/:userName', component: BlogComponent }, // PrologueComponent
   { path: 'blog/:userName/post/:postId', component: BlogComponent }, // PostComponent
   { path: 'blog/:userName/category/:categoryId', component: BlogComponent }, // CategoryComponent
+  { path: 'blog/:userName/category/:categoryId/new-post', component: BlogComponent }, // PostComponent
   { path: 'sign-in', component: SignInComponent },
   { path: 'sign-up', component: SignUpComponent },
   { path: 'contact', component: ContactComponent },

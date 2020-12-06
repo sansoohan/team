@@ -10,62 +10,117 @@
   <div class="blog-post">
     <form *ngIf="postContentsForm" [formGroup]="postContentsForm">
       <section class="post-showing-section">
-        <Button
-          class="btn btn-sm btn-info"
-          *ngIf="authService.isSignedIn() && !isEditingPost"
-          (click)="clickPostEdit()"
-        >Edit Post</Button>
-        <Button
-          class="btn btn-sm btn-success"
-          *ngIf="authService.isSignedIn() && isEditingPost"
-        >Update</Button>
-        <Button
-          class="btn btn-sm btn-danger"
-          *ngIf="authService.isSignedIn() && isEditingPost"
-          (click)="clickPostEditCancel()"
-        >Cancel</Button>
+        <div *ngIf="isCreatingPost">
+          <Button
+            class="btn btn-sm btn-success mr-2"
+            *ngIf="authService.isSignedIn() && isEditingPost"
+            (click)="handleClickEditPostCreateUpdate()"
+          >Update</Button>
+          <Button
+            class="btn btn-sm btn-danger mr-2"
+            *ngIf="authService.isSignedIn() && isEditingPost"
+            (click)="handleClickEditPostCreateCancel()"
+          >Cancel</Button>
+        </div>
+
+        <div *ngIf="!isCreatingPost" class="row">
+          <div class="col-8">
+            <Button
+              class="btn btn-sm btn-info mr-2"
+              *ngIf="authService.isSignedIn() && !isEditingPost"
+              (click)="clickPostEdit()"
+            >Edit Post</Button>
+            <Button
+              class="btn btn-sm btn-success mr-2"
+              *ngIf="authService.isSignedIn() && isEditingPost"
+              (click)="handleClickEditPostUpdate()"
+            >Update</Button>
+            <Button
+              class="btn btn-sm btn-warning mr-2"
+              *ngIf="authService.isSignedIn() && isEditingPost"
+              (click)="handleClickEditPostDelete()"
+            >Remove</Button>
+            <Button
+              class="btn btn-sm btn-danger mr-2"
+              *ngIf="authService.isSignedIn() && isEditingPost"
+              (click)="clickPostEditCancel()"
+            >Cancel</Button>
+          </div>
+          <Button
+            class="btn btn-sm btn-info"
+            style="margin-left:auto;"
+            *ngIf="authService.isSignedIn() && !isEditingPost"
+            (click)="routerHelper.goToBlogCategoryNewPost(params,postContentsForm.value.categoryId)"
+          >Create New Post</Button>
+        </div>
         <div *ngIf="!isEditingPost">
           <div class="form-row">
             <div class="col-9">
               <span
-                class="post-title-col blog-link"
+                class="post-show-title-col blog-link"
                 (click)="routerHelper.goToBlogPost(params,postContentsForm.controls.id.value)"
               >
                 {{postContentsForm.controls.postTitle.value}}
               </span>
               <span>| </span>
               <span
-                class="post-title-category-col blog-link"
+                class="post-show-title-category-col blog-link"
                 (click)="routerHelper.goToBlogCategory(params,postContentsForm.controls.categoryId.value)"
               >{{getCategoryTitle(postContentsForm.controls.categoryId.value)}}</span>
             </div>
             <div class="col-3">
-              <div style="text-align:right">{{dataTransferHelper.numberToDateString(postContentsForm.controls.createdAt.value)}}</div>
+              <div class="post-show-title-date">{{dataTransferHelper.numberToDateString(postContentsForm.controls.createdAt.value)}}</div>
             </div>
           </div>
           <div class="form-row">
-            <div class="col-12" style="padding:0px">
-              <markdown emoji lineNumbers ngPreserveWhitespaces>
-                {{postContentsForm.controls.postMarkdown.value}}
-              </markdown>  
+            <div class="col-12 post-edit-content-col">
+              <markdown
+                emoji
+                lineNumbers
+                ngPreserveWhitespaces
+                data={{postContentsForm.controls.postMarkdown.value}}
+              >
+              </markdown>
             </div>
           </div>
         </div>
       </section>
 
       <section class="post-editing-section">
+        <div
+          *ngIf="hasNullPostTitleError"
+          class="post-edit-title-col-null-error mt-3"
+        >Please Insert Title</div>
         <div class="d-flex flex-wrap" *ngIf="isEditingPost">
           <div class="post-edit-col">
-            <input type="text" class="form-control post-editarea" formControlName="postTitle"/>
-            <textarea class="form-control post-editarea" rows="{{getPostMarkdownLines()}}" formControlName="postMarkdown"></textarea>
+            <input
+              type="text"
+              class="form-control post-editarea"
+              formControlName="postTitle"
+              placeholder="Title"
+            />
+            <textarea
+              class="form-control post-editarea"
+              rows="{{getPostMarkdownLines()}}"
+              formControlName="postMarkdown"
+              placeholder="Content"
+            ></textarea>
           </div>
-          
-          <div class="post-show-col">
-            <span
-              class="post-title-col post-link"
-            >{{postContentsForm.controls.postTitle.value}}</span>
-            <markdown emoji lineNumbers ngPreserveWhitespaces data={{postContentsForm.controls.postMarkdown.value}}>
-            </markdown>
+
+          <div class="post-edit-preview-col">
+            <div
+              class="post-edit-title-col post-link"
+            >{{postContentsForm.controls.postTitle.value}}</div>
+
+            <div class="post-edit-content-col">
+              <markdown
+                emoji
+                lineNumbers
+                ngPreserveWhitespaces
+                data={{postContentsForm.controls.postMarkdown.value}}
+              >
+              </markdown>
+            </div>
           </div>
         </div>
       </section>
