@@ -16,6 +16,13 @@ h4 {
   color: white;
 }
 
+.comment-add-button {
+  margin: 0 0.3rem;
+  padding: 0 0.3rem;
+  margin-left:auto;
+  color: white;
+}
+
 .comment-edit-button {
   margin: 0 0.3rem;
   padding: 0 0.3rem;

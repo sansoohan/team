@@ -11,6 +11,39 @@ export class DataTransferHelper {
   numberToArray(input: number): Array<any>{
     return new Array(input);
   }
+
+  range = (start, stop, step) => Array.from({ length: (stop - start) / step + 1}, (_, i) => start + (i * step));
+
+  markDownPreprocess(input: string): string {
+    const lines = input.split('\n')
+    const codeLineStartEndIndexes = lines.map((line, i) =>
+      line.split('```').length % 2 === 0
+        ? i
+        : null).filter((num) => num !== null);
+    
+    console.log(codeLineStartEndIndexes)
+    if(codeLineStartEndIndexes.length % 2 === 1) {
+      codeLineStartEndIndexes.pop();
+    }
+    let codeLineNumbers = []
+    for(let i=0; i < codeLineStartEndIndexes.length; i+=2){
+      codeLineNumbers = [...codeLineNumbers, ...this.range(codeLineStartEndIndexes[i], codeLineStartEndIndexes[i+1], 1)]
+    }
+    console.log(codeLineNumbers)
+
+    const retLineString = lines.map((line, i) => {
+      if(!line){
+        return line + '&NewLine;<br>\n'
+      }
+      if(codeLineNumbers.includes(i)){
+        return `\n${line}${codeLineNumbers.includes(i+1) ? '' : '\n'}`
+      }
+      return line + '<br>\n'
+    })
+    console.log(retLineString)
+    return retLineString.join('')
+  }
+
   numberToDateString(input: number): string {
     const SECOND = 1000;
     const MINUTE = 60 * SECOND;

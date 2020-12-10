@@ -100,3 +100,7 @@ section.post-editing-section {
     width: 50%;
   }
 }
+
+.blog-font ul li p {
+  margin-bottom: 0;
+}

@@ -5,7 +5,13 @@
       [class.comment-section]="isEditingCommentIds.length===0"
       [class.comment-editing-section]="isEditingCommentIds.length!==0"
     >
-      <h4>Comments</h4>
+      <div class="d-flex">
+        <div>Comments</div>
+        <div
+          class="btn btn-outline-light comment-add-button"
+        >Leave Comment</div>
+      </div>
+
       <form *ngIf="commentContentsForm" [formGroup]="commentContentsForm">
         <div formArrayName="commentContents">
           <div
@@ -52,10 +58,9 @@
                     class="blog-link col-1"
                     (click)="formHelper.toggleCollapse(commentContentsForm.controls.commentContents['controls'],commentContent)"
                   >
-                    <i *ngIf="commentContent.controls.collapsed.value" class="fa fa-caret-up"></i>
-                    <i *ngIf="!commentContent.controls.collapsed.value" class="fa fa-caret-down"></i>
+                    <i *ngIf="commentContent.controls.collapsed.value" class="fa fa-caret-down"></i>
+                    <i *ngIf="!commentContent.controls.collapsed.value" class="fa fa-caret-up"></i>
                   </div>
-
                 </div>
                 <div class="row">
                   <div class="col-12 comment-list-col">
@@ -64,7 +69,7 @@
                       emoji
                       lineNumbers
                       ngPreserveWhitespaces
-                      data={{commentContent.controls.commentMarkdown.value}}>
+                      data={{dataTransferHelper.markDownPreprocess(commentContent.controls.commentMarkdown.value)}}>
                     </markdown>
                   </div>
 
@@ -92,7 +97,7 @@
                           emoji
                           lineNumbers
                           ngPreserveWhitespaces
-                          data={{commentContent.controls.commentMarkdown.value}}
+                          data={{dataTransferHelper.markDownPreprocess(commentContent.controls.commentMarkdown.value)}}
                         >
                         </markdown>
                       </div>
