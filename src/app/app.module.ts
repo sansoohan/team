@@ -25,7 +25,7 @@ import { environment } from 'src/environments/environment';
 
 // ngx module
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
-import { MarkdownModule } from 'ngx-markdown';
+import { MarkdownModule, MarkedOptions } from 'ngx-markdown';
 
 // View
 import { AppComponent } from 'src/app/app.component';
@@ -58,7 +58,17 @@ import { NotFoundModule } from 'src/app/modules/not-found/not-found.module';
     BrowserAnimationsModule,
     SweetAlert2Module.forRoot(),
     MarkdownModule.forRoot({
-      sanitize: SecurityContext.NONE
+      sanitize: SecurityContext.NONE,
+      markedOptions: {
+        provide: MarkedOptions,
+        useValue: {
+          gfm: true,
+          breaks: false,
+          pedantic: false,
+          smartLists: true,
+          smartypants: false,
+        },
+      },
     }),
     NgxAuthFirebaseUIModule.forRoot(
       environment.firebase,

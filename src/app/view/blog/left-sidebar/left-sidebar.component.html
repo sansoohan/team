@@ -43,8 +43,8 @@
                   class="nav-link col-1 blog-link"
                   (click)="formHelper.toggleCollapse(categoryContentsForm.controls.categoryContents['controls'],categoryContent)"
                 >
-                  <i *ngIf="categoryContent.controls.collapsed.value" class="fa fa-caret-up"></i>
-                  <i *ngIf="!categoryContent.controls.collapsed.value" class="fa fa-caret-down"></i>
+                  <i *ngIf="categoryContent.controls.collapsed.value" class="fa fa-caret-down"></i>
+                  <i *ngIf="!categoryContent.controls.collapsed.value" class="fa fa-caret-up"></i>
                 </div>
               </div>
             </li>

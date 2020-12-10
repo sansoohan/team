@@ -80,7 +80,7 @@
                 emoji
                 lineNumbers
                 ngPreserveWhitespaces
-                data={{postContentsForm.controls.postMarkdown.value}}
+                data={{dataTransferHelper.markDownPreprocess(postContentsForm.controls.postMarkdown.value)}}
               >
               </markdown>
             </div>
@@ -119,7 +119,7 @@
                 emoji
                 lineNumbers
                 ngPreserveWhitespaces
-                data={{postContentsForm.controls.postMarkdown.value}}
+                data={{dataTransferHelper.markDownPreprocess(postContentsForm.controls.postMarkdown.value)}}
               >
               </markdown>
             </div>
