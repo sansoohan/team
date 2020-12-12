@@ -63,6 +63,8 @@ export class RouterHelper {
   }
 
   scrollToIdElement(profileTitle: string): void {
-    this.viewportScroller.scrollToAnchor(profileTitle);
+    setTimeout(() => {
+      this.viewportScroller.scrollToAnchor(profileTitle);
+    }, 10)
   }
 }

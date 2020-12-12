@@ -72,8 +72,8 @@ export class FormHelper {
 
   countChildContent(allContents: Array<FormGroup>, parentContent: FormGroup) {
     const count = allContents.filter((content) =>
-      parentContent.controls.id.value === content.value.parentId &&
-      parentContent.controls.id.value !== content.value.id
+      parentContent.controls.id?.value === content.value.parentId &&
+      parentContent.controls.id?.value !== content.value.id
     ).length;
     return count;
   }

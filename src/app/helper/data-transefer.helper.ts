@@ -21,7 +21,6 @@ export class DataTransferHelper {
         ? i
         : null).filter((num) => num !== null);
     
-    console.log(codeLineStartEndIndexes)
     if(codeLineStartEndIndexes.length % 2 === 1) {
       codeLineStartEndIndexes.pop();
     }
@@ -29,7 +28,6 @@ export class DataTransferHelper {
     for(let i=0; i < codeLineStartEndIndexes.length; i+=2){
       codeLineNumbers = [...codeLineNumbers, ...this.range(codeLineStartEndIndexes[i], codeLineStartEndIndexes[i+1], 1)]
     }
-    console.log(codeLineNumbers)
 
     const retLineString = lines.map((line, i) => {
       if(!line){
@@ -40,7 +38,6 @@ export class DataTransferHelper {
       }
       return line + '<br>\n'
     })
-    console.log(retLineString)
     return retLineString.join('')
   }
 
@@ -59,29 +56,42 @@ export class DataTransferHelper {
     const date = new Date(input);
     return `${date.getFullYear()}. ${date.getMonth()}. ${date.getDate()}`;
   }
-  replaceToDateRecursively(profileContent: any): any{
-    if (profileContent instanceof Array){
-      for (let i = 0; i < profileContent.length; i++){
-        if (profileContent[i] instanceof firebase.firestore.Timestamp){
-          profileContent[i] = profileContent[i].toDate();
+  replaceToDateRecursively(content: any): any{
+    if (content instanceof Array){
+      for (let i = 0; i < content.length; i++){
+        if (content[i] instanceof firebase.firestore.Timestamp){
+          content[i] = content[i].toDate();
         }
         else{
-          this.replaceToDateRecursively(profileContent[i]);
+          this.replaceToDateRecursively(content[i]);
         }
       }
     }
-    else if (profileContent instanceof Object) {
-      for (const key in profileContent){
+    else if (content instanceof Object) {
+      for (const key in content){
         if (key){
-          if (profileContent[key] instanceof firebase.firestore.Timestamp){
-            profileContent[key] = profileContent[key].toDate();
+          if (content[key] instanceof firebase.firestore.Timestamp){
+            content[key] = content[key].toDate();
           }
           else{
-            this.replaceToDateRecursively(profileContent[key]);
+            this.replaceToDateRecursively(content[key]);
           }
         }
       }
     }
-    return profileContent;
+    return content;
+  }
+
+  compareByOrderRecursively(contentA: any, contentB: any): number{
+    const recursiveDeepCount: number = Math.max(contentA.order.length, contentB.order.length);
+    for(let orderIndex = 0; orderIndex < recursiveDeepCount; orderIndex++){
+      const orderA: number = contentA.order[orderIndex] || 0;
+      const orderB: number = contentB.order[orderIndex] || 0;
+      if(orderA === orderB && orderA !== 0) {
+        continue;
+      }
+
+      return orderA - orderB;
+    }
   }
 }

@@ -10,16 +10,16 @@
     <ul class="navbar-nav blog-navbar" *ngIf="!isEditingPost">
       <div class="nav-item">
         <Button
-          class="btn btn-sm btn-info"
+          class="btn btn-sm btn-dark mr-2 mb-2"
           *ngIf="authService.isSignedIn() && !isEditingCategory"
           (click)="clickCategoryEdit()"
         >Edit Category</Button>
         <Button
-          class="btn btn-sm btn-success"
+          class="btn btn-sm btn-outline-light mr-2 mb-2"
           *ngIf="authService.isSignedIn() && isEditingCategory"
         >Update</Button>
         <Button
-          class="btn btn-sm btn-danger"
+          class="btn btn-sm btn-outline-light mr-2 mb-2"
           *ngIf="authService.isSignedIn() && isEditingCategory"
           (click)="clickCategoryEditCancel()"
         >Cancel</Button>
