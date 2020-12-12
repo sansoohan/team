@@ -1,41 +1,40 @@
 export class CommentContent {
   id: string;
   postId?: string;
-  writerId: string;
-  writerName: string;
+  userName: string;
   parentId?: string;
-  createdAt: number;
+  createdAt?: number;
+  order: Array<number>;
   commentMarkdown: string;
   commentImageSrcs: any;
-  commentNumber?: number;
   likes: Array<string>;
   collapsed: boolean;
   deepCount?: number;
   hidden: boolean;
   ownerId: string;
   constructor(
-    postId: string = null,
-    writerId: string = '',
-    writerName: string = '',
-    parentId: string = null,
-    createdAt: number = Number(new Date()),
+    id: string = '',
+    postId: string = '',
+    userName: string = '',
+    parentId: string = '',
+    createdAt: number = 0,
+    order: Array<number> = [],
     commentMarkdown: string = '',
     commentImageSrcs: any = [],
-    commentNumber: number = null,
     likes: Array<string> = [],
     collapsed: boolean = false,
-    deepCount: number = null,
+    deepCount: number = 0,
     hidden: boolean = false,
     ownerId: string = '',
   ){
+    this.id = id;
     this.postId = postId;
-    this.writerId = writerId;
-    this.writerName = writerName;
+    this.userName = userName;
     this.parentId = parentId;
     this.createdAt = createdAt,
+    this.order = order,
     this.commentMarkdown = commentMarkdown;
     this.commentImageSrcs = commentImageSrcs;
-    this.commentNumber = commentNumber;
     this.likes = likes;
     this.collapsed = collapsed;
     this.deepCount = deepCount;

@@ -3,7 +3,6 @@ import { Subscription, Observable } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { CommentContent } from './comment.content';
 import { BlogService } from 'src/app/services/blog.service';
-import { FormGroup } from '@angular/forms';
 import { FormHelper } from 'src/app/helper/form.helper';
 import { DataTransferHelper } from 'src/app/helper/data-transefer.helper';
 import { BlogContent } from '../../blog.content';
@@ -21,6 +20,9 @@ import { AuthService } from 'src/app/services/auth.service';
 export class CommentComponent implements OnInit {
   isPage: boolean;
   isEditingCommentIds: Array<string>;
+  isCreatingComment: Boolean;
+  creatingCommentParentId: string;
+  creatingCommentForm: any;
   isShowingComment: boolean;
   hasNullCommentContentError: boolean;
   blogId: string;
@@ -46,6 +48,7 @@ export class CommentComponent implements OnInit {
     this.paramSub = this.route.params.subscribe(params => {
       this.isEditingCommentIds = [];
       this.hasNullCommentContentError = false;
+      this.isCreatingComment = false;
       this.isShowingComment = false;
       this.params = params;
     });
@@ -63,15 +66,18 @@ export class CommentComponent implements OnInit {
     this._blogContents = blogContents;
     this.blogId = blogContents[0].id;
 
-    this.commentContentsObserver = this.blogService.getCommentContentsObserver(this.blogId, this.params.postId);
+    this.commentContentsObserver =
+      this.blogService.getCommentContentsObserver(this.blogId, this.params.postId);
     this.commentContentsSub = this.commentContentsObserver.subscribe(commentContents => {
-      if (!commentContents || commentContents.length === 0){
+      if (!commentContents || commentContents.length === 0) {
         this.isPage = false;
         return;
       }
       this.commentContents = commentContents;
-      this.commentContents.sort((categoryA: CommentContent, categoryB: CommentContent) =>
-        categoryA.commentNumber - categoryB.commentNumber);
+      // this.commentContents.sort((categoryA: CommentContent, categoryB: CommentContent) =>
+      //   categoryA.commentNumber - categoryB.commentNumber);
+
+      this.commentContents.sort(this.dataTransferHelper.compareByOrderRecursively);
       this.commentContentsForm =
         this.formHelper.buildFormRecursively({commentContents: this.commentContents});
       this.isShowingComment = true;
@@ -89,7 +95,51 @@ export class CommentComponent implements OnInit {
   }
 
   getCommentMarkdownLines(commentContent){
-    return commentContent?.controls?.postMarkdown?.value?.match(/\n/g)?.length + 2 || 3;
+    return commentContent?.controls?.commentMarkdown?.value?.match(/\n/g)?.length + 2 || 3;
+  }
+
+  clickCommnetNew(parentId: string = null){
+    this.isCreatingComment = true;
+    this.creatingCommentParentId = parentId;
+    this.creatingCommentForm = this.formHelper.buildFormRecursively(new CommentContent());
+    this.routerHelper.scrollToIdElement('comment-new');
+  }
+
+  clickCommentNewCancel() {
+    this.isCreatingComment = false;
+    this.creatingCommentParentId = null;
+    delete this.creatingCommentForm;  
+  }
+
+  clickCommentNewUpdate() {
+    const newComment = this.creatingCommentForm.value;
+    newComment.postId = this.params.postId;
+    newComment.userName = JSON.parse(localStorage.currentUser).userName;
+    const parentComment = this.commentContents
+    .find((commentContent) => commentContent.id === this.creatingCommentParentId)
+
+    const createdAt = Number(new Date())
+    newComment.createdAt = createdAt;
+    newComment.order = [createdAt];
+
+    if(parentComment){
+      newComment.parentId = parentComment.id;
+      newComment.deepCount = parentComment.deepCount + 1;
+      newComment.order = [...parentComment.order, createdAt];
+    }
+
+    this.creatingCommentForm = this.formHelper.buildFormRecursively(newComment);
+    this.blogService
+    .create(`blogs/${this.blogContents[0].id}/comments`, newComment)
+    .then(() => {
+      this.toastHelper.showSuccess('Comment Update', 'Success!');
+      this.isCreatingComment = false;
+      this.creatingCommentParentId = null;
+      delete this.creatingCommentForm;
+    })
+    .catch(e => {
+      this.toastHelper.showWarning('Comment Update Failed.', e);
+    });
   }
 
   clickCommentEdit(commentId: string) {
@@ -99,31 +149,6 @@ export class CommentComponent implements OnInit {
   clickCommentEditCancel(commentId) {
     this.isEditingCommentIds = this.isEditingCommentIds
     .filter((isEditingCommentId) => isEditingCommentId !== commentId);
-  }
-
-  handleClickEditCommentCreateUpdate(): void {
-    const commentForm = this.formHelper.buildFormRecursively(new CommentContent());
-    if (this.isEditingCommentIds.includes(commentForm.value.id)){
-      this.hasNullCommentContentError = false;
-      if (!commentForm.value.commentMarkdown){
-        this.hasNullCommentContentError = true;
-        return;
-      }
-
-      // tslint:disable-next-line: no-string-literal
-      commentForm['controls'].postId.setValue(this.params.postId);
-      this.blogService
-      .create(
-        `blogs/${this.blogContents[0].id}/comments`,
-        commentForm
-      )
-      .then(() => {
-        this.toastHelper.showSuccess('Comment Update', 'Success!');
-      })
-      .catch(e => {
-        this.toastHelper.showWarning('Comment Update Failed.', e);
-      });
-    }
   }
 
   handleClickEditCommentUpdate(commentForm): void {
@@ -157,11 +182,10 @@ export class CommentComponent implements OnInit {
           `blogs/${this.blogContents[0].id}/comments/${commentContent.value.id}`,
         )
         .then(() => {
-          this.toastHelper.showSuccess('Post Delete', 'OK');
-          this.routerHelper.goToBlogCategory(this.params, commentContent.value.categoryId);
+          this.toastHelper.showSuccess('Comment Delete', 'OK');
         })
         .catch(e => {
-          this.toastHelper.showWarning('Post Delete Failed.', e);
+          this.toastHelper.showWarning('Comment Delete Failed.', e);
         });
       }
       else if (result.dismiss === Swal.DismissReason.cancel) {

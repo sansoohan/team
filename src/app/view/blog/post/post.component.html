@@ -12,12 +12,12 @@
       <section class="post-section">
         <div *ngIf="isCreatingPost">
           <Button
-            class="btn btn-sm btn-success mr-2"
+            class="btn btn-sm btn-outline-light mr-2"
             *ngIf="authService.isSignedIn() && isEditingPost"
             (click)="handleClickEditPostCreateUpdate()"
           >Update</Button>
           <Button
-            class="btn btn-sm btn-danger mr-2"
+            class="btn btn-sm btn-outline-light mr-2"
             *ngIf="authService.isSignedIn() && isEditingPost"
             (click)="handleClickEditPostCreateCancel()"
           >Cancel</Button>
@@ -26,28 +26,28 @@
         <div *ngIf="!isCreatingPost" class="row">
           <div class="col-8">
             <Button
-              class="btn btn-sm btn-info mr-2"
+              class="btn btn-sm btn-warning mr-2"
               *ngIf="authService.isSignedIn() && !isEditingPost"
               (click)="clickPostEdit()"
             >Edit Post</Button>
             <Button
-              class="btn btn-sm btn-success mr-2"
+              class="btn btn-sm btn-outline-light mr-2"
               *ngIf="authService.isSignedIn() && isEditingPost"
               (click)="handleClickEditPostUpdate()"
             >Update</Button>
             <Button
-              class="btn btn-sm btn-warning mr-2"
+              class="btn btn-sm btn-outline-light mr-2"
               *ngIf="authService.isSignedIn() && isEditingPost"
               (click)="handleClickEditPostDelete()"
             >Remove</Button>
             <Button
-              class="btn btn-sm btn-danger mr-2"
+              class="btn btn-sm btn-outline-light mr-2"
               *ngIf="authService.isSignedIn() && isEditingPost"
               (click)="clickPostEditCancel()"
             >Cancel</Button>
           </div>
           <Button
-            class="btn btn-sm btn-info"
+            class="btn btn-sm btn-warning"
             style="margin-left:auto;"
             *ngIf="authService.isSignedIn() && !isEditingPost"
             (click)="routerHelper.goToBlogCategoryNewPost(params,postContentsForm.value.categoryId)"
@@ -65,6 +65,7 @@
               <span>| </span>
               <span
                 class="post-show-title-category-col blog-link"
+                style="font-size: 0.8rem;"
                 (click)="routerHelper.goToBlogCategory(params,postContentsForm.controls.categoryId.value)"
               >{{getCategoryTitle(postContentsForm.controls.categoryId.value)}}</span>
             </div>

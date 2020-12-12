@@ -137,12 +137,10 @@ export class PostComponent implements OnInit {
         return;
       }
 
-      this.postContentsForm.controls.categoryId.setValue(this.params.categoryId);
+      const newPost = this.postContentsForm.value
+      newPost.categoryId = this.params.categoryId
       this.blogService
-      .create(
-        `blogs/${this.blogContents[0].id}/posts`,
-        this.postContentsForm
-      )
+      .create(`blogs/${this.blogContents[0].id}/posts`, newPost)
       .then(() => {
         this.toastHelper.showSuccess('Post Update', 'Success!');
         this.routerHelper.goToBlogPost(this.params, this.postContentsForm.value.id);

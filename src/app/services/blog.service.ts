@@ -94,16 +94,16 @@ export class BlogService {
     return categoryContentsObserver;
   }
 
-  async create(path: string, contentForm: any): Promise<void> {
+  async create(path: string, content: any): Promise<void> {
     if (!this.authService.isSignedIn()) {
       return null;
     }
+    content.ownerId = JSON.parse(localStorage.currentUser).uid;
 
-    return this.firestore.collection(path).add(contentForm.value)
+    return this.firestore.collection(path).add(content)
     .then(async (collection) => {
-      contentForm.controls.ownerId.setValue(JSON.parse(localStorage.currentUser).uid);
-      contentForm.controls.id.setValue(collection.id);
-      collection.update(contentForm.value);
+      content.id = collection.id;
+      collection.update(content);
     });
   }
 

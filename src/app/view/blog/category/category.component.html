@@ -29,7 +29,7 @@
             </span>
             <div style="margin-left:auto;">
               <span
-                class="btn btn-sm btn-info"
+                class="btn btn-sm btn-warning"
                 *ngIf="authService.isSignedIn() && !isEditingPost"
                 (click)="routerHelper.goToBlogCategoryNewPost(params,params.categoryId)"
               >Create New Post</span>

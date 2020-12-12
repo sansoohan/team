@@ -20,13 +20,16 @@ h4 {
   margin: 0 0.3rem;
   padding: 0 0.3rem;
   margin-left:auto;
-  color: white;
 }
 
 .comment-edit-button {
   margin: 0 0.3rem;
   padding: 0 0.3rem;
-  color: grey;
+}
+
+.comment-new-cancel-button {
+  margin: 0 0.3rem;
+  padding: 0 0.3rem;
 }
 
 .comment-list-row {
@@ -78,7 +81,7 @@ section.comment-editing-section {
 
 .comment-editarea {
   color: white;
-  font-size: 0.8rem;
+  font-size: 1rem;
   border: solid #222222;
   background-color: #222222;
   margin-top: 10px;
@@ -91,12 +94,21 @@ section.comment-editing-section {
 .comment-edit-content-col {
   margin: 0.5rem;
   padding: 0.5rem 1rem;
+  font-size: 0.8rem;
   background-color: #222222;
 }
 
 .comment-edit-col {
   width: 100%;
   padding-right: 1rem;
+}
+
+.comment-editarea {
+  color: white;
+  font-size: 0.8rem;
+  border: solid #222222;
+  background-color: #222222;
+  margin-top: 10px;
 }
 
 .comment-edit-preview-col {
