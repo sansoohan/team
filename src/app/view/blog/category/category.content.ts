@@ -5,7 +5,7 @@ export class CategoryContent {
   categoryTitle: string;
   createdAt?: number;
   collapsed: boolean;
-  deepCount?: number;
+  categoryOrder: Array<number>;
   parentId?: string;
   postCreatedAtList: Array<number>;
   hidden: boolean;
@@ -17,7 +17,7 @@ export class CategoryContent {
     categoryTitle: string = '',
     createdAt: number = Number(new Date()),
     collapsed: boolean = false,
-    deepCount: number = null,
+    categoryOrder: Array<number> = [],
     parentId: string = null,
     postCreatedAtList: Array<number> = [],
     hidden: boolean = false,
@@ -29,7 +29,7 @@ export class CategoryContent {
     this.categoryTitle = categoryTitle;
     this.createdAt = createdAt;
     this.collapsed = collapsed;
-    this.deepCount = deepCount;
+    this.categoryOrder = categoryOrder;
     this.parentId = parentId;
     this.postCreatedAtList = postCreatedAtList;
     this.hidden = hidden;

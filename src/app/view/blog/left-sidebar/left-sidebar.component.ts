@@ -6,6 +6,7 @@ import { RouterHelper } from 'src/app/helper/router.helper';
 import { FormHelper } from 'src/app/helper/form.helper';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
+import { BlogService } from 'src/app/services/blog.service';
 
 @Component({
   selector: 'app-blog-left-sidebar',
@@ -24,6 +25,7 @@ export class LeftSidebarComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     public authService: AuthService,
+    public blogService: BlogService,
     public dataTransferHelper: DataTransferHelper,
     public routerHelper: RouterHelper,
     public formHelper: FormHelper,

@@ -6,6 +6,7 @@ import { PostContent } from '../view/blog/post/post.content';
 import { CategoryContent } from '../view/blog/category/category.content';
 import { CommentContent } from '../view/blog/post/comment/comment.content';
 import { AuthService } from './auth.service';
+import { FormGroup, FormArray } from '@angular/forms';
 
 @Injectable({
   providedIn: 'root'
@@ -93,6 +94,20 @@ export class BlogService {
     .collection<CommentContent>('comments', ref => ref.where('postId', '==', postId))
     .valueChanges();
     return categoryContentsObserver;
+  }
+
+  getCategoryDeepCount(
+    categoryContent: any,
+    categoryContents: Array<any>,
+  ): number {
+    // console.log(categoryContent)
+    if(!categoryContent?.value.parentId){
+      return 1
+    }
+    const parentCategory = categoryContents
+    .find((category) => category.value.id === categoryContent.value.parentId)
+
+    return 1 + this.getCategoryDeepCount(parentCategory, categoryContents)
   }
 
   async create(path: string, content: any): Promise<void> {

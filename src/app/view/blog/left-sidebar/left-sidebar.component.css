@@ -89,3 +89,10 @@
   -o-transform: rotate(225deg);
   transform: rotate(225deg);
 }
+
+.cateogory-move-up-down {
+  font-size: 0.7rem;
+  color: white;
+  height: 50%;
+  margin:auto 0;
+}

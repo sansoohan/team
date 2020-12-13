@@ -120,8 +120,6 @@ export class CategoryComponent implements OnInit {
         for (const selectedCategory of selectedCategories){
           this.postCreatedAtList = [...this.postCreatedAtList, ...selectedCategory.postCreatedAtList]
         }
-        console.log(this.postCreatedAtList);
-
         this.changePageList(null);
       }
     });
