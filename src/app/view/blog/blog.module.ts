@@ -9,6 +9,7 @@ import { CategoryComponent } from './category/category.component';
 import { LeftSidebarComponent } from './left-sidebar/left-sidebar.component';
 import { PrologueComponent } from './prologue/prologue.component';
 import { NewPostComponent } from './category/new-post/new-post.component';
+import { MatPaginatorModule } from '@angular/material/paginator';
 
 @NgModule({
   declarations: [
@@ -23,9 +24,11 @@ import { NewPostComponent } from './category/new-post/new-post.component';
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    MatPaginatorModule,
     MarkdownModule.forChild(),
   ],
   exports: [
+    MatPaginatorModule,
     BlogComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

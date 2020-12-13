@@ -25,7 +25,7 @@
           <div class="row category-title-row">
             <span class="col-8 category-title-col">
               {{selectedCategory.value.categoryTitle}}
-              ({{selectedCategory.value.postCount + countChildPost()}})
+              ({{selectedCategory.value.postCreatedAtList.length + countChildPost()}})
             </span>
             <div style="margin-left:auto;">
               <span
@@ -54,6 +54,17 @@
               <span class="col-2 category-post-list-col">{{dataTransferHelper.numberToDateString(postContent.controls.createdAt.value)}}</span>
               <span class="col-1 category-post-list-col" style="text-align:right">{{postContent.controls.readCount.value}}</span>
             </div>
+          </div>
+
+          <div class="d-flex">
+            <mat-paginator
+              class="mx-auto pt-3 post-page-list"
+              [length]="postCreatedAtList.length"
+              [pageIndex]="pageIndex"
+              [pageSize]="pageSize"
+              [pageSizeOptions]="[1, 5, 10, 20]"
+              (page)="changePageList($event)">
+            </mat-paginator>
           </div>
         </section>
       </div>

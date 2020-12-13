@@ -11,9 +11,12 @@ import { AppRoutingModule } from 'src/app/app-routing.module';
 // Angular Material
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatToolbarModule } from '@angular/material/toolbar';
 
 // Firebase
 import { AngularFireAuthModule } from '@angular/fire/auth';
@@ -25,7 +28,7 @@ import { environment } from 'src/environments/environment';
 
 // ngx module
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
-import { MarkdownModule, MarkedOptions } from 'ngx-markdown';
+import { MarkdownModule, MarkedOptions, MarkedRenderer } from 'ngx-markdown';
 
 // View
 import { AppComponent } from 'src/app/app.component';
@@ -57,19 +60,16 @@ import { NotFoundModule } from 'src/app/modules/not-found/not-found.module';
     HttpClientModule,
     BrowserAnimationsModule,
     SweetAlert2Module.forRoot(),
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    HttpClientModule,
     MarkdownModule.forRoot({
       sanitize: SecurityContext.NONE,
-      markedOptions: {
-        provide: MarkedOptions,
-        useValue: {
-          gfm: true,
-          breaks: false,
-          pedantic: false,
-          smartLists: true,
-          smartypants: false,
-        },
-      },
     }),
+    MatButtonModule,
+    MatIconModule,
+    MatTabsModule,
+    MatToolbarModule,
     NgxAuthFirebaseUIModule.forRoot(
       environment.firebase,
       () => 'developer',
@@ -100,7 +100,6 @@ import { NotFoundModule } from 'src/app/modules/not-found/not-found.module';
     MatPasswordStrengthModule,
     MatInputModule,
     MatSelectModule,
-    MatButtonModule,
     MatCheckboxModule,
     MatChipsModule,
     EmbededGooglemapModule,

@@ -21,13 +21,6 @@ export class BlogService {
     private authService: AuthService,
   ) { }
 
-  getCategoryPost(blogId: string, categoryIds: Array<number>): Observable<PostContent[]> {
-    return this.firestore
-    .collection<BlogContent>('blogs').doc(blogId)
-    .collection<PostContent>('posts', ref => ref.where('categoryId', 'in', categoryIds))
-    .valueChanges();
-  }
-
   getBlogContentsObserver({params = null}): Observable<BlogContent[]> {
     if (!this.blogContentsObserver){
       const currentUser = JSON.parse(localStorage.currentUser || null);
@@ -48,24 +41,32 @@ export class BlogService {
       .collection<PostContent>('posts', ref => ref.where('id', '==', postId))
       .valueChanges();
   }
-  getPostListObserver(
-    {params = null},
-    blogId: string,
-    categoryIds: Array<string>
-  ): Observable<PostContent[]> {
-    const categoryId = params?.categoryId;
+  getProloguePostListObserver(blogId: string): Observable<PostContent[]> {
     if (!blogId){
       return;
     }
-    if (!categoryId) {
-      return this.firestore
+    return this.firestore
       .collection<BlogContent>('blogs').doc(blogId)
       .collection<PostContent>('posts', ref => ref.orderBy('createdAt', 'desc').limit(10))
       .valueChanges();
+  }
+
+  getCategoryPostListObserver(
+    blogId: string,
+    postCreatedAtList: Array<number>,
+  ): Observable<PostContent[]> {
+    if (!blogId){
+      return;
     }
+    if(postCreatedAtList.length === 0) {
+      postCreatedAtList = [-1]
+    }
+
     return this.firestore
       .collection<BlogContent>('blogs').doc(blogId)
-      .collection<PostContent>('posts', ref => ref.where('categoryId', 'in', categoryIds))
+      .collection<PostContent>('posts', ref => ref
+        .where('createdAt', 'in', postCreatedAtList)
+      )
       .valueChanges();
   }
 
