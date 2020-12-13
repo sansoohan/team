@@ -43,7 +43,9 @@ export class PrologueComponent implements OnInit {
 
   newPostConent = new PostContent();
   paramSub: Subscription;
+  queryParamSub: Subscription;
   params: any;
+  queryParams: any;
   selectedCategory: FormGroup;
   selectedChildCategories: Array<FormGroup>;
   selectedCategoryId: string;
@@ -61,6 +63,9 @@ export class PrologueComponent implements OnInit {
       this.isShowingCategoryContents = false;
       this.isEditingCategory = false;
       this.params = params;
+    });
+    this.queryParamSub = this.route.queryParams.subscribe(queryParams => {
+      this.queryParams = queryParams;
     });
   }
 
@@ -87,8 +92,7 @@ export class PrologueComponent implements OnInit {
       this.categoryContentsForm = this.formHelper.buildFormRecursively({categoryContents: this.categoryContents});
 
       if (!this.params.categoryId){
-        const categoryIds = [];
-        this.postListObserver = this.blogService.getPostListObserver({params: this.params}, this.blogId, categoryIds);
+        this.postListObserver = this.blogService.getProloguePostListObserver(this.blogId);
         this.postListSub = this.postListObserver.subscribe(postList => {
           this.postList = postList;
           this.postListForm = this.formHelper.buildFormRecursively({postList: this.postList});
@@ -120,6 +124,7 @@ export class PrologueComponent implements OnInit {
 
   OnDestroy() {
     this.paramSub?.unsubscribe();
+    this.queryParamSub?.unsubscribe();
     this.postListSub?.unsubscribe();
     this.categoryContentsSub?.unsubscribe();
   }

@@ -139,15 +139,32 @@ export class PostComponent implements OnInit {
 
       const newPost = this.postContentsForm.value
       newPost.categoryId = this.params.categoryId
-      this.blogService
-      .create(`blogs/${this.blogContents[0].id}/posts`, newPost)
-      .then(() => {
-        this.toastHelper.showSuccess('Post Update', 'Success!');
-        this.routerHelper.goToBlogPost(this.params, this.postContentsForm.value.id);
-      })
-      .catch(e => {
-        this.toastHelper.showWarning('Post Update Failed.', e);
-      });
+      newPost.createdAt = Number(new Date())
+      const selectedCategory: CategoryContent = this.categoryContents.find((categoryContent) =>
+        categoryContent.id === newPost.categoryId
+      )
+      if(selectedCategory){
+        console.log(selectedCategory)
+        selectedCategory.postCreatedAtList = [...selectedCategory.postCreatedAtList, newPost.createdAt]
+        this.blogService.update(
+          `blogs/${this.blogContents[0].id}/categories/${selectedCategory.id}`,
+          selectedCategory
+        ).then(() => {
+          console.log('???')
+          this.blogService
+          .create(`blogs/${this.blogContents[0].id}/posts`, newPost)
+          .then(() => {
+            this.toastHelper.showSuccess('Post Update', 'Success!');
+            this.routerHelper.goToBlogPost(this.params, this.postContentsForm.value.id);
+          })
+          .catch(e => {
+            this.toastHelper.showWarning('Post Update Failed.', e);
+          });  
+        })
+        .catch(e => {
+          this.toastHelper.showWarning('Post Update Failed.', e);
+        });
+      }
     }
   }
 
@@ -173,18 +190,35 @@ export class PostComponent implements OnInit {
   }
 
   async handleClickEditPostDelete() {
-    this.toastHelper.askYesNo('Remove Profile Category', 'Are you sure?').then((result) => {
+    this.toastHelper.askYesNo('Remove Post', 'Are you sure?').then((result) => {
       if (result.value) {
-        this.blogService.delete(
-          `blogs/${this.blogContents[0].id}/posts/${this.postContentsForm.value.id}`,
+        const targetCreatedAt = this.postContentsForm.value.createdAt
+        const selectedCategory: CategoryContent = this.categoryContents.find((categoryContent) =>
+          categoryContent.id === this.postContentsForm.value.categoryId
         )
-        .then(() => {
-          this.toastHelper.showSuccess('Post Delete', 'OK');
-          this.routerHelper.goToBlogCategory(this.params, this.postContentsForm.value.categoryId);
-        })
-        .catch(e => {
-          this.toastHelper.showWarning('Post Delete Failed.', e);
-        });
+
+        if(selectedCategory){
+          selectedCategory.postCreatedAtList = selectedCategory.postCreatedAtList
+            .filter((createdAt) => createdAt !== targetCreatedAt)
+          this.blogService.update(
+            `blogs/${this.blogContents[0].id}/categories/${selectedCategory.id}`,
+            selectedCategory
+          ).then(() => {
+            this.blogService.delete(
+              `blogs/${this.blogContents[0].id}/posts/${this.postContentsForm.value.id}`,
+            )
+            .then(() => {
+              this.toastHelper.showSuccess('Post Delete', 'OK');
+              this.routerHelper.goToBlogCategory(this.params, this.postContentsForm.value.categoryId);
+            })
+            .catch(e => {
+              this.toastHelper.showWarning('Post Delete Failed.', e);
+            });  
+          })
+          .catch(e => {
+            this.toastHelper.showWarning('Post Delete Failed.', e);
+          });  
+        }
       }
       else if (result.dismiss === Swal.DismissReason.cancel) {
       }

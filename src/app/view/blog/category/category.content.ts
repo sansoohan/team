@@ -7,8 +7,9 @@ export class CategoryContent {
   collapsed: boolean;
   deepCount?: number;
   parentId?: string;
-  postCount: number;
+  postCreatedAtList: Array<number>;
   hidden: boolean;
+  ownerId: string;
   constructor(
     id: string = '',
     blogId: string = null,
@@ -18,8 +19,9 @@ export class CategoryContent {
     collapsed: boolean = false,
     deepCount: number = null,
     parentId: string = null,
-    postCount: number = 0,
+    postCreatedAtList: Array<number> = [],
     hidden: boolean = false,
+    ownerId: '',
   ){
     this.id = id;
     this.blogId = blogId;
@@ -29,7 +31,8 @@ export class CategoryContent {
     this.collapsed = collapsed;
     this.deepCount = deepCount;
     this.parentId = parentId;
-    this.postCount = postCount;
+    this.postCreatedAtList = postCreatedAtList;
     this.hidden = hidden;
+    this.ownerId = ownerId;
   }
 }

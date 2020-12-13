@@ -65,3 +65,8 @@ section.category-section {
   color: white;
   font-size: 0.8rem;
 }
+
+.post-page-list {
+  background-color: #333333;
+  color: white;
+}

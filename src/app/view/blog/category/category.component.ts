@@ -43,12 +43,18 @@ export class CategoryComponent implements OnInit {
 
   newPostConent = new PostContent();
   paramSub: Subscription;
+  queryParamSub: Subscription;
   params: any;
   queryParams: any;
   selectedCategory: FormGroup;
   selectedChildCategories: Array<FormGroup>;
   selectedCategoryId: string;
   selectedChildCategoryIds: Array<string>;
+
+  selectedPageNum: number;
+  pageSize: number;
+  pageIndex: number;
+  postCreatedAtList: Array<number>;
 
   constructor(
     private route: ActivatedRoute,
@@ -63,8 +69,10 @@ export class CategoryComponent implements OnInit {
       this.isEditingCategory = false;
       this.params = params;
     });
-    this.route.queryParams.subscribe(queryParams => {
+    this.queryParamSub = this.route.queryParams.subscribe(queryParams => {
       this.queryParams = queryParams;
+      this.pageIndex = queryParams?.pageIndex || 0;
+      this.pageSize = 20;
       this.isCreatingPost = !!queryParams.isCreatingPost;
     });
   }
@@ -100,16 +108,21 @@ export class CategoryComponent implements OnInit {
           this.formHelper.getChildContentsRecusively(
             this.categoryContentsForm.controls.categoryContents.controls, this.selectedCategory
           );
-        const categoryIds = [this.selectedCategory, ...this.selectedChildCategories].map((categoryContent) =>
-          categoryContent.value.id
-        );
 
-        this.postListObserver = this.blogService.getPostListObserver({params: this.params}, this.blogId, categoryIds);
-        this.postListSub = this.postListObserver.subscribe(postList => {
-          this.postList = postList;
-          this.postListForm = this.formHelper.buildFormRecursively({postList: this.postList});
-        });
-        this.isShowingPostList = true;
+        const selectedCategories = [
+          this.selectedCategory.value,
+          ...this.selectedChildCategories.map((selectedChildCategory) => selectedChildCategory.value)
+        ]
+        const categoryIds = selectedCategories.map((categoryContent) =>
+          categoryContent.id
+        );
+        this.postCreatedAtList = [];
+        for (const selectedCategory of selectedCategories){
+          this.postCreatedAtList = [...this.postCreatedAtList, ...selectedCategory.postCreatedAtList]
+        }
+        console.log(this.postCreatedAtList);
+
+        this.changePageList(null);
       }
     });
   }
@@ -119,7 +132,7 @@ export class CategoryComponent implements OnInit {
   countChildPost() {
     let count = 0;
     this.selectedChildCategories.forEach((categoryContent) => {
-      count += categoryContent.value.postCount;
+      count += categoryContent.value.postCreatedAtList.length;
     });
     return count;
   }
@@ -130,12 +143,35 @@ export class CategoryComponent implements OnInit {
     return category.value.categoryTitle;
   }
 
+  changePageList(event) {
+    if(event){
+      this.pageIndex = event?.pageIndex;
+      this.pageSize = event?.pageSize;
+    }
+    if(this.postListSub){
+      this.postListSub.unsubscribe();
+    }
+    const selectedCreatedAtList = this.postCreatedAtList
+    .sort((createdA, createdB) => createdA - createdB)
+    .splice(this.pageIndex * this.pageSize, this.pageSize)
+    this.postCreatedAtList = [...selectedCreatedAtList, ...this.postCreatedAtList]
+    this.postListObserver = this.blogService.getCategoryPostListObserver(
+      this.blogId, selectedCreatedAtList
+    );
+    this.postListSub = this.postListObserver.subscribe(postList => {
+      this.postList = postList;
+      this.postListForm = this.formHelper.buildFormRecursively({postList: this.postList});
+      this.isShowingPostList = true;
+    });
+  }
+
   ngOnInit() {
 
   }
 
   OnDestroy() {
     this.paramSub?.unsubscribe();
+    this.queryParamSub?.unsubscribe();
     this.postListSub?.unsubscribe();
     this.categoryContentsSub?.unsubscribe();
   }
