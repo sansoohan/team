@@ -10,6 +10,10 @@ import { LeftSidebarComponent } from './left-sidebar/left-sidebar.component';
 import { PrologueComponent } from './prologue/prologue.component';
 import { NewPostComponent } from './category/new-post/new-post.component';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatToolbarModule } from '@angular/material/toolbar';
 
 @NgModule({
   declarations: [
@@ -25,10 +29,18 @@ import { MatPaginatorModule } from '@angular/material/paginator';
     CommonModule,
     ReactiveFormsModule,
     MatPaginatorModule,
+    MatButtonModule,
+    MatIconModule,
+    MatTabsModule,
+    MatToolbarModule,
     MarkdownModule.forChild(),
   ],
   exports: [
     MatPaginatorModule,
+    MatButtonModule,
+    MatIconModule,
+    MatTabsModule,
+    MatToolbarModule,
     BlogComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

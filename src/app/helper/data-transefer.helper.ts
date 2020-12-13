@@ -37,6 +37,10 @@ export class DataTransferHelper {
       if(codeLineNumbers.includes(i)){
         return `\n${line}${codeLineNumbers.includes(i+1) ? '' : '\n'}`
       }
+      else if(/\|(.+)\|/g.test(line)){
+        return line + '\n'
+      }
+
       return line + '<br>\n'
     })
     return retLineString.join('')
