@@ -1,3 +1,30 @@
+.selected-header{
+  height: 56px;
+  width: 80px;
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 1;
+  background-color: #BD5D38;
+}
+
+@media (min-width: 992px) {
+  .selected-header{
+    z-index: 1030;
+  }
+}
+
+.selected-header-link {
+  color: white;
+}
+
+.selected-header-link:hover {
+  cursor: pointer;
+  color: black;
+}
+
+
 .header-link {
   opacity: 0.5;
 }
@@ -10,12 +37,22 @@
 .top-nav-block{
   height: 56px;
   width: 100%;
-  background-color: #BD5D38;
 }
 
 .header-navbar {
-  margin-left: 80px;
   position: fixed;
+}
+
+.header-navbar.main-header {
+  margin-left: 0;
+}
+
+.header-navbar.blog-header {
+  margin-left: 80px;
+}
+
+.header-navbar.profile-header {
+  margin-left: 80px;
 }
 
 @media (min-width: 992px) {

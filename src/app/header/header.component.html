@@ -1,16 +1,40 @@
 <div class="top-nav-block"></div>
 
-<nav class="header-navbar navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+<nav
+  class="header-navbar navbar navbar-expand-lg selected-header"
+>
+  <div class="collapse navbar-collapse">
+    <a
+      *ngIf="router.url.includes('/profile')"
+      class="navbar-brand selected-header-link"
+      (click)="routerHelper.goToProfile(params)"
+    >Profile</a>
+    <a
+      *ngIf="router.url.includes('/blog')"
+      class="navbar-brand selected-header-link"
+      (click)="routerHelper.goToBlogPrologue(params)"
+    >Blog</a>
+  </div>
+</nav>
+
+<nav
+  class="header-navbar navbar navbar-expand-lg navbar-dark bg-dark fixed-top"
+  [class.main-header]="router.url.includes('/main')"
+  [class.blog-header]="router.url.includes('/blog')"
+  [class.profile-header]="router.url.includes('/profile')"
+>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTopCollapse" aria-controls="navbarTopCollapse" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
 
   <div class="collapse navbar-collapse" id="navbarTopCollapse">
     <a
+      *ngIf="!router.url.includes('/profile')"
       class="navbar-brand header-link"
       (click)="routerHelper.goToProfile(params)"
     >Profile</a>
     <a
+      *ngIf="!router.url.includes('/blog')"
       class="navbar-brand header-link"
       (click)="routerHelper.goToBlogPrologue(params)"
     >Blog</a>
@@ -34,7 +58,7 @@
       <!-- 2. Select User -->
       <div [class]="searchValue&&!isSearchValueSelected?'dropdown-menu show':'dropdown-menu'">
         <div
-          *ngFor="let result of results | async"
+          *ngFor="let result of searchResults | async"
           class="d-flex mr-2"
           (click)="setSearchValue(result.aboutContent.userName)"
         >
