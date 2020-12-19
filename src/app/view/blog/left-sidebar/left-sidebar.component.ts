@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { AuthService } from 'src/app/services/auth.service';
-import { FormGroup, FormArray, Form } from '@angular/forms';
+import { FormGroup, FormArray, Form, AbstractControl } from '@angular/forms';
 import { DataTransferHelper } from 'src/app/helper/data-transefer.helper';
 import { RouterHelper } from 'src/app/helper/router.helper';
 import { FormHelper } from 'src/app/helper/form.helper';
@@ -45,7 +45,7 @@ export class LeftSidebarComponent implements OnInit {
   switchCategory(
     categoryContentGroupA: FormGroup,
     categoryContentGroupB: FormGroup,
-    categoryContentsArray: FormArray,
+    categoryContentsArray: AbstractControl,
   ): void {
     console.log(categoryContentGroupA, categoryContentGroupB)
     if(!categoryContentGroupA) {
@@ -86,7 +86,7 @@ export class LeftSidebarComponent implements OnInit {
   async clickCategoryEditUpdate(
     blogContents: Array<BlogContent>,
     categoryContents: Array<CategoryContent>,
-    categoryContentsArray: FormArray,
+    categoryContentsArray: AbstractControl,
   ) {
     console.log(blogContents)
     console.log(categoryContentsArray.value.map((categoryContent) => categoryContent.categoryNumber))

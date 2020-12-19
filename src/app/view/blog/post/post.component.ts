@@ -150,8 +150,6 @@ export class PostComponent implements OnInit {
         categoryContent.id === newPost.categoryId
       )
       if(selectedCategory){
-        console.log(selectedCategory)
-        selectedCategory.postCreatedAtList = [...selectedCategory.postCreatedAtList, newPost.createdAt]
         this.blogService.update(
           `blogs/${this.blogContents[0].id}/categories/${selectedCategory.id}`,
           selectedCategory
@@ -205,8 +203,6 @@ export class PostComponent implements OnInit {
         )
 
         if(selectedCategory){
-          selectedCategory.postCreatedAtList = selectedCategory.postCreatedAtList
-            .filter((createdAt) => createdAt !== targetCreatedAt)
           this.blogService.update(
             `blogs/${this.blogContents[0].id}/categories/${selectedCategory.id}`,
             selectedCategory
