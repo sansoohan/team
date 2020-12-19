@@ -20,7 +20,7 @@ import { AuthService } from 'src/app/services/auth.service';
 export class CommentComponent implements OnInit {
   isPage: boolean;
   isEditingCommentIds: Array<string>;
-  isCreatingComment: Boolean;
+  isCreatingComment: boolean;
   creatingCommentParentId: string;
   creatingCommentForm: any;
   isShowingComment: boolean;
@@ -108,7 +108,7 @@ export class CommentComponent implements OnInit {
   clickCommentNewCancel() {
     this.isCreatingComment = false;
     this.creatingCommentParentId = null;
-    delete this.creatingCommentForm;  
+    delete this.creatingCommentForm;
   }
 
   clickCommentNewUpdate() {
@@ -116,13 +116,13 @@ export class CommentComponent implements OnInit {
     newComment.postId = this.params.postId;
     newComment.userName = JSON.parse(localStorage.currentUser).userName;
     const parentComment = this.commentContents
-    .find((commentContent) => commentContent.id === this.creatingCommentParentId)
+    .find((commentContent) => commentContent.id === this.creatingCommentParentId);
 
-    const createdAt = Number(new Date())
+    const createdAt = Number(new Date());
     newComment.createdAt = createdAt;
     newComment.order = [createdAt];
 
-    if(parentComment){
+    if (parentComment) {
       newComment.parentId = parentComment.id;
       newComment.deepCount = parentComment.deepCount + 1;
       newComment.order = [...parentComment.order, createdAt];

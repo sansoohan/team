@@ -1,3 +1,29 @@
+.category-move-up-button {
+  color: white;
+}
+
+.category-move-up-button:hover {
+  cursor: pointer;
+  color: black;
+}
+
+.category-add-button {
+  color: green;
+
+}
+
+.category-add-button:hover {
+  color: black;
+}
+
+.category-remove-button {
+  color: red;
+}
+
+.category-remove-button:hover {
+  color: black;
+}
+
 .nav-collapse-button {
   margin: 8px 12px;
   width: 56px;
@@ -93,7 +119,12 @@
 
 .cateogory-move-up-down {
   font-size: 0.7rem;
-  color: white;
+  height: 50%;
+  margin:auto 0;
+}
+
+.cateogory-add-remove {
+  font-size: 0.7rem;
   height: 50%;
   margin:auto 0;
 }

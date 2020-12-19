@@ -97,12 +97,13 @@ export class CategoryComponent implements OnInit {
 
       this.categoryContents = categoryContents.map((categoryContent) => {
         categoryContent.categoryNumber = blogContents[0].categoryOrder
-        .findIndex(categoryId => categoryId === categoryContent.id)
-        return categoryContent
-      })
+        .findIndex(categoryId => categoryId === categoryContent.id);
+        return categoryContent;
+      });
 
       this.categoryContents.sort((categoryA: CategoryContent, categoryB: CategoryContent) =>
         categoryA.categoryNumber - categoryB.categoryNumber);
+
       this.categoryContentsForm = this.formHelper.buildFormRecursively({categoryContents: this.categoryContents});
 
       if (this.params.categoryId){
@@ -117,13 +118,16 @@ export class CategoryComponent implements OnInit {
         const selectedCategories = [
           this.selectedCategory.value,
           ...this.selectedChildCategories.map((selectedChildCategory) => selectedChildCategory.value)
-        ]
+        ];
         const categoryIds = selectedCategories.map((categoryContent) =>
           categoryContent.id
         );
         this.postCreatedAtList = [];
         for (const selectedCategory of selectedCategories){
-          this.postCreatedAtList = [...this.postCreatedAtList, ...selectedCategory.postCreatedAtList]
+          this.postCreatedAtList = [
+            ...this.postCreatedAtList,
+            ...selectedCategory.postCreatedAtList
+          ];
         }
         this.changePageList(null);
       }
@@ -147,17 +151,17 @@ export class CategoryComponent implements OnInit {
   }
 
   changePageList(event) {
-    if(event){
+    if (event) {
       this.pageIndex = event?.pageIndex;
       this.pageSize = event?.pageSize;
     }
-    if(this.postListSub){
+    if (this.postListSub) {
       this.postListSub.unsubscribe();
     }
     const selectedCreatedAtList = this.postCreatedAtList
     .sort((createdA, createdB) => createdA - createdB)
-    .splice(this.pageIndex * this.pageSize, this.pageSize)
-    this.postCreatedAtList = [...selectedCreatedAtList, ...this.postCreatedAtList]
+    .splice(this.pageIndex * this.pageSize, this.pageSize);
+    this.postCreatedAtList = [...selectedCreatedAtList, ...this.postCreatedAtList];
     this.postListObserver = this.blogService.getCategoryPostListObserver(
       this.blogId, selectedCreatedAtList
     );
