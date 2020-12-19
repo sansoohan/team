@@ -6,7 +6,6 @@ export class PostContent {
   postTitle: string;
   postMarkdown: string;
   postImageSrcs: any;
-  readCount: number;
   selectedIamgeIndex?: number;
   likes: any;
   ownerId: string;
@@ -18,7 +17,6 @@ export class PostContent {
     postTitle: string = '',
     postMarkdown: string = '',
     postImageSrcs: any = [],
-    readCount: number = 0,
     selectedIamgeIndex: number = null,
     likes: any = [],
     ownerId: string = '',
@@ -30,7 +28,6 @@ export class PostContent {
     this.postTitle = postTitle;
     this.postMarkdown = postMarkdown;
     this.postImageSrcs = postImageSrcs;
-    this.readCount = readCount;
     this.selectedIamgeIndex = selectedIamgeIndex;
     this.likes = likes;
     this.ownerId = ownerId;

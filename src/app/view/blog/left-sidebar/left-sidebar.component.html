@@ -1,7 +1,15 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary" id="sideNav">
   <!-- Collapse button -->
   <div class="fixed-top">
-    <button class="navbar-toggler nav-collapse-button fixed-top" type="button" data-toggle="collapse" data-target="#navbarSideCollapse" aria-controls="navbarSideCollapse" aria-expanded="false" aria-label="Toggle navigation">
+    <button
+      class="navbar-toggler nav-collapse-button fixed-top"
+      type="button"
+      data-toggle="collapse"
+      data-target="#navbarSideCollapse"
+      aria-controls="navbarSideCollapse"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
       <span class="navbar-toggler-icon"></span>
     </button>  
   </div>
@@ -17,6 +25,11 @@
         <Button
           class="btn btn-sm btn-outline-light mr-2 mb-2"
           *ngIf="authService.isSignedIn() && isEditingCategory"
+          (click)="clickCategoryEditUpdate(
+            blogContents,
+            categoryContents,
+            categoryContentsForm.controls.categoryContents
+          )"
         >Update</Button>
         <Button
           class="btn btn-sm btn-outline-light mr-2 mb-2"
@@ -25,26 +38,98 @@
         >Cancel</Button>
       </div>
 
-      <form *ngIf="categoryContentsForm" [formGroup]="categoryContentsForm">
+      <form
+        *ngIf="categoryContentsForm"
+        [formGroup]="categoryContentsForm"
+      >
         <div formArrayName="categoryContents">
-          <div *ngFor="let categoryContent of categoryContentsForm.controls.categoryContents['controls']; let i=index">
-            <li *ngIf="!categoryContent.controls.hidden.value" class="nav-item" [formGroupName]="i">
+          <div
+            *ngFor="let categoryContent of categoryContentsForm.controls.categoryContents['controls'];
+            let i=index"
+          >
+            <li
+              *ngIf="!categoryContent.controls.hidden.value"
+              class="nav-item"
+              [formGroupName]="i"
+            >
               <div class="form-row">
-                <div *ngFor="let n of dataTransferHelper.numberToArray(categoryContent.controls.deepCount.value) ; let j=index" class="col-1" style="padding:0">
-                  <i *ngIf="j==categoryContent.controls.deepCount.value-1" class="fa fa-chevron-up fa-rotate-225"></i>
+                <div
+                  *ngFor="let n of dataTransferHelper.numberToArray(
+                    blogService.getCategoryDeepCount(
+                      categoryContent,categoryContentsForm.controls.categoryContents['controls']
+                    )-1
+                  ) ; let j=index"
+                  class="col-1"
+                  style="padding:0"
+                >
+                  <i
+                    *ngIf="j==blogService.getCategoryDeepCount(
+                      categoryContent,categoryContentsForm.controls.categoryContents['controls']
+                    )-2"
+                    class="fa fa-chevron-up fa-rotate-225"
+                  ></i>
                 </div>
-                <input *ngIf="isEditingCategory" type="text" class="form-control nav-link-edit col-8" formControlName="categoryTitle">
-                <a *ngIf="!isEditingCategory" class="nav-link col-8 blog-link" (click)="routerHelper.goToBlogCategory(params,categoryContent.controls.id.value)">
+                <div
+                  *ngIf="isEditingCategory"
+                  class="col-1 container cateogory-move-up-down"
+                >
+                  <div
+                    class="fa fa-arrow-up"
+                    (click)="switchCategory(
+                      categoryContentsForm.controls.categoryContents['controls'][i-1],
+                      categoryContent,
+                      categoryContentsForm.controls.categoryContents
+                    )"
+                  ></div>
+                  <div
+                    class="fa fa-arrow-down"
+                    (click)="switchCategory(
+                      categoryContent,
+                      categoryContentsForm.controls.categoryContents['controls'][i+1],
+                      categoryContentsForm.controls.categoryContents
+                    )"
+                  ></div>
+                </div>
+                <input
+                  *ngIf="isEditingCategory"
+                  type="text"
+                  class="form-control nav-link-edit col-7"
+                  formControlName="categoryTitle"
+                >
+                <a
+                  *ngIf="!isEditingCategory"
+                  class="nav-link col-8 blog-link"
+                  (click)="routerHelper.goToBlogCategory(
+                    params,categoryContent.controls.id.value
+                  )"
+                >
                   <i class="fa fa-caret-right"></i>  {{categoryContent.controls.categoryTitle.value}}
                 </a>
-                <div *ngFor="let n of dataTransferHelper.numberToArray(3 - categoryContent.controls.deepCount.value) ; let j=index" class="col-1"></div>
                 <div
-                  *ngIf="formHelper.countChildContent(categoryContentsForm.controls.categoryContents['controls'],categoryContent)!==0"
+                  *ngFor="let n of dataTransferHelper.numberToArray(
+                    4-blogService.getCategoryDeepCount(
+                      categoryContent,categoryContentsForm.controls.categoryContents['controls']
+                    )
+                  ) ; let j=index"
+                  class="col-1"
+                ></div>
+                <div
+                  *ngIf="formHelper.countChildContent(
+                    categoryContentsForm.controls.categoryContents['controls'],categoryContent
+                  )!==0"
                   class="nav-link col-1 blog-link"
-                  (click)="formHelper.toggleCollapse(categoryContentsForm.controls.categoryContents['controls'],categoryContent)"
+                  (click)="formHelper.toggleCollapse(
+                    categoryContentsForm.controls.categoryContents['controls'],categoryContent
+                  )"
                 >
-                  <i *ngIf="categoryContent.controls.collapsed.value" class="fa fa-caret-down"></i>
-                  <i *ngIf="!categoryContent.controls.collapsed.value" class="fa fa-caret-up"></i>
+                  <i
+                    *ngIf="categoryContent.controls.collapsed.value"
+                    class="fa fa-caret-down"
+                  ></i>
+                  <i
+                    *ngIf="!categoryContent.controls.collapsed.value"
+                    class="fa fa-caret-up"
+                  ></i>
                 </div>
               </div>
             </li>

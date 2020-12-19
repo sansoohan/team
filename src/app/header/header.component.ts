@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 import * as firebase from 'firebase';
 import Identicon from 'identicon.js';
@@ -14,15 +14,15 @@ import { DomSanitizer } from '@angular/platform-browser';
   styleUrls: ['./header.component.css']
 })
 export class HeaderComponent {
-  searchValue: string;
-  results: any;
-
   isPage: boolean;
   params: any;
   paramSub: Subscription;
 
+  // Search
   isSearchValueSelected: boolean;
   selectedSearchName: string;
+  searchValue: string;
+  searchResults: any;
 
   // tslint:disable-next-line:no-shadowed-variable
   constructor(
@@ -31,6 +31,7 @@ export class HeaderComponent {
     public authService: AuthService,
     public routerHelper: RouterHelper,
     private domSanitizer: DomSanitizer,
+    public router: Router,
   ) {
     this.searchValue = '';
     this.isSearchValueSelected = false;
@@ -85,11 +86,11 @@ export class HeaderComponent {
     if (event.target.value){
       this.searchValue = event.target.value;
       if (this.searchValue === ''){
-        this.results = null;
+        this.searchResults = null;
         return;
       }
 
-      this.results = this.firestore.collection('profiles', ref => ref
+      this.searchResults = this.firestore.collection('profiles', ref => ref
       .orderBy(new firebase.firestore.FieldPath('aboutContent', 'userName'))
       .limit(10)
       .startAt(this.searchValue)

@@ -1,7 +1,9 @@
 <app-blog-left-sidebar
   [isEditingPost]="isEditingPost"
   [isEditingCategory]="isEditingCategory"
+  [categoryContents]="categoryContents"
   [categoryContentsForm]="categoryContentsForm"
+  [blogContents]="blogContents"
 ></app-blog-left-sidebar>
 <div class="blog-prologue" *ngIf="!isEditingCategory && isShowingPostList">
   <form *ngIf="postListForm" [formGroup]="postListForm">

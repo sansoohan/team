@@ -1,5 +1,6 @@
 .nav-collapse-button {
   margin: 8px 12px;
+  width: 56px;
   background-color: #BD5D38;
 }
 
@@ -88,4 +89,11 @@
   -ms-transform: rotate(225deg);
   -o-transform: rotate(225deg);
   transform: rotate(225deg);
+}
+
+.cateogory-move-up-down {
+  font-size: 0.7rem;
+  color: white;
+  height: 50%;
+  margin:auto 0;
 }

@@ -23,17 +23,17 @@
             <div class="nav-item">
               <a class="nav-link">
                 <Button
-                  class="btn btn-sm btn-info"
+                  class="btn btn-sm btn-dark"
                   *ngIf="authService.isSignedIn() && !isEditing"
                   (click)="handleClickEditProfileStart()"
                 >Edit Profile</Button>
                 <Button
-                  class="btn btn-sm btn-success"
+                  class="btn btn-sm btn-outline-light mr-2"
                   *ngIf="authService.isSignedIn() && isEditing"
                   (click)="handleClickEditProfileUpdate()"
                 >Update</Button>
                 <Button
-                  class="btn btn-sm btn-danger"
+                  class="btn btn-sm btn-outline-light"
                   *ngIf="authService.isSignedIn() && isEditing"
                   (click)="handleClickEditProfileAbort()"
                 >Cancel</Button>
@@ -92,7 +92,7 @@
             <div class="nav-item">
               <button
                 *ngIf="isEditing"
-                class="btn btn-outline-dark btn-circle col-10"
+                class="btn btn-outline-light btn-circle col-10"
                 (click)="handleAddAdditionalProfile()"
               >
                 Add New Category  <i class="fa fa-plus"></i>
