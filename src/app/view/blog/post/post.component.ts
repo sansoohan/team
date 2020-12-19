@@ -87,9 +87,15 @@ export class PostComponent implements OnInit {
         return;
       }
 
-      this.categoryContents = categoryContents;
+      this.categoryContents = categoryContents.map((categoryContent) => {
+        categoryContent.categoryNumber = blogContents[0].categoryOrder
+        .findIndex(categoryId => categoryId === categoryContent.id)
+        return categoryContent
+      })
+
       this.categoryContents.sort((categoryA: CategoryContent, categoryB: CategoryContent) =>
-        categoryA.categoryNumber - categoryB.categoryNumber);
+      categoryA.categoryNumber - categoryB.categoryNumber);
+
       this.categoryContentsForm =
         this.formHelper.buildFormRecursively({categoryContents: this.categoryContents});
 
@@ -193,6 +199,7 @@ export class PostComponent implements OnInit {
     this.toastHelper.askYesNo('Remove Post', 'Are you sure?').then((result) => {
       if (result.value) {
         const targetCreatedAt = this.postContentsForm.value.createdAt
+
         const selectedCategory: CategoryContent = this.categoryContents.find((categoryContent) =>
           categoryContent.id === this.postContentsForm.value.categoryId
         )

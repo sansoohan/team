@@ -5,7 +5,9 @@
   <app-blog-left-sidebar
     [isEditingPost]="isEditingPost"
     [isEditingCategory]="isEditingCategory"
+    [categoryContents]="categoryContents"
     [categoryContentsForm]="categoryContentsForm"
+    [blogContents]="blogContents"
   ></app-blog-left-sidebar>
   <div class="blog-post">
     <form *ngIf="postContentsForm" [formGroup]="postContentsForm">

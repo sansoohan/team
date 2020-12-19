@@ -25,6 +25,11 @@
         <Button
           class="btn btn-sm btn-outline-light mr-2 mb-2"
           *ngIf="authService.isSignedIn() && isEditingCategory"
+          (click)="clickCategoryEditUpdate(
+            blogContents,
+            categoryContents,
+            categoryContentsForm.controls.categoryContents
+          )"
         >Update</Button>
         <Button
           class="btn btn-sm btn-outline-light mr-2 mb-2"
@@ -68,8 +73,22 @@
                   *ngIf="isEditingCategory"
                   class="col-1 container cateogory-move-up-down"
                 >
-                  <div class="fa fa-arrow-up"></div>
-                  <div class="fa fa-arrow-down"></div>
+                  <div
+                    class="fa fa-arrow-up"
+                    (click)="switchCategory(
+                      categoryContentsForm.controls.categoryContents['controls'][i-1],
+                      categoryContent,
+                      categoryContentsForm.controls.categoryContents
+                    )"
+                  ></div>
+                  <div
+                    class="fa fa-arrow-down"
+                    (click)="switchCategory(
+                      categoryContent,
+                      categoryContentsForm.controls.categoryContents['controls'][i+1],
+                      categoryContentsForm.controls.categoryContents
+                    )"
+                  ></div>
                 </div>
                 <input
                   *ngIf="isEditingCategory"

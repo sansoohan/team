@@ -13,7 +13,9 @@
   <app-blog-left-sidebar
     [isEditingPost]="isEditingPost"
     [isEditingCategory]="isEditingCategory"
+    [categoryContents]="categoryContents"
     [categoryContentsForm]="categoryContentsForm"
+    [blogContents]="blogContents"
   ></app-blog-left-sidebar>
   <div
     *ngIf="!isEditingCategory && isShowingPostList"
