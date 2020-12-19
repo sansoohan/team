@@ -44,7 +44,6 @@ export class PostComponent implements OnInit {
   blogId: string;
   isPage: boolean;
   updateOk: boolean;
-  newDescription: '';
 
   paramSub: Subscription;
   params: any;
@@ -89,9 +88,9 @@ export class PostComponent implements OnInit {
 
       this.categoryContents = categoryContents.map((categoryContent) => {
         categoryContent.categoryNumber = blogContents[0].categoryOrder
-        .findIndex(categoryId => categoryId === categoryContent.id)
-        return categoryContent
-      })
+        .findIndex(categoryId => categoryId === categoryContent.id);
+        return categoryContent;
+      });
 
       this.categoryContents.sort((categoryA: CategoryContent, categoryB: CategoryContent) =>
       categoryA.categoryNumber - categoryB.categoryNumber);
@@ -143,19 +142,21 @@ export class PostComponent implements OnInit {
         return;
       }
 
-      const newPost = this.postContentsForm.value
-      newPost.categoryId = this.params.categoryId
-      newPost.createdAt = Number(new Date())
+      const newPost = this.postContentsForm.value;
+      newPost.categoryId = this.params.categoryId;
+      newPost.createdAt = Number(new Date());
       const selectedCategory: CategoryContent = this.categoryContents.find((categoryContent) =>
         categoryContent.id === newPost.categoryId
-      )
-      if(selectedCategory){
-        selectedCategory.postCreatedAtList = [...selectedCategory.postCreatedAtList, newPost.createdAt]
+      );
+      if (selectedCategory) {
+        selectedCategory.postCreatedAtList = [
+          ...selectedCategory.postCreatedAtList,
+          newPost.createdAt,
+        ];
         this.blogService.update(
           `blogs/${this.blogContents[0].id}/categories/${selectedCategory.id}`,
           selectedCategory
         ).then(() => {
-          console.log('???')
           this.blogService
           .create(`blogs/${this.blogContents[0].id}/posts`, newPost)
           .then(() => {
@@ -164,7 +165,7 @@ export class PostComponent implements OnInit {
           })
           .catch(e => {
             this.toastHelper.showWarning('Post Update Failed.', e);
-          });  
+          });
         })
         .catch(e => {
           this.toastHelper.showWarning('Post Update Failed.', e);
@@ -197,15 +198,15 @@ export class PostComponent implements OnInit {
   async handleClickEditPostDelete() {
     this.toastHelper.askYesNo('Remove Post', 'Are you sure?').then((result) => {
       if (result.value) {
-        const targetCreatedAt = this.postContentsForm.value.createdAt
+        const targetCreatedAt = this.postContentsForm.value.createdAt;
 
         const selectedCategory: CategoryContent = this.categoryContents.find((categoryContent) =>
           categoryContent.id === this.postContentsForm.value.categoryId
-        )
+        );
 
-        if(selectedCategory){
+        if (selectedCategory) {
           selectedCategory.postCreatedAtList = selectedCategory.postCreatedAtList
-            .filter((createdAt) => createdAt !== targetCreatedAt)
+            .filter((createdAt) => createdAt !== targetCreatedAt);
           this.blogService.update(
             `blogs/${this.blogContents[0].id}/categories/${selectedCategory.id}`,
             selectedCategory
@@ -219,11 +220,11 @@ export class PostComponent implements OnInit {
             })
             .catch(e => {
               this.toastHelper.showWarning('Post Delete Failed.', e);
-            });  
+            });
           })
           .catch(e => {
             this.toastHelper.showWarning('Post Delete Failed.', e);
-          });  
+          });
         }
       }
       else if (result.dismiss === Swal.DismissReason.cancel) {

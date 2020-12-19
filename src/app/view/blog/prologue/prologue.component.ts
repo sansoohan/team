@@ -85,12 +85,12 @@ export class PrologueComponent implements OnInit {
         this.isPage = false;
         return;
       }
-      
+
       this.categoryContents = categoryContents.map((categoryContent) => {
         categoryContent.categoryNumber = blogContents[0].categoryOrder
-        .findIndex(categoryId => categoryId === categoryContent.id)
-        return categoryContent
-      })
+        .findIndex(categoryId => categoryId === categoryContent.id);
+        return categoryContent;
+      });
 
       this.categoryContents.sort((categoryA: CategoryContent, categoryB: CategoryContent) =>
       categoryA.categoryNumber - categoryB.categoryNumber);

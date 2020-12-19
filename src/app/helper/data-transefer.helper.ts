@@ -12,38 +12,44 @@ export class DataTransferHelper {
     return new Array(input);
   }
 
-  range = (start, stop, step) => Array.from({ length: (stop - start) / step + 1}, (_, i) => start + (i * step));
+  range = (start, stop, step) =>
+    Array.from({ length: (stop - start) / step + 1}, (_, i) => start + (i * step))
 
   markDownPreprocess(input: string): string {
-    const lines = input.split('\n')
+    const lines = input.split('\n');
     const codeLineStartEndIndexes = lines.map((line, i) =>
       line.split('```').length % 2 === 0
         ? i
         : null).filter((num) => num !== null);
-    
-    if(codeLineStartEndIndexes.length % 2 === 1) {
+
+    if (codeLineStartEndIndexes.length % 2 === 1) {
       codeLineStartEndIndexes.pop();
     }
-    let codeLineNumbers = []
-    for(let i=0; i < codeLineStartEndIndexes.length; i+=2){
-      codeLineNumbers = [...codeLineNumbers, ...this.range(codeLineStartEndIndexes[i], codeLineStartEndIndexes[i+1], 1)]
+    let codeLineNumbers = [];
+    for (let i = 0; i < codeLineStartEndIndexes.length; i += 2) {
+      codeLineNumbers = [
+        ...codeLineNumbers,
+        ...this.range(codeLineStartEndIndexes[i],
+          codeLineStartEndIndexes[i + 1],
+        1)
+      ];
     }
 
     const retLineString = lines.map((line, i) => {
-      line = this.preProcessEmoji(line)
-      if(!line){
-        return line + '&NewLine;<br>\n'
+      line = this.preProcessEmoji(line);
+      if (!line) {
+        return line + '&NewLine;<br>\n';
       }
-      if(codeLineNumbers.includes(i)){
-        return `\n${line}${codeLineNumbers.includes(i+1) ? '' : '\n'}`
+      if (codeLineNumbers.includes(i)) {
+        return `\n${line}${codeLineNumbers.includes(i + 1) ? '' : '\n'}`;
       }
-      else if(/\|(.+)\|/g.test(line)){
-        return line + '\n'
+      else if (/\|(.+)\|/g.test(line)) {
+        return line + '\n';
       }
 
-      return line + '<br>\n'
-    })
-    return retLineString.join('')
+      return line + '<br>\n';
+    });
+    return retLineString.join('');
   }
 
   preProcessEmoji(inputString: string): string {
@@ -70,9 +76,9 @@ export class DataTransferHelper {
       ':fist_oncoming:': ':punch:',
       ':fist_left:': ':left_fist:',
       ':fist_right:': ':right_fist:',
-      ':woman_blond_haired:':':blond-haired_woman:',
-      ':woman_blonde:':':blond-haired_woman:',
-      ':man_blond_haired:':':blond-haired_man:',
+      ':woman_blond_haired:': ':blond-haired_woman:',
+      ':woman_blonde:': ':blond-haired_woman:',
+      ':man_blond_haired:': ':blond-haired_man:',
       ':pouting_face:': ':person_pouting:',
       ':man_no_good:': ':man_gesturing_no:',
       ':man_ng:': ':man_gesturing_no:',
@@ -183,32 +189,36 @@ export class DataTransferHelper {
       ':play_or_pause_button:': ':play_pause:',
       ':previous_track_button:': ':previous_track:',
       ':tornado:': ':cloud_tornado:',
-    } 
+    };
 
-    if(/:(\w+):/g.test(inputString)){
-      let searchList = [...inputString['matchAll'](/:(\w+)_man:/g)]
+    if (/:(\w+):/g.test(inputString)) {
+      // tslint:disable-next-line: no-string-literal
+      let searchList = [...inputString['matchAll'](/:(\w+)_man:/g)];
       for (const search of searchList){
-        inputString = inputString.replace(new RegExp(search[0],'g'), `:man_${search[1]}:`)
+        inputString = inputString.replace(new RegExp(search[0], 'g'), `:man_${search[1]}:`);
       }
-      searchList = [...inputString['matchAll'](/:(\w+)_woman:/g)]
+      // tslint:disable-next-line: no-string-literal
+      searchList = [...inputString['matchAll'](/:(\w+)_woman:/g)];
       for (const search of searchList){
-        inputString = inputString.replace(new RegExp(search[0],'g'), `:woman_${search[1]}:`)
+        inputString = inputString.replace(new RegExp(search[0], 'g'), `:woman_${search[1]}:`);
       }
-      searchList = [...inputString['matchAll'](/:(\w+)_person:/g)]
+      // tslint:disable-next-line: no-string-literal
+      searchList = [...inputString['matchAll'](/:(\w+)_person:/g)];
       for (const search of searchList){
-        inputString = inputString.replace(new RegExp(search[0],'g'), `:person_${search[1]}:`)
+        inputString = inputString.replace(new RegExp(search[0], 'g'), `:person_${search[1]}:`);
       }
-      searchList = [...inputString['matchAll'](/:(\w+):/g)]
-      for (const search of searchList){
-        const searchedEmoji = preProcessEmojiList[search[0]]
-        if(searchedEmoji){
+      // tslint:disable-next-line: no-string-literal
+      searchList = [...inputString['matchAll'](/:(\w+):/g)];
+      for (const search of searchList) {
+        const searchedEmoji = preProcessEmojiList[search[0]];
+        if (searchedEmoji) {
           inputString = inputString.replace(
-            new RegExp(search[0],'g'), `${preProcessEmojiList[search[0]]}`
-          )
+            new RegExp(search[0], 'g'), `${preProcessEmojiList[search[0]]}`
+          );
         }
       }
     }
-    return inputString
+    return inputString;
   }
 
   numberToDateString(input: number): string {
@@ -252,12 +262,12 @@ export class DataTransferHelper {
     return content;
   }
 
-  compareByOrderRecursively(contentA: any, contentB: any): number{
+  compareByOrderRecursively(contentA: any, contentB: any): number {
     const recursiveDeepCount: number = Math.max(contentA.order.length, contentB.order.length);
-    for(let orderIndex = 0; orderIndex < recursiveDeepCount; orderIndex++){
+    for (let orderIndex = 0; orderIndex < recursiveDeepCount; orderIndex++) {
       const orderA: number = contentA.order[orderIndex] || 0;
       const orderB: number = contentB.order[orderIndex] || 0;
-      if(orderA === orderB && orderA !== 0) {
+      if (orderA === orderB && orderA !== 0) {
         continue;
       }
 

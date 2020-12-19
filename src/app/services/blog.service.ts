@@ -116,6 +116,7 @@ export class BlogService {
     }
     content.ownerId = JSON.parse(localStorage.currentUser).uid;
 
+    console.log(path, content);
     return this.firestore.collection(path).add(content)
     .then(async (collection) => {
       content.id = collection.id;

@@ -1,25 +1,25 @@
 export class CategoryContent {
   id: string;
-  blogId?: string;
-  categoryNumber?: number;
+  blogId: string;
+  categoryNumber: number;
   categoryTitle: string;
-  createdAt?: number;
+  createdAt: number;
   collapsed: boolean;
-  parentId?: string;
+  parentId: string;
   postCreatedAtList: Array<number>;
   hidden: boolean;
   ownerId: string;
   constructor(
     id: string = '',
-    blogId: string = null,
-    categoryNumber: number = null,
-    categoryTitle: string = '',
+    blogId: string = '',
+    categoryNumber: number = 0,
+    categoryTitle: string = 'New Category',
     createdAt: number = Number(new Date()),
     collapsed: boolean = false,
     parentId: string = null,
     postCreatedAtList: Array<number> = [],
     hidden: boolean = false,
-    ownerId: '',
+    ownerId: string = '',
   ){
     this.id = id;
     this.blogId = blogId;
