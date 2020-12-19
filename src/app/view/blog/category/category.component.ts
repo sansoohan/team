@@ -103,7 +103,6 @@ export class CategoryComponent implements OnInit {
 
       this.categoryContents.sort((categoryA: CategoryContent, categoryB: CategoryContent) =>
         categoryA.categoryNumber - categoryB.categoryNumber);
-
       this.categoryContentsForm = this.formHelper.buildFormRecursively({categoryContents: this.categoryContents});
 
       if (this.params.categoryId){
