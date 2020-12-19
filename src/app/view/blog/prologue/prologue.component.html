@@ -15,8 +15,7 @@
         <div class="row prologue-top-row">
           <span class="col-6 row prologue-top-col">Title</span>
           <span class="col-3 row prologue-top-col">Category</span>
-          <span class="col-2 row prologue-top-col">Date</span>
-          <span class="col-1 row prologue-top-col" style="text-align:right">Count</span>
+          <span class="col-3 row prologue-top-col">Date</span>
         </div>
         <div *ngFor="let postContent of postListForm.controls.postList.controls; let i=index">
           <div class="row prologue-post-list-row">
@@ -28,8 +27,7 @@
               class="col-3 prologue-post-list-col blog-link"
               (click)="routerHelper.goToBlogCategory(params,postContent.controls.categoryId.value)"
             >{{getCategoryTitle(postContent.controls.categoryId.value)}}</span>
-            <span class="col-2 prologue-post-list-col">{{dataTransferHelper.numberToDateString(postContent.controls.createdAt.value)}}</span>
-            <span class="col-1 prologue-post-list-col" style="text-align:right">{{postContent.controls.readCount.value}}</span>
+            <span class="col-3 prologue-post-list-col">{{dataTransferHelper.numberToDateString(postContent.controls.createdAt.value)}}</span>
           </div>
         </div>
       </section>
