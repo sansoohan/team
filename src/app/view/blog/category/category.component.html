@@ -40,8 +40,7 @@
           <div class="row category-top-row">
             <span class="col-6 category-top-col">Title</span>
             <span class="col-3 category-top-col">Category</span>
-            <span class="col-2 category-top-col">Date</span>
-            <div class="col-1 category-top-col" style="text-align:right">Count</div>
+            <span class="col-3 category-top-col">Date</span>
           </div>
           <div *ngFor="let postContent of postListForm.controls.postList.controls; let i=index">
             <div class="row category-post-list-row">
@@ -53,8 +52,7 @@
                 class="col-3 category-post-list-col blog-link"
                 (click)="routerHelper.goToBlogCategory(params,postContent.controls.categoryId.value)"
               >{{getCategoryTitle(postContent.controls.categoryId.value)}}</span>
-              <span class="col-2 category-post-list-col">{{dataTransferHelper.numberToDateString(postContent.controls.createdAt.value)}}</span>
-              <span class="col-1 category-post-list-col" style="text-align:right">{{postContent.controls.readCount.value}}</span>
+              <span class="col-3 category-post-list-col">{{dataTransferHelper.numberToDateString(postContent.controls.createdAt.value)}}</span>
             </div>
           </div>
 

@@ -1,21 +1,23 @@
 export class CategoryContent {
   id: string;
-  blogId: string;
+  blogId?: string;
   categoryNumber?: number;
   categoryTitle: string;
-  createdAt: number;
+  createdAt?: number;
   collapsed: boolean;
   parentId?: string;
+  postCreatedAtList: Array<number>;
   hidden: boolean;
   ownerId: string;
   constructor(
     id: string = '',
-    blogId: string = '',
-    categoryNumber: number = 0,
+    blogId: string = null,
+    categoryNumber: number = null,
     categoryTitle: string = '',
     createdAt: number = Number(new Date()),
     collapsed: boolean = false,
     parentId: string = null,
+    postCreatedAtList: Array<number> = [],
     hidden: boolean = false,
     ownerId: '',
   ){
@@ -26,6 +28,7 @@ export class CategoryContent {
     this.createdAt = createdAt;
     this.collapsed = collapsed;
     this.parentId = parentId;
+    this.postCreatedAtList = postCreatedAtList;
     this.hidden = hidden;
     this.ownerId = ownerId;
   }
