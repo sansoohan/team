@@ -2,6 +2,7 @@ import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MarkdownModule } from 'ngx-markdown';
 import { NotFoundModule } from 'src/app/modules/not-found/not-found.module';
+import { PageLoadingModule } from 'src/app/modules/page-loading/page-loading.module';
 
 import { BlogComponent } from './blog.component';
 import { CommentComponent } from './post/comment/comment.component';
@@ -32,6 +33,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     CommonModule,
     ReactiveFormsModule,
     NotFoundModule,
+    PageLoadingModule,
     MatPaginatorModule,
     MatButtonModule,
     MatIconModule,
@@ -41,6 +43,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
   ],
   exports: [
     NotFoundModule,
+    PageLoadingModule,
     MatPaginatorModule,
     MatButtonModule,
     MatIconModule,

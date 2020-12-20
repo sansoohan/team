@@ -2,6 +2,9 @@
   <app-modules-not-found></app-modules-not-found>
 </div>
 <div *ngIf="isPage">
+  <div *ngIf="isLoading">
+    <app-modules-page-loading style="color:'white'"></app-modules-page-loading>
+  </div>  
   <app-blog-left-sidebar
     [isEditingPost]="isEditingPost"
     [isEditingCategory]="isEditingCategory"

@@ -1,9 +1,6 @@
 <div class="top-nav-block"></div>
 
-<div *ngIf="!isPage">
-  <app-module-not-found></app-module-not-found>
-</div>
-<div *ngIf="isPage" class="blog-background">
+<div class="blog-background">
   <app-blog-post
     *ngIf="params.postId"
     [isEditingPost]="isEditingPost"

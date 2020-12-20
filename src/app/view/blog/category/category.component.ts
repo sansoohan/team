@@ -38,6 +38,7 @@ export class CategoryComponent implements OnInit {
 
   blogId: string;
   isPage: boolean;
+  isLoading: boolean;
   updateOk: boolean;
   newDescription: '';
 
@@ -64,6 +65,8 @@ export class CategoryComponent implements OnInit {
     private formHelper: FormHelper,
     public dataTransferHelper: DataTransferHelper,
   ) {
+    this.isPage = true;
+    this.isLoading = true;
     this.paramSub = this.route.params.subscribe(params => {
       this.isShowingCategoryContents = false;
       this.isEditingCategory = false;
@@ -80,18 +83,17 @@ export class CategoryComponent implements OnInit {
   @Input()
   get blogContents(): Array<BlogContent> { return this._blogContents; }
   set blogContents(blogContents: Array<BlogContent>) {
-    this.isPage = true;
     if (!blogContents || blogContents.length === 0){
-      this.isPage = false;
       return;
     }
+    this.isPage = true;
+    this.isLoading = true;
     this._blogContents = blogContents;
     this.blogId = blogContents[0].id;
 
     this.categoryContentsObserver = this.blogService.getCategoryContentsObserver(this.blogId);
     this.categoryContentsSub = this.categoryContentsObserver.subscribe(categoryContents => {
       if (!categoryContents || categoryContents.length === 0){
-        this.isPage = false;
         return;
       }
 
@@ -110,6 +112,11 @@ export class CategoryComponent implements OnInit {
         this.selectedCategory =
           this.categoryContentsForm.controls.categoryContents.controls.find((categoryContent) =>
           categoryContent.value.id === this.params.categoryId);
+        if (!this.selectedCategory) {
+          this.isPage = false;
+          return;
+        }
+
         this.selectedChildCategories =
           this.formHelper.getChildContentsRecusively(
             this.categoryContentsForm.controls.categoryContents.controls, this.selectedCategory
@@ -168,7 +175,7 @@ export class CategoryComponent implements OnInit {
     this.postListSub = this.postListObserver.subscribe(postList => {
       this.postList = postList;
       this.postListForm = this.formHelper.buildFormRecursively({postList: this.postList});
-      this.isShowingPostList = true;
+      this.isLoading = false;
     });
   }
 

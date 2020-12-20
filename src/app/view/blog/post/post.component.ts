@@ -34,7 +34,6 @@ export class PostComponent implements OnInit {
   postContents: PostContent[];
   postContentsSub: Subscription;
   postContentsForm: any;
-  isShowingPostContents: boolean;
   hasNullPostTitleError: boolean;
 
   postListObserver: Observable<PostContent[]>;
@@ -43,6 +42,7 @@ export class PostComponent implements OnInit {
 
   blogId: string;
   isPage: boolean;
+  isLoading: boolean;
   updateOk: boolean;
 
   paramSub: Subscription;
@@ -59,10 +59,11 @@ export class PostComponent implements OnInit {
     public dataTransferHelper: DataTransferHelper,
   ) {
     this.paramSub = this.route.params.subscribe(params => {
+      this.isPage = true;
+      this.isLoading = true;
       this.postContents = [new PostContent()];
       this.postContentsForm = this.formHelper.buildFormRecursively(this.postContents[0]);
       this.hasNullPostTitleError = false;
-      this.isShowingPostContents = false;
       this.isEditingCategory = false;
       this.params = params;
     });
@@ -71,9 +72,7 @@ export class PostComponent implements OnInit {
   @Input()
   get blogContents(): Array<BlogContent> { return this._blogContents; }
   set blogContents(blogContents: Array<BlogContent>) {
-    this.isPage = true;
     if (!blogContents || blogContents.length === 0){
-      this.isPage = false;
       return;
     }
     this._blogContents = blogContents;
@@ -109,7 +108,7 @@ export class PostComponent implements OnInit {
           this.postContents[0].postMarkdown = this.postContents[0].postMarkdown.replace(/\\n/g, '\n');
           this.postContentsForm = this.formHelper.buildFormRecursively(this.postContents[0]);
         });
-        this.isShowingPostContents = true;
+        this.isLoading = false;
       }
     });
   }
