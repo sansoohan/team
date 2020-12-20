@@ -8,7 +8,8 @@ export class DataTransferHelper {
   constructor(
   ) { }
 
-  numberToArray(input: number): Array<any>{
+  numberToArray(input: number): Array<any> {
+    input = input < 0 ? 0 : input;
     return new Array(input);
   }
 
