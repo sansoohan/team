@@ -1,36 +1,44 @@
-<app-blog-left-sidebar
-  [isEditingPost]="isEditingPost"
-  [isEditingCategory]="isEditingCategory"
-  [categoryContents]="categoryContents"
-  [categoryContentsForm]="categoryContentsForm"
-  [blogContents]="blogContents"
-></app-blog-left-sidebar>
-<div class="blog-prologue" *ngIf="!isEditingCategory && isShowingPostList">
-  <form *ngIf="postListForm" [formGroup]="postListForm">
-    <div formArrayName="postList">
-      <section class="container prologue-section">
-        <div class="row prologue-title-row">
-          <span class="col-12 prologue-title-col">Prologue</span>
-        </div>
-        <div class="row prologue-top-row">
-          <span class="col-6 row prologue-top-col">Title</span>
-          <span class="col-3 row prologue-top-col">Category</span>
-          <span class="col-3 row prologue-top-col">Date</span>
-        </div>
-        <div *ngFor="let postContent of postListForm.controls.postList.controls; let i=index">
-          <div class="row prologue-post-list-row">
-            <span
-              class="col-6 prologue-post-list-col blog-link"
-              (click)="routerHelper.goToBlogPost(params,postContent.controls.id.value)"
-            >{{postContent.controls.postTitle.value}}</span>
-            <span
-              class="col-3 prologue-post-list-col blog-link"
-              (click)="routerHelper.goToBlogCategory(params,postContent.controls.categoryId.value)"
-            >{{getCategoryTitle(postContent.controls.categoryId.value)}}</span>
-            <span class="col-3 prologue-post-list-col">{{dataTransferHelper.numberToDateString(postContent.controls.createdAt.value)}}</span>
+<div *ngIf="!isPage">
+  <app-modules-not-found></app-modules-not-found>
+</div>
+<div *ngIf=isPage>
+  <div *ngIf="isLoading">
+    <app-modules-page-loading style="color:'white'"></app-modules-page-loading>
+  </div>
+  <app-blog-left-sidebar
+    [isEditingPost]="isEditingPost"
+    [isEditingCategory]="isEditingCategory"
+    [categoryContents]="categoryContents"
+    [categoryContentsForm]="categoryContentsForm"
+    [blogContents]="blogContents"
+  ></app-blog-left-sidebar>
+  <div class="blog-prologue" *ngIf="!isEditingCategory">
+    <form *ngIf="postListForm" [formGroup]="postListForm">
+      <div formArrayName="postList">
+        <section class="container prologue-section">
+          <div class="row prologue-title-row">
+            <span class="col-12 prologue-title-col">Prologue</span>
           </div>
-        </div>
-      </section>
-    </div>
-  </form>
+          <div class="row prologue-top-row">
+            <span class="col-6 row prologue-top-col">Title</span>
+            <span class="col-3 row prologue-top-col">Category</span>
+            <span class="col-3 row prologue-top-col">Date</span>
+          </div>
+          <div *ngFor="let postContent of postListForm.controls.postList.controls; let i=index">
+            <div class="row prologue-post-list-row">
+              <span
+                class="col-6 prologue-post-list-col blog-link"
+                (click)="routerHelper.goToBlogPost(params,postContent.controls.id.value)"
+              >{{postContent.controls.postTitle.value}}</span>
+              <span
+                class="col-3 prologue-post-list-col blog-link"
+                (click)="routerHelper.goToBlogCategory(params,postContent.controls.categoryId.value)"
+              >{{getCategoryTitle(postContent.controls.categoryId.value)}}</span>
+              <span class="col-3 prologue-post-list-col">{{dataTransferHelper.numberToDateString(postContent.controls.createdAt.value)}}</span>
+            </div>
+          </div>
+        </section>
+      </div>
+    </form>
+  </div>
 </div>

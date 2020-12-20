@@ -34,10 +34,10 @@ export class PrologueComponent implements OnInit {
   postList: PostContent[];
   postListSub: Subscription;
   postListForm: any;
-  isShowingPostList: boolean;
 
   blogId: string;
   isPage: boolean;
+  isLoading: boolean;
   updateOk: boolean;
   newDescription: '';
 
@@ -59,6 +59,8 @@ export class PrologueComponent implements OnInit {
     private formHelper: FormHelper,
     public dataTransferHelper: DataTransferHelper,
   ) {
+    this.isPage = true;
+    this.isLoading = true;
     this.paramSub = this.route.params.subscribe(params => {
       this.isShowingCategoryContents = false;
       this.isEditingCategory = false;
@@ -73,7 +75,6 @@ export class PrologueComponent implements OnInit {
   get blogContents(): Array<BlogContent> { return this._blogContents; }
   set blogContents(blogContents: Array<BlogContent>) {
     if (!blogContents || blogContents.length === 0){
-      this.isPage = false;
       return;
     }
     this._blogContents = blogContents;
@@ -82,7 +83,6 @@ export class PrologueComponent implements OnInit {
     this.categoryContentsObserver = this.blogService.getCategoryContentsObserver(this.blogId);
     this.categoryContentsSub = this.categoryContentsObserver.subscribe(categoryContents => {
       if (!categoryContents || categoryContents.length === 0){
-        this.isPage = false;
         return;
       }
 
@@ -102,8 +102,8 @@ export class PrologueComponent implements OnInit {
         this.postListSub = this.postListObserver.subscribe(postList => {
           this.postList = postList;
           this.postListForm = this.formHelper.buildFormRecursively({postList: this.postList});
+          this.isLoading = false;
         });
-        this.isShowingPostList = true;
       }
     });
   }
