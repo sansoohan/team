@@ -116,9 +116,9 @@ export class CategoryComponent implements OnInit {
           );
 
         const selectedCategories = [
-          this.selectedCategory.value,
+          this.selectedCategory?.value,
           ...this.selectedChildCategories.map((selectedChildCategory) => selectedChildCategory.value)
-        ];
+        ].filter(Boolean);
         const categoryIds = selectedCategories.map((categoryContent) =>
           categoryContent.id
         );

@@ -4,6 +4,7 @@
 }
 
 #notfound {
+  background-color: white;
   position: relative;
   height: 100vh;
 }

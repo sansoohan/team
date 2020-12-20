@@ -10,6 +10,7 @@ import { BlogService } from 'src/app/services/blog.service';
 import { BlogContent } from '../blog.content';
 import { CategoryContent } from '../category/category.content';
 import { ToastHelper } from 'src/app/helper/toast.helper';
+import { PostContent } from '../post/post.content';
 
 @Component({
   selector: 'app-blog-left-sidebar',
@@ -49,10 +50,16 @@ export class LeftSidebarComponent implements OnInit {
   addCategory(
     blogContents: Array<BlogContent>,
     parentCategory: FormGroup,
+    categoryContentsArray: any,
   ){
     const newCategory = Object.assign({}, new CategoryContent());
     newCategory.blogId = blogContents[0].id;
     newCategory.parentId = parentCategory.value.id;
+    const newCategoryCount = categoryContentsArray.value
+    .filter((category) =>
+      new RegExp(newCategory.categoryTitle, 'g').test(category.categoryTitle)
+    ).length;
+    newCategory.categoryTitle = `${newCategory.categoryTitle}${newCategoryCount + 1}`;
     this.blogService
     .create(`blogs/${blogContents[0].id}/categories`, newCategory)
     .then(() => {
@@ -79,7 +86,8 @@ export class LeftSidebarComponent implements OnInit {
     blogContents: Array<BlogContent>,
     targetCategory: FormGroup,
     categoryContentsForm: FormGroup,
-  ){
+  ) {
+    const blogId = blogContents[0].id;
     const targetChildCategories = this.formHelper.getChildContentsRecusively(
       // tslint:disable-next-line: no-string-literal
       categoryContentsForm.controls.categoryContents['controls'], targetCategory
@@ -89,21 +97,14 @@ export class LeftSidebarComponent implements OnInit {
     this.toastHelper.askYesNo('Remove Category', [...removeMessages].join(', '))
     .then((result) => {
       if (result.value) {
-        this.blogService
-        .delete(`blogs/${blogContents[0].id}/categories/${targetCategory.value.id}`)
+        this.blogService.cascadeDeleteCateogry(
+          blogContents,
+          targetCategory,
+          categoryContentsForm
+        )
         .then(() => {
-          blogContents[0].categoryOrder = blogContents[0].categoryOrder
-          .filter((categoryId) => categoryId !== targetCategory.value.id);
-          this.blogService.update(
-            `blogs/${blogContents[0].id}`,
-            blogContents[0]
-          )
-          .then(() => {
-            this.toastHelper.showSuccess('Category Remove', 'Success!');
-          })
-          .catch(e => {
-            this.toastHelper.showWarning('Category Remove Failed.', e);
-          });
+          this.toastHelper.showSuccess('Category Remove', 'Success!');
+          this.routerHelper.goToBlogPrologue(this.params);
         })
         .catch(e => {
           this.toastHelper.showWarning('Category Remove Failed.', e);
@@ -112,38 +113,80 @@ export class LeftSidebarComponent implements OnInit {
     });
   }
 
-  switchCategory(
-    categoryContentGroupA: FormGroup,
-    categoryContentGroupB: FormGroup,
-    categoryContentsArray: AbstractControl,
+  moveUpCategory(
+    categoryContentGroupBId: string,
+    categoryContentsArray: any,
   ): void {
+    const categoryContentGroupB = categoryContentsArray.controls
+    .find((category) => category.value.id === categoryContentGroupBId);
+    const categoryContentGroupA =
+    categoryContentsArray.controls[categoryContentGroupB.value.categoryNumber - 1];
+    const deepCountA = this.blogService.getCategoryDeepCount(
+      categoryContentGroupA, categoryContentsArray.controls
+    );
+    const minDeepCountB = this.blogService.getCategoryDeepCount(
+      categoryContentGroupB, categoryContentsArray.controls
+    );
+    const childrenCategoryWithB = [
+      categoryContentGroupB,
+      ...this.formHelper
+      .getChildContentsRecusively(categoryContentsArray.controls, categoryContentGroupB)
+    ];
+
     if (!categoryContentGroupA) {
       return;
     }
-    else if (!categoryContentGroupB) {
+
+    if (!categoryContentGroupB) {
       categoryContentGroupA.controls.parentId.setValue(null);
     }
     else if (categoryContentGroupB.value.parentId === categoryContentGroupA.value.id) {
       const tmpCategoryANubmer = categoryContentGroupA.value.categoryNumber;
-      categoryContentGroupA.controls.categoryNumber
-      .setValue(categoryContentGroupB.value.categoryNumber);
-      categoryContentGroupB.controls.categoryNumber
-      .setValue(tmpCategoryANubmer);
-      categoryContentGroupB.controls.parentId
-      .setValue(categoryContentGroupA.value.parentId || null);
-    } else if (
-      categoryContentGroupB.value.parentId === categoryContentGroupA.value.parentId &&
-      categoryContentGroupA.value.parentId
+      const categoryBSize = childrenCategoryWithB.length;
+      for (let i = tmpCategoryANubmer; i <= tmpCategoryANubmer + categoryBSize; i++){
+        if (i === tmpCategoryANubmer) {
+          categoryContentsArray.controls[i].controls.categoryNumber
+          .setValue(tmpCategoryANubmer + categoryBSize);
+          continue;
+        }
+
+        if (i === tmpCategoryANubmer + 1) {
+          categoryContentsArray.controls[i].controls.categoryNumber
+          .setValue(i - 1);
+          categoryContentsArray.controls[i].controls.parentId
+          .setValue(categoryContentGroupA.value.parentId || null);
+          continue;
+        }
+
+        categoryContentsArray.controls[i].controls.categoryNumber
+        .setValue(i - 1);
+      }
+    }
+    else if (
+      categoryContentGroupB.value.parentId === categoryContentGroupA.value.parentId
     ) {
       categoryContentGroupB.controls.parentId.setValue(categoryContentGroupA.value.id);
     } else {
       categoryContentGroupB.controls.parentId.setValue(categoryContentGroupA.value.parentId);
     }
 
-    const categoryContentsArraySorted =
-    categoryContentsArray.value.sort((categoryA: CategoryContent, categoryB: CategoryContent) =>
-    categoryA.categoryNumber - categoryB.categoryNumber);
-    categoryContentsArray.patchValue(categoryContentsArraySorted);
+    categoryContentsArray.patchValue(
+      categoryContentsArray.value.sort((a, b) => a.categoryNumber - b.categoryNumber)
+    );
+
+    const maxDeepCountB = Math.max(...childrenCategoryWithB.map((category) => {
+      return this.blogService.getCategoryDeepCount(
+        category, categoryContentsArray.controls
+      );
+    })) - 1;
+
+    categoryContentsArray.patchValue(
+      categoryContentsArray.value.sort((a, b) => a.categoryNumber - b.categoryNumber)
+    );
+
+    if (maxDeepCountB >= 4){
+      this.moveUpCategory(categoryContentGroupBId, categoryContentsArray);
+    }
   }
 
   clickCategoryEdit(): void {
@@ -182,7 +225,9 @@ export class LeftSidebarComponent implements OnInit {
         ) {
           return this.blogService.update(
             `blogs/${blogContents[0].id}/categories/${categoryContent.id}`,
-            categoryContentsArray.value.map((category: CategoryContent) => category.categoryNumber)
+            categoryContentsArray.value.find(
+              (category: CategoryContent) => category.id === categoryContent.id
+            )
           );
         }
         else {

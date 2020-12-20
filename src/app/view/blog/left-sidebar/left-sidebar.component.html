@@ -75,20 +75,19 @@
                 >
                   <div
                     class="fa fa-arrow-up category-move-up-button"
-                    (click)="switchCategory(
-                      categoryContentsForm.controls.categoryContents['controls'][i-1],
-                      categoryContent,
+                    (click)="moveUpCategory(
+                      categoryContent.value.id,
                       categoryContentsForm.controls.categoryContents
                     )"
                   ></div>
-                  <div
+                  <!-- <div
                     class="fa fa-arrow-down category-move-up-button"
                     (click)="switchCategory(
                       categoryContent,
                       categoryContentsForm.controls.categoryContents['controls'][i+1],
                       categoryContentsForm.controls.categoryContents
                     )"
-                  ></div>
+                  ></div> -->
                 </div>
                 <input
                   *ngIf="isEditingCategory"
@@ -105,7 +104,11 @@
                       categoryContent,categoryContentsForm.controls.categoryContents['controls']
                     )<4"
                     class="fa fa-plus category-add-button"
-                    (click)="addCategory(blogContents,categoryContent)"
+                    (click)="addCategory(
+                      blogContents,
+                      categoryContent,
+                      categoryContentsForm.controls.categoryContents
+                    )"
                   ></div>
                   <div
                     class="fa fa-times category-remove-button"

@@ -1,6 +1,8 @@
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MarkdownModule } from 'ngx-markdown';
+import { NotFoundModule } from 'src/app/modules/not-found/not-found.module';
+
 import { BlogComponent } from './blog.component';
 import { CommentComponent } from './post/comment/comment.component';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -9,6 +11,7 @@ import { CategoryComponent } from './category/category.component';
 import { LeftSidebarComponent } from './left-sidebar/left-sidebar.component';
 import { PrologueComponent } from './prologue/prologue.component';
 import { NewPostComponent } from './category/new-post/new-post.component';
+
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -28,6 +31,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    NotFoundModule,
     MatPaginatorModule,
     MatButtonModule,
     MatIconModule,
@@ -36,6 +40,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     MarkdownModule.forChild(),
   ],
   exports: [
+    NotFoundModule,
     MatPaginatorModule,
     MatButtonModule,
     MatIconModule,

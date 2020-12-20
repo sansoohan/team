@@ -7,6 +7,7 @@ import { CategoryContent } from '../view/blog/category/category.content';
 import { CommentContent } from '../view/blog/post/comment/comment.content';
 import { AuthService } from './auth.service';
 import { FormGroup, FormArray } from '@angular/forms';
+import { FormHelper } from 'src/app/helper/form.helper';
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +21,7 @@ export class BlogService {
   constructor(
     private firestore: AngularFirestore,
     private authService: AuthService,
+    private formHelper: FormHelper,
   ) { }
 
   getBlogContentsObserver({params = null}): Observable<BlogContent[]> {
@@ -59,8 +61,8 @@ export class BlogService {
     if (!blogId){
       return;
     }
-    if(postCreatedAtList.length === 0) {
-      postCreatedAtList = [-1]
+    if (postCreatedAtList.length === 0) {
+      postCreatedAtList = [-1];
     }
 
     return this.firestore
@@ -100,14 +102,70 @@ export class BlogService {
     categoryContent: any,
     categoryContents: Array<any>,
   ): number {
-    // console.log(categoryContent)
-    if(!categoryContent?.value.parentId){
-      return 1
+    if (!categoryContent?.value.parentId) {
+      return 1;
     }
     const parentCategory = categoryContents
-    .find((category) => category.value.id === categoryContent.value.parentId)
+    .find((category) => category.value.id === categoryContent.value.parentId);
 
-    return 1 + this.getCategoryDeepCount(parentCategory, categoryContents)
+    return 1 + this.getCategoryDeepCount(parentCategory, categoryContents);
+  }
+
+  async cascadeDeleteCateogry(
+    blogContents: Array<BlogContent>,
+    targetCategory: FormGroup,
+    categoryContentsForm: FormGroup,
+  ): Promise<any> {
+    const blogId = blogContents[0].id;
+    const targetChildCategories = this.formHelper.getChildContentsRecusively(
+      // tslint:disable-next-line: no-string-literal
+      categoryContentsForm.controls.categoryContents['controls'], targetCategory
+    );
+    const targetCategories = [targetCategory, ...targetChildCategories];
+    const targetCategoryPromises = targetCategories.map(async (category) => {
+      return new Promise((resolve, reject) => {
+        return this
+        .delete(`blogs/${blogId}/categories/${category.value.id}`)
+        .then(() => {
+          blogContents[0].categoryOrder = blogContents[0].categoryOrder
+          .filter((categoryId) => categoryId !== category.value.id);
+          this
+          .update(`blogs/${blogId}`, blogContents[0])
+          .then(() => resolve())
+          .catch(e => reject(e));
+        })
+        .catch(e => reject(e));
+      });
+    });
+
+    const targetPostPromises = targetCategories.map((category) => {
+      return new Promise((resolve, reject) => {
+        const tmpSub = this
+        .getCategoryPostListObserver(blogId, category.value.postCreatedAtList)
+        .subscribe((postContents: Array<PostContent>) => {
+          const postContentPromises = postContents.map((postContent) => {
+            return new Promise((resolveInner, rejectInner) => {
+              this
+              .delete(`blogs/${blogId}/posts/${postContent.id}`)
+              .then(() => resolveInner())
+              .catch((e) => rejectInner(e));
+            });
+          });
+
+          Promise.all(postContentPromises)
+          .then(() => {
+            tmpSub.unsubscribe();
+            resolve();
+          })
+          .catch((e) => reject(e));
+        });
+      });
+    });
+
+    return Promise.all([
+      ...targetPostPromises,
+      ...targetCategoryPromises,
+    ]);
   }
 
   async create(path: string, content: any): Promise<void> {
@@ -115,8 +173,6 @@ export class BlogService {
       return null;
     }
     content.ownerId = JSON.parse(localStorage.currentUser).uid;
-
-    console.log(path, content);
     return this.firestore.collection(path).add(content)
     .then(async (collection) => {
       content.id = collection.id;

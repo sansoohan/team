@@ -39,7 +39,7 @@ export class FormHelper {
     parentContent: FormGroup
   ): Array<FormGroup>{
     const childContents = allContent
-    .filter((categoryForm) => categoryForm.value.parentId === parentContent.value.id);
+    .filter((categoryForm) => categoryForm?.value.parentId === parentContent?.value.id);
     if (childContents.length === 0){
       return [];
     }
