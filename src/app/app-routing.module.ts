@@ -7,6 +7,7 @@ import { SignInComponent } from 'src/app/view/sign-in/sign-in.component';
 import { SignUpComponent } from 'src/app/view/sign-up/sign-up.component';
 import { ContactComponent } from 'src/app/view/contact/contact.component';
 import { MainComponent } from 'src/app/view/main/main.component';
+import { TalkComponent } from './view/talk/talk.component';
 
 const appRoutes: Routes = [
   { path: '', component: MainComponent },
@@ -16,6 +17,7 @@ const appRoutes: Routes = [
   { path: 'blog/:userName/post/:postId', component: BlogComponent }, // PostComponent
   { path: 'blog/:userName/category/:categoryId', component: BlogComponent }, // CategoryComponent
   { path: 'blog/:userName/category/:categoryId/new-post', component: BlogComponent }, // PostComponent
+  { path: 'talk/:userName', component: TalkComponent }, // TalkComponent
   { path: 'sign-in', component: SignInComponent },
   { path: 'sign-up', component: SignUpComponent },
   { path: 'contact', component: ContactComponent },

@@ -7,5 +7,8 @@
         ]
       }
     }
+  },
+  "projects": {
+    "Developer": "developers-8a830"
   }
 }
