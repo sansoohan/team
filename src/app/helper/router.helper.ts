@@ -11,6 +11,15 @@ export class RouterHelper {
     private viewportScroller: ViewportScroller,
   ) { }
 
+  goToTalk(params: any): void {
+    this.router.onSameUrlNavigation = 'reload';
+    const currentUser = JSON.parse(localStorage.currentUser || null);
+    const queryUser = currentUser?.userName || currentUser?.uid || params?.userName || 'sansoohan';
+    this.router.navigate(['/talk', queryUser]).finally(() => {
+      this.router.onSameUrlNavigation = 'ignore'; // Restore config after navigation completes
+    });
+  }
+
   goToProfile(params: any): void {
     this.router.onSameUrlNavigation = 'reload';
     const currentUser = JSON.parse(localStorage.currentUser || null);

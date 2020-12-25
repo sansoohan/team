@@ -14,6 +14,11 @@
       class="navbar-brand selected-header-link"
       (click)="routerHelper.goToBlogPrologue(params)"
     >Blog</a>
+    <a
+      *ngIf="router.url.includes('/talk')"
+      class="navbar-brand selected-header-link"
+      (click)="routerHelper.goToTalk(params)"
+    >Talk</a>
   </div>
 </nav>
 
@@ -38,6 +43,11 @@
       class="navbar-brand header-link"
       (click)="routerHelper.goToBlogPrologue(params)"
     >Blog</a>
+    <a
+      *ngIf="!router.url.includes('/talk')"
+      class="navbar-brand header-link"
+      (click)="routerHelper.goToTalk(params)"
+    >Talk</a>
   </div>
 </nav>
 

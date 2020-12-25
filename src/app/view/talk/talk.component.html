@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Welcome to FirebaseRTC</title>
+  <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+  <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+</head>
+<body>
+<h1>Welcome to FirebaseRTC!</h1>
+<div id="buttons">
+  <button
+    class="mdc-button mdc-button--raised"
+    id="cameraBtn"
+    (click)="openUserMedia()"
+    [disabled]="isCameraBtnDisabled"
+  >
+    <i class="material-icons mdc-button__icon" aria-hidden="true">perm_camera_mic</i>
+    <span class="mdc-button__label">Open camera & microphone</span>
+  </button>
+  <button
+    class="mdc-button mdc-button--raised"
+    id="createBtn"
+    (click)="createRoom()"
+    [disabled]="isCreateBtnDisabled"
+  >
+    <i class="material-icons mdc-button__icon" aria-hidden="true">group_add</i>
+    <span class="mdc-button__label">Create room</span>
+  </button>
+  <button
+    class="mdc-button mdc-button--raised"
+    id="joinBtn"
+    (click)="joinRoom()"
+    [disabled]="isJoinBtnDisabled"
+  >
+    <i class="material-icons mdc-button__icon" aria-hidden="true">group</i>
+    <span class="mdc-button__label">Join room</span>
+  </button>
+  <button
+    class="mdc-button mdc-button--raised"
+    disabled
+    id="hangupBtn"
+    (click)="hangUp()"
+    [disabled]="isHangupBtnDisabled"
+  >
+    <i class="material-icons mdc-button__icon" aria-hidden="true">close</i>
+    <span class="mdc-button__label">Hangup</span>
+  </button>
+</div>
+<div>
+  <span id="currentRoom">
+    {{currentRoomMessage}}
+  </span>
+</div>
+<div id="videos">
+  <video id="localVideo" #localVideo muted autoplay playsinline></video>
+  <video id="remoteVideo" #remoteVideo autoplay playsinline></video>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
