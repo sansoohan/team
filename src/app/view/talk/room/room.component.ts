@@ -73,11 +73,11 @@ export class RoomComponent implements OnInit {
       this.talkSub = this.talkContentsObserver.subscribe((talkContents) => {
         this.talkContents = talkContents;
         this.isLoading = false;
+        if (params.roomId) {
+          this.roomId = params.roomId;
+          this.joinRoomById(this.roomId);
+        }
       });
-      if (params.roomId) {
-        this.roomId = params.roomId;
-        this.joinRoomById(this.roomId);
-      }
     });
   }
 
