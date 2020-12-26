@@ -1,0 +1,31 @@
+<div *ngIf=!isPage>
+  <app-not-found></app-not-found>
+</div>
+<div>
+  <form>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary" id="sideNav">
+      <!-- Collapse button -->
+      <div style="margin:auto;">
+        <div class="fixed-top">
+          <button class="navbar-toggler nav-collapse-button fixed-top" type="button" data-toggle="collapse" data-target="#navbarSideCollapse" aria-controls="navbarSideCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+        </div>
+      
+        <div class="collapse navbar-collapse" id="navbarSideCollapse">
+          <ul class="navbar-nav resume-navbar">
+            <div *ngIf="!isInRoom" class="nav-item">
+              <a class="nav-link" (click)="handleClickCreateRoom()">Create</a>
+            </div>
+            <div *ngIf="!isInRoom" class="nav-item">
+              <a class="nav-link" (click)="handleClickJoinRoom()">Join</a>
+            </div>
+            <div *ngIf="isInRoom" class="nav-item">
+              <a class="nav-link" (click)="handleClickLeaveRoom()">Leave</a>
+            </div>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </form>
+</div>
