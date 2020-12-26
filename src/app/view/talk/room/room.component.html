@@ -1,0 +1,32 @@
+<div *ngIf="!isPage">
+  <app-modules-not-found></app-modules-not-found>
+</div>
+<div
+  *ngIf="isPage"
+  class="profiles"
+>
+  <div *ngIf="isLoading">
+    <app-modules-page-loading style="color:'white'"></app-modules-page-loading>
+  </div>
+  <app-talk-left-sidebar
+    [isInRoom]="isInRoom"
+    (clickCreateRoom)="handleClickCreateRoom()"
+    (clickJoinRoom)="handleClickJoinRoom()"
+    (clickLeaveRoom)="handleClickLeaveRoom()"
+  ></app-talk-left-sidebar>
+  <div *ngIf="isInRoom" class="ml-2 mt-2">
+    <button
+      class="btn btn-secondary btn-sm ml-2"
+      (click)="copyToClipboard(createdRoomUrl)"
+    >Copy to Clipboard</button>
+    <a class="ml-2">{{createdRoomUrl}}</a>
+    <span
+      *ngIf="isCopiedToClipboard"
+      class="badge badge-success ml-2"
+    ><i class="fa fa-check-circle mr-1"></i>Copied!</span>
+  </div>
+  <div *ngIf="isInRoom" id="videos">
+    <video id="localVideo" #localVideo muted autoplay playsinline></video>
+    <video id="remoteVideo" #remoteVideo autoplay playsinline></video>
+  </div>
+</div>

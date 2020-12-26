@@ -47,6 +47,10 @@
   margin-left: 0;
 }
 
+.header-navbar.talk-header {
+  margin-left: 80px;
+}
+
 .header-navbar.blog-header {
   margin-left: 80px;
 }

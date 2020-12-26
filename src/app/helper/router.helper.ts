@@ -11,11 +11,20 @@ export class RouterHelper {
     private viewportScroller: ViewportScroller,
   ) { }
 
+  goToUrl(url: string): void {
+    this.router.onSameUrlNavigation = 'reload';
+    this.router.navigate([url.replace(`${window.location.origin}/#`, '')]).finally(() => {
+      this.router.onSameUrlNavigation = 'ignore'; // Restore config after navigation completes
+    });
+  }
+
   goToTalk(params: any): void {
     this.router.onSameUrlNavigation = 'reload';
     const currentUser = JSON.parse(localStorage.currentUser || null);
     const queryUser = currentUser?.userName || currentUser?.uid || params?.userName || 'sansoohan';
-    this.router.navigate(['/talk', queryUser]).finally(() => {
+    this.router.navigate([
+      '/talk', queryUser, params.roomId ? 'room' : null, params.roomId,
+    ].filter(Boolean)).finally(() => {
       this.router.onSameUrlNavigation = 'ignore'; // Restore config after navigation completes
     });
   }

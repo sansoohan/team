@@ -25,6 +25,7 @@
 <nav
   class="header-navbar navbar navbar-expand-lg navbar-dark bg-dark fixed-top"
   [class.main-header]="router.url.includes('/main')"
+  [class.talk-header]="router.url.includes('/talk')"
   [class.blog-header]="router.url.includes('/blog')"
   [class.profile-header]="router.url.includes('/profile')"
 >
@@ -95,6 +96,10 @@
           class="dropdown-item"
           (click)="routerHelper.goToBlogPrologue({userName:searchValue})"
         >{{searchValue}}'s Blog</a>
+        <a
+          class="dropdown-item"
+          (click)="routerHelper.goToTalk({userName:searchValue})"
+        >{{searchValue}}'s Talk</a>
         <a
           class="dropdown-item"
           (click)="closeProfileLinkDropDown()"
