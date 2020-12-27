@@ -29,6 +29,7 @@ export class RoomComponent implements OnInit {
   roomJoinSubscribe: Subscription;
   talkSub: Subscription;
 
+  @ViewChild ('videos') public videos: any;
   @ViewChild ('localVideo') public localVideo: ElementRef;
   @ViewChild ('remoteVideo') public remoteVideo: ElementRef;
 
@@ -37,6 +38,7 @@ export class RoomComponent implements OnInit {
   isCopiedToClipboard: boolean;
   talkContentsObserver: Observable<TalkContent[]>;
   talkContents: TalkContent[];
+  isHorizontalVideo: boolean;
 
   constructor(
     private firestore: AngularFirestore,
@@ -77,6 +79,7 @@ export class RoomComponent implements OnInit {
           this.roomId = params.roomId;
           this.joinRoomById(this.roomId);
         }
+        window.addEventListener('resize', this.onResizeWindow.bind(this));
       });
     });
   }
@@ -332,6 +335,15 @@ export class RoomComponent implements OnInit {
     document.body.removeChild(el);
   }
 
+  onResizeWindow() {
+    const width = this.videos.nativeElement.offsetWidth;
+    const height = this.videos.nativeElement.offsetHeight;
+
+    this.isHorizontalVideo = (width / 4) > (height / 3);
+
+    console.log();
+  }
+
   ngOnInit(): void {
   }
 
@@ -339,5 +351,6 @@ export class RoomComponent implements OnInit {
     this.handleClickLeaveRoom();
     this.talkSub?.unsubscribe();
     this.paramSub?.unsubscribe();
+    window.removeEventListener('resize', this.onResizeWindow);
   }
 }

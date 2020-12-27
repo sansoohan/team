@@ -3,7 +3,7 @@
 </div>
 <div
   *ngIf="isPage"
-  class="profiles"
+  class="talks"
 >
   <div *ngIf="isLoading">
     <app-modules-page-loading style="color:'white'"></app-modules-page-loading>
@@ -14,19 +14,37 @@
     (clickJoinRoom)="handleClickJoinRoom()"
     (clickLeaveRoom)="handleClickLeaveRoom()"
   ></app-talk-left-sidebar>
-  <div *ngIf="isInRoom" class="ml-2 mt-2">
+  <div *ngIf="isInRoom" class="copy-to-clipboard">
     <button
-      class="btn btn-secondary btn-sm ml-2"
+      class="btn btn-secondary btn-sm"
       (click)="copyToClipboard(createdRoomUrl)"
     >Copy to Clipboard</button>
-    <a class="ml-2">{{createdRoomUrl}}</a>
     <span
       *ngIf="isCopiedToClipboard"
       class="badge badge-success ml-2"
     ><i class="fa fa-check-circle mr-1"></i>Copied!</span>
+    <p>{{createdRoomUrl}}</p>
   </div>
-  <div *ngIf="isInRoom" id="videos">
-    <video id="localVideo" #localVideo muted autoplay playsinline></video>
-    <video id="remoteVideo" #remoteVideo autoplay playsinline></video>
+  <div
+    *ngIf="isInRoom"
+    id="videos"
+    #videos
+    [class.horizontal]="isHorizontalVideo"
+  >
+    <video
+      id="localVideo"
+      #localVideo
+      muted
+      autoplay
+      playsinline
+      [class.horizontal]="isHorizontalVideo"
+    ></video>
+    <video
+      id="remoteVideo"
+      #remoteVideo
+      autoplay
+      playsinline
+      [class.horizontal]="isHorizontalVideo"
+    ></video>
   </div>
 </div>
