@@ -13,14 +13,16 @@
         </div>
       
         <div class="collapse navbar-collapse" id="navbarSideCollapse">
-          <ul class="navbar-nav resume-navbar">
-            <div *ngIf="!isInRoom" class="nav-item">
+          <ul *ngIf="!isInRoom" class="navbar-nav">
+            <div class="nav-item">
               <a class="nav-link" (click)="handleClickCreateRoom()">Create</a>
             </div>
-            <div *ngIf="!isInRoom" class="nav-item">
+            <div class="nav-item">
               <a class="nav-link" (click)="handleClickJoinRoom()">Join</a>
             </div>
-            <div *ngIf="isInRoom" class="nav-item">
+          </ul>
+          <ul *ngIf="isInRoom" class="navbar-nav">
+            <div class="nav-item">
               <a class="nav-link" (click)="handleClickLeaveRoom()">Leave</a>
             </div>
           </ul>

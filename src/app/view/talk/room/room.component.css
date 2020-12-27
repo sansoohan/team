@@ -1,13 +1,51 @@
+.talks {
+  font-family: 'Open Sans', serif;
+  color: white;
+  background-color: #333333;
+  scroll-behavior: smooth;
+}
+
 div#videos {
-  display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  width: calc(100vw);
+  height: calc(100vh - 4rem - 56px);
+}
+
+div#videos.horizontal {
+  display: flex;
 }
 
 div#videos > video {
   background: black;
-  width: 640px;
-  height: 100%;
+  width: calc((100vh - 4rem - 56px) / 2 * 4 / 3);
+  height: calc((100vh - 4rem - 56px) / 2);
   display: block;
-  margin: 1em;
+  margin: 0 auto 0 auto;
+}
+
+div#videos > video.horizontal {
+  width: calc(100vw / 2);
+  height: calc(100vw / 2 * 3 / 4);
+  background: black;
+  display: block;
+  margin: auto 0 auto 0;
+}
+
+@media (min-width: 992px) {
+  .talks {
+    padding-left: 17rem;
+  }
+  div#videos {
+    width: calc(100vw - 17rem);
+  }
+  div#videos > video.horizontal {
+    width: calc((100vw - 17rem) / 2);
+    height: calc((100vw - 17rem) / 2 * 3 / 4);
+    }
+}
+
+.copy-to-clipboard{
+  height: 4rem;
+  padding: 0.5rem 0.5rem 0 0.5rem;
 }
