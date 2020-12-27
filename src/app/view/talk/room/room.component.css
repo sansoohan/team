@@ -6,46 +6,150 @@
 }
 
 div#videos {
-  flex-direction: row;
-  flex-wrap: wrap;
   width: calc(100vw);
-  height: calc(100vh - 4rem - 56px);
+  height: calc(100vh - 3.5rem - 56px);
+}
+
+div#videos > div {
+  width: calc((100vh - 4rem - 56px) / 2 * 4 / 3);
+  max-width: 100vw;
+  height: calc((100vh - 4rem - 56px) / 2);
+  margin: auto;
+}
+
+div#videos > div > video {
+  width: calc((100vh - 4rem - 56px) / 2 * 4 / 3);
+  max-width: 100vw;
+  height: calc((100vh - 4rem - 56px) / 2);
+  background-color: black;
+}
+
+div#videos > div > span {
+  width: calc((100vh - 4rem - 56px) / 2 * 4 / 3);
+  max-width: 100vw;
+  height: calc((100vh - 4rem - 56px) / 2);
+  bottom: calc((100vh - 3rem - 56px) / 2);
+  display: flex;
+  position: relative;
 }
 
 div#videos.horizontal {
   display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
 }
 
-div#videos > video {
-  background: black;
-  width: calc((100vh - 4rem - 56px) / 2 * 4 / 3);
-  height: calc((100vh - 4rem - 56px) / 2);
-  display: block;
-  margin: 0 auto 0 auto;
-}
-
-div#videos > video.horizontal {
+div#videos > div.horizontal {
   width: calc(100vw / 2);
   height: calc(100vw / 2 * 3 / 4);
-  background: black;
-  display: block;
-  margin: auto 0 auto 0;
+  max-height: (100vh - 4rem - 56px);
+  margin: auto;
+}
+
+div#videos > div > video.horizontal {
+  width: calc(100vw / 2);
+  height: calc(100vw / 2 * 3 / 4);
+  max-height: calc(100vh - 4rem - 56px);
+  background-color: black;
+}
+
+div#videos > div > span.horizontal {
+  width: calc(100vw / 2);
+  height: calc(100vw / 2 * 3 / 4);
+  bottom: calc((100vw + 1rem) / 2 * 3 / 4);
+  max-height: calc(100vh - 4rem - 56px);
+  display: flex;
+  position: relative;
+}
+
+.video-button-group {
+  margin-top: auto;
+}
+
+.video-button-group-min {
+  position: fixed;
+  bottom: 0;
+}
+
+.video-button {
+  padding: 0;
+  font-size: 1.5rem;
+  height: 2.5rem;
+  width: 2.5rem;
+  border-radius: 2.5rem;
+  margin-bottom: 0.5rem;
+  margin-right: 0.5rem;
 }
 
 @media (min-width: 992px) {
   .talks {
     padding-left: 17rem;
   }
+
   div#videos {
     width: calc(100vw - 17rem);
+    height: calc(100vh - 3.5rem - 56px);
   }
-  div#videos > video.horizontal {
+  
+  div#videos > div {
+    width: calc((100vh - 4rem - 56px) / 2 * 4 / 3);
+    max-width: 100vw;
+    height: calc((100vh - 4rem - 56px) / 2);
+    margin: auto;
+  }
+  
+  div#videos > div > video {
+    width: calc((100vh - 4rem - 56px) / 2 * 4 / 3);
+    max-width: 100vw;
+    height: calc((100vh - 4rem - 56px) / 2);
+    background-color: black;
+  }
+  
+  div#videos > div > span {
+    width: calc((100vh - 4rem - 56px) / 2 * 4 / 3);
+    max-width: 100vw;
+    height: calc((100vh - 4rem - 56px) / 2);
+    bottom: calc((100vh - 3rem - 56px) / 2);
+    display: flex;
+    position: relative;
+  }
+
+  div#videos.horizontal {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  div#videos > div.horizontal {
     width: calc((100vw - 17rem) / 2);
     height: calc((100vw - 17rem) / 2 * 3 / 4);
-    }
+    max-height: calc(100vh - 4rem - 56px);
+    margin: auto;
+  }
+  
+  div#videos > div > video.horizontal {
+    width: calc((100vw - 17rem) / 2);
+    height: calc((100vw - 17rem) / 2 * 3 / 4);
+    max-height: calc(100vh - 4rem - 56px);
+    background-color: black;
+  }
+
+  div#videos > div > span.horizontal {
+    width: calc((100vw - 17rem) / 2);
+    height: calc((100vw - 17rem) / 2 * 3 / 4);
+    bottom: calc((100vw - 16rem) / 2 * 3 / 4);
+    max-height: calc(100vh - 4rem - 56px);
+    display: flex;
+    position: relative;
+  }
 }
 
-.copy-to-clipboard{
-  height: 4rem;
+.copy-to-clipboard {
+  height: 3.5rem;
   padding: 0.5rem 0.5rem 0 0.5rem;
+}
+
+.copy-to-clipboard > button {
+  height: 1.5rem;
+  padding: 0 0.5rem;
 }

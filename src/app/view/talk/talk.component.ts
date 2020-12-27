@@ -1,8 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { Subscription, Observable } from 'rxjs';
-import { TalkContent } from './talk.content';
-import { TalkService } from 'src/app/services/talk.service';
-import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-talk',

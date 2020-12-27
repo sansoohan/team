@@ -6,7 +6,6 @@ import { TalkContent } from '../talk.content';
 import { TalkService } from 'src/app/services/talk.service';
 import { ActivatedRoute } from '@angular/router';
 import { RouterHelper } from 'src/app/helper/router.helper';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-talk-room',
@@ -15,9 +14,9 @@ import { Router } from '@angular/router';
 })
 export class RoomComponent implements OnInit {
   // WebRTC Connection
-  localStream: MediaStream;
+  public localStream: MediaStream;
+  public remoteStream: MediaStream;
   peerConnection: RTCPeerConnection;
-  remoteStream: MediaStream;
   roomId: string;
   createdRoomUrl: string;
   callerCandidatesString: string;
@@ -39,6 +38,12 @@ export class RoomComponent implements OnInit {
   talkContentsObserver: Observable<TalkContent[]>;
   talkContents: TalkContent[];
   isHorizontalVideo: boolean;
+  isLocalVideoOn: boolean;
+  isLocalAudioOn: boolean;
+  isRemoteVideoOn: boolean;
+  isRemoteAudioOn: boolean;
+  hasRemoteConnection: boolean;
+  isVideoButtonGroupHeightMininum: boolean;
 
   constructor(
     private firestore: AngularFirestore,
@@ -49,7 +54,13 @@ export class RoomComponent implements OnInit {
   ) {
     this.isPage = true;
     this.isLoading = true;
+    this.isLocalVideoOn = true;
+    this.isLocalAudioOn = true;
+    this.isRemoteVideoOn = true;
+    this.isRemoteAudioOn = true;
+    this.hasRemoteConnection = false;
     this.isCopiedToClipboard = false;
+    this.isVideoButtonGroupHeightMininum = false;
     this.callerCandidatesString = 'callerCandidates';
     this.calleeCandidatesString = 'calleeCandidates';
     this.configuration = {
@@ -83,6 +94,38 @@ export class RoomComponent implements OnInit {
         this.onResizeWindow();
       });
     });
+  }
+
+  setMediaStatus(stream: MediaStream, mediaType: string, status: boolean) {
+    stream[`get${mediaType}Tracks`]().forEach((track) => track.enabled = status);
+  }
+
+  clickLocalStreamVideoToggle() {
+    this.isLocalVideoOn = !this.isLocalVideoOn;
+    if (this.localStream) {
+      this.setMediaStatus(this.localStream, 'Video', this.isLocalVideoOn);
+    }
+  }
+
+  clickLocalStreamAudioToggle() {
+    this.isLocalAudioOn = !this.isLocalAudioOn;
+    if (this.localStream) {
+      this.setMediaStatus(this.localStream, 'Audio', this.isLocalAudioOn);
+    }
+  }
+
+  clickRemoteStreamVideoToggle() {
+    this.isRemoteVideoOn = !this.isRemoteVideoOn;
+    if (this.remoteStream) {
+      this.setMediaStatus(this.remoteStream, 'Video', this.isRemoteVideoOn);
+    }
+  }
+
+  clickRemoteStreamAudioToggle() {
+    this.isRemoteAudioOn = !this.isRemoteAudioOn;
+    if (this.remoteStream) {
+      this.setMediaStatus(this.remoteStream, 'Audio', this.isRemoteAudioOn);
+    }
   }
 
   async handleClickCreateRoom() {
@@ -312,6 +355,9 @@ export class RoomComponent implements OnInit {
     this.peerConnection.addEventListener('connectionstatechange', () => {
       // tslint:disable-next-line: no-console
       console.log(`Connection state change: ${this.peerConnection.connectionState}`);
+      if (this.peerConnection.connectionState === 'connected') {
+        this.hasRemoteConnection = true;
+      }
     });
     this.peerConnection.addEventListener('signalingstatechange', () => {
       // tslint:disable-next-line: no-console
@@ -341,7 +387,12 @@ export class RoomComponent implements OnInit {
       const width = this.videos.nativeElement.offsetWidth;
       const height = this.videos.nativeElement.offsetHeight;
       this.isHorizontalVideo = (width / 4) > (height / 3);
-      console.log(this.isHorizontalVideo);
+    }
+    if (this.localVideo) {
+      const width = this.localVideo.nativeElement.offsetWidth;
+      const height = this.localVideo.nativeElement.offsetHeight;
+      console.log(width, height)
+      this.isVideoButtonGroupHeightMininum = (width / 4) > (height / 3 + 3);
     }
   }
 
