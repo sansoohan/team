@@ -80,6 +80,7 @@ export class RoomComponent implements OnInit {
           this.joinRoomById(this.roomId);
         }
         window.addEventListener('resize', this.onResizeWindow.bind(this));
+        this.onResizeWindow();
       });
     });
   }
@@ -336,12 +337,12 @@ export class RoomComponent implements OnInit {
   }
 
   onResizeWindow() {
-    const width = this.videos.nativeElement.offsetWidth;
-    const height = this.videos.nativeElement.offsetHeight;
-
-    this.isHorizontalVideo = (width / 4) > (height / 3);
-
-    console.log();
+    if (this.videos) {
+      const width = this.videos.nativeElement.offsetWidth;
+      const height = this.videos.nativeElement.offsetHeight;
+      this.isHorizontalVideo = (width / 4) > (height / 3);
+      console.log(this.isHorizontalVideo);
+    }
   }
 
   ngOnInit(): void {
