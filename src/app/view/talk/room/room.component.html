@@ -14,8 +14,9 @@
     (clickJoinRoom)="handleClickJoinRoom()"
     (clickLeaveRoom)="handleClickLeaveRoom()"
   ></app-talk-left-sidebar>
-  <div *ngIf="isInRoom" class="copy-to-clipboard">
+  <div class="copy-to-clipboard">
     <button
+      *ngIf="isInRoom"
       class="btn btn-secondary btn-sm"
       (click)="copyToClipboard(createdRoomUrl)"
     >Copy to Clipboard</button>
@@ -26,12 +27,12 @@
     <p>{{createdRoomUrl}}</p>
   </div>
   <div
-    *ngIf="isInRoom"
     id="videos"
     #videos
     [class.horizontal]="isHorizontalVideo"
-  >
+  > 
     <video
+      *ngIf="isInRoom"
       id="localVideo"
       #localVideo
       muted
@@ -40,6 +41,7 @@
       [class.horizontal]="isHorizontalVideo"
     ></video>
     <video
+      *ngIf="isInRoom"
       id="remoteVideo"
       #remoteVideo
       autoplay
