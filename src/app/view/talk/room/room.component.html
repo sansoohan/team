@@ -34,7 +34,11 @@
     #videos
     [class.horizontal]="isHorizontalVideo"
   > 
-    <div [class.horizontal]="isHorizontalVideo">
+    <div
+      id="localVideoGroup"
+      #localVideoGroup
+      [class.horizontal]="isHorizontalVideo"
+    >
       <video
         *ngIf="isInRoom"
         id="localVideo"
@@ -42,14 +46,23 @@
         autoplay
         playsinline
         [class.horizontal]="isHorizontalVideo"
+        [class.full-screen-zoom]="isFullScreen"
       >
       </video>
       <span
         *ngIf="isInRoom"
         class="container"
         [class.horizontal]="isHorizontalVideo"
+        [class.full-screen-zoom]="isFullScreen"
+        (click)="isShowingLocalControl=!isShowingLocalControl"
+        (mouseenter)="isShowingLocalControl=true"
+        (mouseleave)="isShowingLocalControl=false"
       >
-        <div class="video-button-group">
+        <div
+          *ngIf="isShowingLocalControl"
+          class="video-button-group"
+          [class.video-button-group-min]="isVideoButtonGroupHeightMininum"
+        >
           <button
             *ngIf="!isLocalVideoOn"
             class="btn btn-secondary video-button fa fa-eye"
@@ -70,11 +83,25 @@
             class="btn btn-danger video-button fa fa-microphone-slash"
             (click)="clickLocalAudioToggle()"
           ></button>
+          <button
+            *ngIf="!isFullScreen"
+            class="btn btn-secondary video-button fa fa-expand"
+            (click)="toggleFullScreen(localVideoGroup)"
+          ></button>
+          <button
+            *ngIf="isFullScreen"
+            class="btn btn-secondary video-button fa fa-compress"
+            (click)="toggleFullScreen(localVideoGroup)"
+          ></button>
         </div>
       </span>
     </div>
 
-    <div [class.horizontal]="isHorizontalVideo">
+    <div
+      id="remoteVideoGroup"
+      #remoteVideoGroup
+      [class.horizontal]="isHorizontalVideo"
+    >
       <video
         *ngIf="isInRoom"
         id="remoteVideo"
@@ -82,36 +109,52 @@
         autoplay
         playsinline
         [class.horizontal]="isHorizontalVideo"
+        [class.full-screen-zoom]="isFullScreen"
       >
       </video>
       <span
         *ngIf="isInRoom"
         class="container"
         [class.horizontal]="isHorizontalVideo"
+        [class.full-screen-zoom]="isFullScreen"
+        (click)="isShowingRemoteControl=!isShowingRemoteControl"
+        (mouseenter)="isShowingRemoteControl=true"
+        (mouseleave)="isShowingRemoteControl=false"
       >
         <div
+          *ngIf="isShowingRemoteControl && hasRemoteConnection"
           class="video-button-group"
           [class.video-button-group-min]="isVideoButtonGroupHeightMininum"
         >
           <button
-            *ngIf="!isRemoteVideoOn && hasRemoteConnection"
+            *ngIf="!isRemoteVideoOn"
             class="btn btn-secondary video-button fa fa-eye"
             (click)="clickRemoteVideoToggle()"
           ></button>
           <button
-            *ngIf="isRemoteVideoOn && hasRemoteConnection"
+            *ngIf="isRemoteVideoOn"
             class="btn btn-danger video-button fa fa-eye-slash"
             (click)="clickRemoteVideoToggle()"
           ></button>
           <button
-            *ngIf="!isRemoteAudioOn && hasRemoteConnection"
+            *ngIf="!isRemoteAudioOn"
             class="btn btn-secondary video-button fa fa-microphone"
             (click)="clickRemoteAudioToggle()"
           ></button>
           <button
-            *ngIf="isRemoteAudioOn && hasRemoteConnection"
+            *ngIf="isRemoteAudioOn"
             class="btn btn-danger video-button fa fa-microphone-slash"
             (click)="clickRemoteAudioToggle()"
+          ></button>
+          <button
+            *ngIf="!isFullScreen"
+            class="btn btn-secondary video-button fa fa-expand"
+            (click)="toggleFullScreen(remoteVideoGroup)"
+          ></button>
+          <button
+            *ngIf="isFullScreen"
+            class="btn btn-secondary video-button fa fa-compress"
+            (click)="toggleFullScreen(remoteVideoGroup)"
           ></button>
         </div>
       </span>

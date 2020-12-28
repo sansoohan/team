@@ -32,6 +32,8 @@ export class RoomComponent implements OnInit {
   @ViewChild ('videos') public videos: any;
   @ViewChild ('localVideo') public localVideo: ElementRef;
   @ViewChild ('remoteVideo') public remoteVideo: ElementRef;
+  @ViewChild ('localVideoGroup') public localVideoGroup: ElementRef;
+  @ViewChild ('remoteVideoGroup') public remoteVideoGroup: ElementRef;
 
   isPage: boolean;
   isLoading: boolean;
@@ -46,6 +48,9 @@ export class RoomComponent implements OnInit {
   hasRemoteConnection: boolean;
   isVideoButtonGroupHeightMininum: boolean;
   isScreenSharing: boolean;
+  isFullScreen: boolean;
+  isShowingLocalControl: boolean;
+  isShowingRemoteControl: boolean;
 
   constructor(
     private firestore: AngularFirestore,
@@ -64,6 +69,9 @@ export class RoomComponent implements OnInit {
     this.isCopiedToClipboard = false;
     this.isVideoButtonGroupHeightMininum = false;
     this.isScreenSharing = false;
+    this.isFullScreen = false;
+    this.isShowingLocalControl = false;
+    this.isShowingRemoteControl = false;
     this.callerCandidatesString = 'callerCandidates';
     this.calleeCandidatesString = 'calleeCandidates';
     this.configuration = {
@@ -109,6 +117,15 @@ export class RoomComponent implements OnInit {
         }
         this.isLoading = false;
       });
+      document.addEventListener('fullscreenchange', (event) => {
+        if (document.fullscreenElement) {
+          this.isFullScreen = true;
+          console.log(`Element: ${document.fullscreenElement.id} entered full-screen mode.`);
+        } else {
+          this.isFullScreen = false;
+          console.log('Leaving full-screen mode.');
+        }
+      });
     });
   }
 
@@ -147,6 +164,18 @@ export class RoomComponent implements OnInit {
     this.isRemoteAudioOn = !this.isRemoteAudioOn;
     if (this.remoteStream) {
       this.setMediaStatus(this.remoteStream, 'Audio', this.isRemoteAudioOn);
+    }
+  }
+
+  toggleFullScreen(videoGroup: ElementRef) {
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    } else {
+      const el: any = videoGroup;
+      if (el.requestFullscreen) { el.requestFullscreen(); }
+      else if (el.msRequestFullscreen) { el.msRequestFullscreen(); }
+      else if (el.mozRequestFullScreen) { el.mozRequestFullScreen(); }
+      else if (el.webkitRequestFullscreen) { el.webkitRequestFullscreen(); }
     }
   }
 

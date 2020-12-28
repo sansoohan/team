@@ -153,3 +153,11 @@ div#videos > div > span.horizontal {
   height: 1.5rem;
   padding: 0 0.5rem;
 }
+
+.full-screen-zoom {
+  max-height: none !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  position: fixed !important;
+  bottom: 0 !important;
+}
