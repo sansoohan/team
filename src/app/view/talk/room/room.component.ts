@@ -97,7 +97,6 @@ export class RoomComponent implements OnInit {
       this.talkSub = this.talkContentsObserver.subscribe((talkContents) => {
         this.talkContents = talkContents;
         window.addEventListener('resize', this.onResizeWindow.bind(this));
-        this.onResizeWindow();
         if (params.roomId) {
           this.firestore
           .collection('talks').doc(this.talkContents[0].id)
@@ -111,19 +110,20 @@ export class RoomComponent implements OnInit {
             setTimeout(() => {
               this.joinRoomById(this.roomId);
               this.isLoading = false;
+              this.onResizeWindow();
             }, waitTime);
           });
           return;
         }
+        setTimeout(() => this.onResizeWindow(), 300);
         this.isLoading = false;
       });
       document.addEventListener('fullscreenchange', (event) => {
+        setTimeout(() => this.onResizeWindow(), 300);
         if (document.fullscreenElement) {
           this.isFullScreen = true;
-          console.log(`Element: ${document.fullscreenElement.id} entered full-screen mode.`);
         } else {
           this.isFullScreen = false;
-          console.log('Leaving full-screen mode.');
         }
       });
     });
