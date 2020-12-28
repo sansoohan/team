@@ -8,6 +8,11 @@
   <div *ngIf="isLoading">
     <app-modules-page-loading style="color:'white'"></app-modules-page-loading>
   </div>
+  <canvas
+    id="localCanvas"
+    hidden
+    #localCanvas
+  ></canvas>
   <app-talk-left-sidebar
     [isInRoom]="isInRoom"
     [isScreenSharing]="isScreenSharing"
@@ -29,6 +34,15 @@
     ><i class="fa fa-check-circle mr-1"></i>Copied!</span>
     <p>{{createdRoomUrl}}</p>
   </div>
+
+
+
+  <video
+    id="localVideo"
+    #localVideo
+    autoplay
+    playsinline
+  ></video>
   <div
     id="videos"
     #videos
@@ -41,8 +55,8 @@
     >
       <video
         *ngIf="isInRoom"
-        id="localVideo"
-        #localVideo
+        id="canvasVideo"
+        #canvasVideo
         autoplay
         playsinline
         [class.horizontal]="isHorizontalVideo"
@@ -64,33 +78,24 @@
           [class.video-button-group-min]="isVideoButtonGroupHeightMininum"
         >
           <button
-            *ngIf="!isLocalVideoOn"
-            class="btn btn-secondary video-button fa fa-eye"
+            class="btn video-button fa"
+            [class.btn-danger]="isLocalVideoOn"
+            [class.fa-eye-slash]="isLocalVideoOn"
+            [class.btn-secondary]="!isLocalVideoOn"
+            [class.fa-eye]="!isLocalVideoOn"
             (click)="clickLocalVideoToggle()"
           ></button>
           <button
-            *ngIf="isLocalVideoOn"
-            class="btn btn-danger video-button fa fa-eye-slash"
-            (click)="clickLocalVideoToggle()"
-          ></button>
-          <button
-            *ngIf="!isLocalAudioOn"
-            class="btn btn-secondary video-button fa fa-microphone"
+            class="btn video-button fa"
+            [class.btn-danger]="isLocalAudioOn"
+            [class.fa-microphone-slash]="isLocalAudioOn"
+            [class.btn-secondary]="!isLocalAudioOn"
+            [class.fa-microphone]="!isLocalAudioOn"
             (click)="clickLocalAudioToggle()"
           ></button>
           <button
-            *ngIf="isLocalAudioOn"
-            class="btn btn-danger video-button fa fa-microphone-slash"
-            (click)="clickLocalAudioToggle()"
-          ></button>
-          <button
-            *ngIf="!isFullScreen"
             class="btn btn-secondary video-button fa fa-expand"
-            (click)="toggleFullScreen(localVideoGroup)"
-          ></button>
-          <button
-            *ngIf="isFullScreen"
-            class="btn btn-secondary video-button fa fa-compress"
+            [class.fa-compress]="isFullScreen"
             (click)="toggleFullScreen(localVideoGroup)"
           ></button>
         </div>
@@ -127,33 +132,25 @@
           [class.video-button-group-min]="isVideoButtonGroupHeightMininum"
         >
           <button
-            *ngIf="!isRemoteVideoOn"
-            class="btn btn-secondary video-button fa fa-eye"
+            class="btn video-button fa"
+            [class.btn-danger]="isRemoteVideoOn"
+            [class.fa-eye-slash]="isRemoteVideoOn"
+            [class.btn-secondary]="!isRemoteVideoOn"
+            [class.fa-eye]="!isRemoteVideoOn"
             (click)="clickRemoteVideoToggle()"
           ></button>
           <button
-            *ngIf="isRemoteVideoOn"
-            class="btn btn-danger video-button fa fa-eye-slash"
-            (click)="clickRemoteVideoToggle()"
-          ></button>
-          <button
-            *ngIf="!isRemoteAudioOn"
-            class="btn btn-secondary video-button fa fa-microphone"
+            class="btn video-button fa"
+            [class.btn-danger]="isRemoteAudioOn"
+            [class.fa-microphone-slash]="isRemoteAudioOn"
+            [class.btn-secondary]="!isRemoteAudioOn"
+            [class.fa-microphone]="!isRemoteAudioOn"
             (click)="clickRemoteAudioToggle()"
           ></button>
           <button
-            *ngIf="isRemoteAudioOn"
-            class="btn btn-danger video-button fa fa-microphone-slash"
-            (click)="clickRemoteAudioToggle()"
-          ></button>
-          <button
-            *ngIf="!isFullScreen"
-            class="btn btn-secondary video-button fa fa-expand"
-            (click)="toggleFullScreen(remoteVideoGroup)"
-          ></button>
-          <button
-            *ngIf="isFullScreen"
-            class="btn btn-secondary video-button fa fa-compress"
+            class="btn btn-secondary video-button fa"
+            [class.fa-expand]="!isFullScreen"
+            [class.fa-compress]="isFullScreen"
             (click)="toggleFullScreen(remoteVideoGroup)"
           ></button>
         </div>
