@@ -350,9 +350,9 @@ export class RoomComponent implements OnInit {
   // collect ICE Candidates function above
 
   async openUserMedia() {
-    const stream = await navigator.mediaDevices.getUserMedia(
-        {video: true, audio: true});
+    const stream = await navigator.mediaDevices.getUserMedia({video: true, audio: true});
     this.localVideo.nativeElement.srcObject = stream;
+    this.localVideo.nativeElement.muted = true;
     this.localStream = stream;
     this.remoteStream = new MediaStream();
     this.remoteVideo.nativeElement.srcObject = this.remoteStream;
