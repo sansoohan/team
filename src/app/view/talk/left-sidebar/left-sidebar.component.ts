@@ -21,7 +21,11 @@ export class LeftSidebarComponent implements OnInit {
   @Output() clickCreateRoom: EventEmitter<null> = new EventEmitter();
   @Output() clickJoinRoom: EventEmitter<null> = new EventEmitter();
   @Output() clickLeaveRoom: EventEmitter<null> = new EventEmitter();
+  @Output() clickStartScreenSharing: EventEmitter<null> = new EventEmitter();
+  @Output() clickStopScreenSharing: EventEmitter<null> = new EventEmitter();
+
   @Input() isInRoom: boolean;
+  @Input() isScreenSharing: boolean;
 
   paramSub: Subscription;
   params: any;
@@ -84,6 +88,14 @@ export class LeftSidebarComponent implements OnInit {
 
   handleClickLeaveRoom() {
     this.clickLeaveRoom.emit();
+  }
+
+  handleClickStartScreenSharing() {
+    this.clickStartScreenSharing.emit();
+  }
+
+  handleClickStopScreenSharing() {
+    this.clickStopScreenSharing.emit();
   }
 
   ngOnInit(): void {

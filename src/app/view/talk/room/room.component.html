@@ -10,9 +10,12 @@
   </div>
   <app-talk-left-sidebar
     [isInRoom]="isInRoom"
+    [isScreenSharing]="isScreenSharing"
     (clickCreateRoom)="handleClickCreateRoom()"
     (clickJoinRoom)="handleClickJoinRoom()"
     (clickLeaveRoom)="handleClickLeaveRoom()"
+    (clickStartScreenSharing)="handleClickStartScreenSharing()"
+    (clickStopScreenSharing)="handleClickStopScreenSharing()"
   ></app-talk-left-sidebar>
   <div class="copy-to-clipboard">
     <button
@@ -47,29 +50,26 @@
         class="container"
         [class.horizontal]="isHorizontalVideo"
       >
-        <div
-          class="video-button-group"
-          [class.video-button-group-min]="isVideoButtonGroupHeightMininum"
-        >
+        <div class="video-button-group">
           <button
             *ngIf="!isLocalVideoOn"
             class="btn btn-secondary video-button fa fa-eye"
-            (click)="clickLocalStreamVideoToggle()"
+            (click)="clickLocalVideoToggle()"
           ></button>
           <button
             *ngIf="isLocalVideoOn"
             class="btn btn-danger video-button fa fa-eye-slash"
-            (click)="clickLocalStreamVideoToggle()"
+            (click)="clickLocalVideoToggle()"
           ></button>
           <button
             *ngIf="!isLocalAudioOn"
             class="btn btn-secondary video-button fa fa-microphone"
-            (click)="clickLocalStreamAudioToggle()"
+            (click)="clickLocalAudioToggle()"
           ></button>
           <button
             *ngIf="isLocalAudioOn"
             class="btn btn-danger video-button fa fa-microphone-slash"
-            (click)="clickLocalStreamAudioToggle()"
+            (click)="clickLocalAudioToggle()"
           ></button>
         </div>
       </span>
@@ -97,22 +97,22 @@
           <button
             *ngIf="!isRemoteVideoOn && hasRemoteConnection"
             class="btn btn-secondary video-button fa fa-eye"
-            (click)="clickRemoteStreamVideoToggle()"
+            (click)="clickRemoteVideoToggle()"
           ></button>
           <button
             *ngIf="isRemoteVideoOn && hasRemoteConnection"
             class="btn btn-danger video-button fa fa-eye-slash"
-            (click)="clickRemoteStreamVideoToggle()"
+            (click)="clickRemoteVideoToggle()"
           ></button>
           <button
             *ngIf="!isRemoteAudioOn && hasRemoteConnection"
             class="btn btn-secondary video-button fa fa-microphone"
-            (click)="clickRemoteStreamAudioToggle()"
+            (click)="clickRemoteAudioToggle()"
           ></button>
           <button
             *ngIf="isRemoteAudioOn && hasRemoteConnection"
             class="btn btn-danger video-button fa fa-microphone-slash"
-            (click)="clickRemoteStreamAudioToggle()"
+            (click)="clickRemoteAudioToggle()"
           ></button>
         </div>
       </span>

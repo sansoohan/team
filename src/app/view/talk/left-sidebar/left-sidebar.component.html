@@ -15,13 +15,21 @@
         <div class="collapse navbar-collapse" id="navbarSideCollapse">
           <ul *ngIf="!isInRoom" class="navbar-nav">
             <div class="nav-item">
-              <a class="nav-link" (click)="handleClickCreateRoom()">Create</a>
+              <a class="nav-link" (click)="handleClickCreateRoom()">Create Talk Room</a>
             </div>
             <div class="nav-item">
-              <a class="nav-link" (click)="handleClickJoinRoom()">Join</a>
+              <a class="nav-link" (click)="handleClickJoinRoom()">Join Talk Room</a>
             </div>
           </ul>
           <ul *ngIf="isInRoom" class="navbar-nav">
+            <div *ngIf="!isScreenSharing" class="nav-item">
+              <a class="nav-link" (click)="handleClickStartScreenSharing()">Start Screen Share</a>
+            </div>
+
+            <div *ngIf="isScreenSharing" class="nav-item">
+              <a class="nav-link" (click)="handleClickStopScreenSharing()">Stop Screen Share</a>
+            </div>
+
             <div class="nav-item">
               <a class="nav-link" (click)="handleClickLeaveRoom()">Leave</a>
             </div>
