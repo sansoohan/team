@@ -13,7 +13,8 @@ import { RoomComponent } from './room/room.component';
     RoomComponent,
   ],
   imports: [
-    CommonModule
+    CommonModule,
+    PageLoadingModule,
   ],
   exports: [
     TalkComponent,

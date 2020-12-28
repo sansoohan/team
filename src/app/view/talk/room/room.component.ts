@@ -85,13 +85,26 @@ export class RoomComponent implements OnInit {
       this.talkContentsObserver = this.talkService.getTalkContentsObserver({params});
       this.talkSub = this.talkContentsObserver.subscribe((talkContents) => {
         this.talkContents = talkContents;
-        this.isLoading = false;
-        if (params.roomId) {
-          this.roomId = params.roomId;
-          this.joinRoomById(this.roomId);
-        }
         window.addEventListener('resize', this.onResizeWindow.bind(this));
         this.onResizeWindow();
+        if (params.roomId) {
+          const roomJoinSubscribe = this.firestore
+          .collection('talks').doc(this.talkContents[0].id)
+          .collection('rooms').doc(`${params.roomId}`).get()
+          .forEach(async (roomData) => {
+            let waitTime = 0;
+            if (roomData.data().answer) {
+              waitTime = 10000;
+            }
+            this.roomId = params.roomId;
+            setTimeout(() => {
+              this.joinRoomById(this.roomId);
+              this.isLoading = false;
+            }, waitTime);
+          });
+          return;
+        }
+        this.isLoading = false;
       });
     });
   }
@@ -131,65 +144,72 @@ export class RoomComponent implements OnInit {
   async handleClickCreateRoom() {
     this.isInRoom = true;
     await this.openUserMedia();
-    this.firestore
-    .collection('talks').doc(this.talkContents[0].id)
-    .collection('rooms').add({})
-    .then(async (roomRef) => {
-      // tslint:disable-next-line: no-console
-      console.log('Create PeerConnection with configuration: ', this.configuration);
-      this.peerConnection = new RTCPeerConnection(this.configuration);
 
-      this.registerPeerConnectionListeners();
+    let roomRef: DocumentReference;
+    if (this.roomId) {
+      roomRef = this.firestore
+      .collection('talks').doc(this.talkContents[0].id)
+      .collection('rooms').doc(this.roomId).ref;
+    } else {
+      roomRef = await this.firestore
+      .collection('talks').doc(this.talkContents[0].id)
+      .collection('rooms').add({});
+    }
 
-      this.localStream.getTracks().forEach(track => {
-        this.peerConnection.addTrack(track, this.localStream);
-      });
+    // tslint:disable-next-line: no-console
+    console.log('Create PeerConnection with configuration: ', this.configuration);
+    this.peerConnection = new RTCPeerConnection(this.configuration);
 
-      // Uncomment to collect ICE candidates below
-      await this.collectIceCandidates(roomRef, this.peerConnection, this.callerCandidatesString, this.calleeCandidatesString);
+    this.registerPeerConnectionListeners();
 
-      // Code for creating a room below
-      const offer = await this.peerConnection.createOffer();
-      await this.peerConnection.setLocalDescription(offer);
-      // tslint:disable-next-line: no-console
-      console.log('Created offer:', offer);
-      await roomRef.set({
-        id: roomRef.id,
-        caller: JSON.parse(localStorage.currentUser || '{}').uid || null,
-        createdAt: Number(new Date()),
-        offer: {
-          type: offer.type,
-          sdp: offer.sdp,
-        }
-      });
-      this.roomId = roomRef.id;
-      // tslint:disable-next-line: no-console
-      console.log(`New room created with SDP offer. Room ID: ${roomRef.id}`);
-      this.createdRoomUrl = `${window.location.href}/room/${this.roomId}`;
-
-      // Code for creating a room above
-      this.peerConnection.addEventListener('track', event => {
-        // tslint:disable-next-line: no-console
-        console.log('Got remote track:', event.streams[0]);
-        event.streams[0].getTracks().forEach(track => {
-          // tslint:disable-next-line: no-console
-          console.log('Add a track to the remoteStream:', track);
-          this.remoteStream.addTrack(track);
-        });
-      });
-
-      // Listening for remote session description below
-      roomRef.onSnapshot(async snapshot => {
-        const data = snapshot.data();
-        if (!this.peerConnection.currentRemoteDescription && data && data.answer) {
-          // tslint:disable-next-line: no-console
-          console.log('Got remote description: ', data.answer);
-          const rtcSessionDescription = new RTCSessionDescription(data.answer);
-          await this.peerConnection.setRemoteDescription(rtcSessionDescription);
-        }
-      });
-      // Listening for remote session description above
+    this.localStream.getTracks().forEach(track => {
+      this.peerConnection.addTrack(track, this.localStream);
     });
+
+    // Uncomment to collect ICE candidates below
+    await this.collectIceCandidates(roomRef, this.peerConnection, this.callerCandidatesString, this.calleeCandidatesString);
+
+    // Code for creating a room below
+    const offer = await this.peerConnection.createOffer();
+    await this.peerConnection.setLocalDescription(offer);
+    // tslint:disable-next-line: no-console
+    console.log('Created offer:', offer);
+    await roomRef.set({
+      id: roomRef.id,
+      caller: JSON.parse(localStorage.currentUser || '{}').uid || null,
+      createdAt: Number(new Date()),
+      offer: {
+        type: offer.type,
+        sdp: offer.sdp,
+      }
+    });
+    this.roomId = roomRef.id;
+    // tslint:disable-next-line: no-console
+    console.log(`New room created with SDP offer. Room ID: ${roomRef.id}`);
+    this.createdRoomUrl = `${window.location.href}/room/${this.roomId}`;
+
+    // Code for creating a room above
+    this.peerConnection.addEventListener('track', event => {
+      // tslint:disable-next-line: no-console
+      console.log('Got remote track:', event.streams[0]);
+      event.streams[0].getTracks().forEach(track => {
+        // tslint:disable-next-line: no-console
+        console.log('Add a track to the remoteStream:', track);
+        this.remoteStream.addTrack(track);
+      });
+    });
+
+    // Listening for remote session description below
+    roomRef.onSnapshot(async snapshot => {
+      const data = snapshot.data();
+      if (!this.peerConnection.currentRemoteDescription && data && data.answer) {
+        // tslint:disable-next-line: no-console
+        console.log('Got remote description: ', data.answer);
+        const rtcSessionDescription = new RTCSessionDescription(data.answer);
+        await this.peerConnection.setRemoteDescription(rtcSessionDescription);
+      }
+    });
+    // Listening for remote session description above
   }
 
   handleClickJoinRoom() {
@@ -214,6 +234,7 @@ export class RoomComponent implements OnInit {
     const roomRef = this.firestore
     .collection('talks').doc(this.talkContents[0].id)
     .collection('rooms').doc(`${roomId}`);
+
     const roomSnapshot = roomRef.get();
     // tslint:disable-next-line: no-console
     console.log('Got room:', roomRef.ref.id);
@@ -325,25 +346,25 @@ export class RoomComponent implements OnInit {
 
     // Delete room on hangup
     if (this.roomId) {
-      const roomRef = this.firestore
-      .collection('talks').doc(this.talkContents[0].id)
-      .collection('rooms').doc(this.roomId);
-      const calleeCandidates = await roomRef.collection(this.calleeCandidatesString).get();
-      calleeCandidates.forEach(async candidate => {
-        candidate.forEach(async can => {
-          can.ref.delete();
-        });
-      });
-      const callerCandidates = await roomRef.collection(this.callerCandidatesString).get();
-      callerCandidates.forEach(async candidate => {
-        candidate.forEach(async can => {
-          can.ref.delete();
-        });
-      });
-      await roomRef.delete();
-      const params = Object.assign({}, this.params);
-      delete params.roomId;
-      this.routerHelper.goToTalk(params);
+      // const roomRef = this.firestore
+      // .collection('talks').doc(this.talkContents[0].id)
+      // .collection('rooms').doc(this.roomId);
+      // const calleeCandidates = await roomRef.collection(this.calleeCandidatesString).get();
+      // calleeCandidates.forEach(async candidate => {
+      //   candidate.forEach(async can => {
+      //     can.ref.delete();
+      //   });
+      // });
+      // const callerCandidates = await roomRef.collection(this.callerCandidatesString).get();
+      // callerCandidates.forEach(async candidate => {
+      //   candidate.forEach(async can => {
+      //     can.ref.delete();
+      //   });
+      // });
+      // await roomRef.delete();
+      // const params = Object.assign({}, this.params);
+      // delete params.roomId;
+      // this.routerHelper.goToTalk(params);
     }
   }
 
@@ -352,11 +373,24 @@ export class RoomComponent implements OnInit {
       // tslint:disable-next-line: no-console
       console.log(`ICE gathering state changed: ${this.peerConnection.iceGatheringState}`);
     });
-    this.peerConnection.addEventListener('connectionstatechange', () => {
+    this.peerConnection.addEventListener('connectionstatechange', async () => {
       // tslint:disable-next-line: no-console
       console.log(`Connection state change: ${this.peerConnection.connectionState}`);
       if (this.peerConnection.connectionState === 'connected') {
         this.hasRemoteConnection = true;
+      }
+
+      if (this.peerConnection.connectionState === 'disconnected') {
+        await this.handleClickCreateRoom();
+        const roomRef = this.firestore
+        .collection('talks').doc(this.talkContents[0].id)
+        .collection('rooms').doc(this.roomId);
+        const calleeCandidates = await roomRef.collection(this.calleeCandidatesString).get();
+        calleeCandidates.forEach(async candidate => {
+          candidate.forEach(async can => {
+            can.ref.delete();
+          });
+        });
       }
     });
     this.peerConnection.addEventListener('signalingstatechange', () => {
@@ -391,7 +425,6 @@ export class RoomComponent implements OnInit {
     if (this.localVideo) {
       const width = this.localVideo.nativeElement.offsetWidth;
       const height = this.localVideo.nativeElement.offsetHeight;
-      console.log(width, height)
       this.isVideoButtonGroupHeightMininum = (width / 4) > (height / 3 + 3);
     }
   }
