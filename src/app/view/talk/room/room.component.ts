@@ -15,6 +15,7 @@ import { RouterHelper } from 'src/app/helper/router.helper';
 export class RoomComponent implements OnInit {
   // WebRTC Connection
   public localStream: MediaStream;
+  public shareStream: MediaStream;
   public remoteStream: MediaStream;
   peerConnection: RTCPeerConnection;
   roomId: string;
@@ -44,6 +45,7 @@ export class RoomComponent implements OnInit {
   isRemoteAudioOn: boolean;
   hasRemoteConnection: boolean;
   isVideoButtonGroupHeightMininum: boolean;
+  isScreenSharing: boolean;
 
   constructor(
     private firestore: AngularFirestore,
@@ -61,6 +63,7 @@ export class RoomComponent implements OnInit {
     this.hasRemoteConnection = false;
     this.isCopiedToClipboard = false;
     this.isVideoButtonGroupHeightMininum = false;
+    this.isScreenSharing = false;
     this.callerCandidatesString = 'callerCandidates';
     this.calleeCandidatesString = 'calleeCandidates';
     this.configuration = {
@@ -88,7 +91,7 @@ export class RoomComponent implements OnInit {
         window.addEventListener('resize', this.onResizeWindow.bind(this));
         this.onResizeWindow();
         if (params.roomId) {
-          const roomJoinSubscribe = this.firestore
+          this.firestore
           .collection('talks').doc(this.talkContents[0].id)
           .collection('rooms').doc(`${params.roomId}`).get()
           .forEach(async (roomData) => {
@@ -113,32 +116,67 @@ export class RoomComponent implements OnInit {
     stream[`get${mediaType}Tracks`]().forEach((track) => track.enabled = status);
   }
 
-  clickLocalStreamVideoToggle() {
+  clickLocalVideoToggle() {
     this.isLocalVideoOn = !this.isLocalVideoOn;
-    if (this.localStream) {
-      this.setMediaStatus(this.localStream, 'Video', this.isLocalVideoOn);
+    if (this.isScreenSharing) {
+      if (this.shareStream) {
+        this.setMediaStatus(this.shareStream, 'Video', this.isLocalVideoOn);
+      }
+    } else {
+      if (this.localStream) {
+        this.setMediaStatus(this.localStream, 'Video', this.isLocalVideoOn);
+      }
     }
   }
 
-  clickLocalStreamAudioToggle() {
+  clickLocalAudioToggle() {
     this.isLocalAudioOn = !this.isLocalAudioOn;
     if (this.localStream) {
       this.setMediaStatus(this.localStream, 'Audio', this.isLocalAudioOn);
     }
   }
 
-  clickRemoteStreamVideoToggle() {
+  clickRemoteVideoToggle() {
     this.isRemoteVideoOn = !this.isRemoteVideoOn;
     if (this.remoteStream) {
       this.setMediaStatus(this.remoteStream, 'Video', this.isRemoteVideoOn);
     }
   }
 
-  clickRemoteStreamAudioToggle() {
+  clickRemoteAudioToggle() {
     this.isRemoteAudioOn = !this.isRemoteAudioOn;
     if (this.remoteStream) {
       this.setMediaStatus(this.remoteStream, 'Audio', this.isRemoteAudioOn);
     }
+  }
+
+  async handleClickStartScreenSharing() {
+    try {
+      this.shareStream = await navigator.mediaDevices[`getDisplayMedia`]({video: true});
+      this.setMediaStatus(this.shareStream, 'Video', this.isLocalVideoOn);
+      this.localVideo.nativeElement.srcObject = this.shareStream;
+      const videoSender = this.peerConnection.getSenders().find(sender => {
+        return sender.track.kind === 'video';
+      });
+      const [screenVideoTrack] = this.shareStream.getVideoTracks();
+      videoSender.replaceTrack(screenVideoTrack);
+      screenVideoTrack.addEventListener('ended', () => {
+        this.handleClickStopScreenSharing();
+      }, {once: true});
+      this.isScreenSharing = true;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async handleClickStopScreenSharing() {
+    this.localVideo.nativeElement.srcObject = this.localStream;
+    const videoSender = this.peerConnection.getSenders().find(sender => {
+      return sender.track.kind === 'video';
+    });
+    const [screenVideoTrack] = this.localStream.getVideoTracks();
+    videoSender.replaceTrack(screenVideoTrack);
+    this.isScreenSharing = false;
   }
 
   async handleClickCreateRoom() {
@@ -326,6 +364,7 @@ export class RoomComponent implements OnInit {
   async handleClickLeaveRoom() {
     this.isInRoom = false;
     this.isCopiedToClipboard = false;
+    this.isScreenSharing = false;
     this.roomJoinSubscribe?.unsubscribe();
     const tracks = this.localVideo.nativeElement.srcObject.getTracks();
     tracks.forEach(track => {
