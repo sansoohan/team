@@ -1,8 +1,8 @@
 .nav-collapse-button {
   margin: 8px 12px;
+  width: 56px;
   background-color: #BD5D38;
 }
-
 #navbarSideCollapse.collapsed {
   margin-bottom: 0px;
 }
@@ -19,7 +19,7 @@
   background-color: #BD5D38 !important;
   padding: 0;
   z-index: 1;
-  width: 100vw;
+  width: 50vw;
 }
 
 #sideNav .navbar-nav .nav-item .nav-link {
@@ -41,6 +41,7 @@
     height: 100vh;
     margin: auto auto 0;
     padding: 0.5rem;
+    margin: auto;
   }
   #sideNav .img-profile {
     max-width: 10rem;
