@@ -46,7 +46,8 @@
   background-color: #BD5D38 !important;
   padding: 0;
   z-index: 99;
-  width: 100vw;
+  width: 50vw;
+  min-width: 13rem;
 }
 
 #sideNav .navbar-nav .nav-item .nav-link {

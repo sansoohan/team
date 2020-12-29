@@ -1,6 +1,6 @@
 .selected-header{
   height: 56px;
-  width: 80px;
+  width: 50vw;
   position: fixed;
   top: 0;
   right: 0;
@@ -43,26 +43,45 @@
   position: fixed;
 }
 
+.header-navbar > button.navbar-toggler {
+  margin-left: auto;
+}
+
 .header-navbar.main-header {
   margin-left: 0;
 }
 
 .header-navbar.talk-header {
-  margin-left: 80px;
+  margin-left: 50vw;
+  width: 50vw;
 }
 
 .header-navbar.blog-header {
-  margin-left: 80px;
+  margin-left: 50vw;
+  width: 50vw;
 }
 
 .header-navbar.profile-header {
-  margin-left: 80px;
+  margin-left: 50vw;
+  width: 50vw;
 }
 
-@media (min-width: 992px) {
+@media (min-width: 992px) {  
   .header-navbar {
     margin-left: 0px;
   }
+  .header-navbar.talk-header {
+    margin-left: 80px;
+    width: calc(100vw - 80px);
+  }
+  .header-navbar.blog-header {
+    margin-left: 80px;
+    width: calc(100vw - 80px);
+  }
+  .header-navbar.profile-header {
+    margin-left: 80px;
+    width: calc(100vw - 80px);
+  }  
 }
 
 .search-navbar {
@@ -76,4 +95,19 @@
   max-width: 3rem;
   max-height: 3rem;
   border: 0.5rem solid rgba(255, 255, 255, 0.2);
+}
+
+.sign-in-button {
+  padding: 0 0.5rem;
+  margin: 0.5rem 0.5rem 0.5rem 0;
+}
+
+.search-input {
+  max-width: 15rem;
+}
+
+.search-drop-down {
+  left: unset;
+  right: 0;
+  max-width: calc(100vw - 2rem);
 }
