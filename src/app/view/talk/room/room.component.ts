@@ -58,6 +58,8 @@ export class RoomComponent implements OnInit, OnDestroy {
   isShowingRemoteControl: boolean;
   localCanvasInterval: any;
   deviceRotation: number;
+  isMobileDevice: boolean;
+  localCanvasZoom: number;
 
   constructor(
     private firestore: AngularFirestore,
@@ -81,6 +83,7 @@ export class RoomComponent implements OnInit, OnDestroy {
     this.isShowingRemoteControl = false;
     this.callerCandidatesString = 'callerCandidates';
     this.calleeCandidatesString = 'calleeCandidates';
+    this.localCanvasZoom = 1;
     this.mediaContraints = {
       video: {
         width: { ideal: 640, max: 640 },
@@ -110,15 +113,16 @@ export class RoomComponent implements OnInit, OnDestroy {
     // tslint:disable-next-line: deprecation
     if (window.orientation === undefined) {
       this.deviceRotation = 90;
+      this.isMobileDevice = false;
     } else {
       // tslint:disable-next-line: deprecation
       this.deviceRotation = Number(window.orientation);
+      this.isMobileDevice = true;
     }
     window.addEventListener('orientationchange', () => {
       // tslint:disable-next-line: deprecation
       this.deviceRotation = Number(window.orientation);
     });
-
     this.paramSub = this.route.params.subscribe((params) => {
       this.params = params;
       this.talkContentsObserver = this.talkService.getTalkContentsObserver({params});
@@ -147,7 +151,6 @@ export class RoomComponent implements OnInit, OnDestroy {
           });
           return;
         }
-        setTimeout(() => this.onResizeWindow(), 300);
         this.isLoading = false;
       });
       document.addEventListener('fullscreenchange', (event) => {
@@ -326,7 +329,7 @@ export class RoomComponent implements OnInit, OnDestroy {
 
   async joinRoomById(roomId: string) {
     this.peerConnection = new RTCPeerConnection(this.configuration);
-    this.createdRoomUrl = `${window.location.href}/room/${this.roomId}`;
+    this.createdRoomUrl = `${window.location.href}`;
     this.isInRoom = true;
     await this.openUserMedia();
     const roomDoc = this.firestore
@@ -440,8 +443,7 @@ export class RoomComponent implements OnInit, OnDestroy {
     this.canvasStream.addTrack(localVideoAudio);
     this.canvasVideo.nativeElement.srcObject = this.canvasStream;
     this.canvasVideo.nativeElement.muted = true;
-    this.remoteVideo.nativeElement.autoplay = true;
-    this.canvasVideo.nativeElement.play();
+    this.canvasVideo.nativeElement.autoplay = true;
     this.canvasVideo.nativeElement.setAttribute('playsinline', '');
   }
 
@@ -450,14 +452,18 @@ export class RoomComponent implements OnInit, OnDestroy {
     this.isCopiedToClipboard = false;
     this.isScreenSharing = false;
     this.roomJoinSubscribe?.unsubscribe();
-    const tracks = this.localVideo.nativeElement.srcObject.getTracks();
-    tracks.forEach(track => {
+    const localVideoTracks = this.localVideo.nativeElement.srcObject.getTracks();
+    localVideoTracks.forEach(track => {
       track.stop();
     });
-
-    if (this.remoteStream) {
-      this.remoteStream.getTracks().forEach(track => track.stop());
-    }
+    const remoteVideoTracks = this.remoteVideo.nativeElement.srcObject.getTracks();
+    remoteVideoTracks.forEach(track => {
+      track.stop();
+    });
+    const canvasVideoTracks = this.canvasVideo.nativeElement.srcObject.getTracks();
+    canvasVideoTracks.forEach(track => {
+      track.stop();
+    });
 
     if (this.peerConnection) {
       this.peerConnection.close();
@@ -545,10 +551,17 @@ export class RoomComponent implements OnInit, OnDestroy {
       const height = this.videos.nativeElement.offsetHeight;
       this.isHorizontalVideo = (width / 4) > (height / 3);
     }
-    if (this.localVideo) {
-      const width = this.localVideo.nativeElement.offsetWidth;
-      const height = this.localVideo.nativeElement.offsetHeight;
-      this.isVideoButtonGroupHeightMininum = (width / 4) > (height / 3 + 3);
+    if (this.remoteVideo) {
+      const width = this.remoteVideo.nativeElement.offsetWidth;
+      const height = this.remoteVideo.nativeElement.offsetHeight;
+      this.isVideoButtonGroupHeightMininum = (width / 4) > (height / 3 + 1);
+    }
+    if (!this.isMobileDevice && this.localCanvas) {
+      this.localCanvas.nativeElement.hidden = true;
+    }
+    if (this.canvasVideo && this.remoteVideo) {
+      this.localCanvasZoom =
+        this.remoteVideo.nativeElement.offsetWidth / this.localCanvas.nativeElement.width;
     }
   }
 
@@ -570,7 +583,7 @@ export class RoomComponent implements OnInit, OnDestroy {
         0, 0, canvasWidth, canvasHeight,
       );
     }
-    else if (width / 4 < height / 3){
+    else if (width / 4 < height / 3) {
       const overHeight = (width / 4 - height / 3) * (-3);
       const canvasWidth = canvasTag.nativeElement.width = width;
       const canvasHeight = canvasTag.nativeElement.height = height - overHeight;
@@ -587,6 +600,7 @@ export class RoomComponent implements OnInit, OnDestroy {
         0, 0, canvasWidth, canvasHeight
       );
     }
+    this.onResizeWindow();
   }
 
   ngOnInit(): void {
