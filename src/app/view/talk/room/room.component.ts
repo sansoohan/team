@@ -29,7 +29,6 @@ export class RoomComponent implements OnInit, OnDestroy {
   isInRoom: boolean;
   params: any;
   paramSub: Subscription;
-  roomJoinSubscribe: Subscription;
   talkSub: Subscription;
 
   @ViewChild ('videos') public videos: any;
@@ -451,26 +450,10 @@ export class RoomComponent implements OnInit, OnDestroy {
     this.isInRoom = false;
     this.isCopiedToClipboard = false;
     this.isScreenSharing = false;
-    this.roomJoinSubscribe?.unsubscribe();
-    const localVideoTracks = this.localVideo.nativeElement.srcObject.getTracks();
-    localVideoTracks.forEach(track => {
-      track.stop();
-    });
-    const remoteVideoTracks = this.remoteVideo.nativeElement.srcObject.getTracks();
-    remoteVideoTracks.forEach(track => {
-      track.stop();
-    });
-    const canvasVideoTracks = this.canvasVideo.nativeElement.srcObject.getTracks();
-    canvasVideoTracks.forEach(track => {
-      track.stop();
-    });
-
-    if (this.peerConnection) {
-      this.peerConnection.close();
-    }
-
-    this.localVideo.nativeElement.srcObject = null;
-    this.remoteVideo.nativeElement.srcObject = null;
+    this.localStream?.getTracks().forEach(track => { track.stop(); });
+    this.remoteStream?.getTracks().forEach(track => { track.stop(); });
+    this.canvasStream?.getTracks().forEach(track => { track.stop(); });
+    this.peerConnection?.close();
     this.createdRoomUrl = '';
 
     // Delete room on hangup
