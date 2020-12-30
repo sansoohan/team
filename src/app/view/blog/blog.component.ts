@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { PostContent } from './post/post.content';
 import { ActivatedRoute } from '@angular/router';
@@ -17,7 +17,7 @@ import { RouterHelper } from 'src/app/helper/router.helper';
   templateUrl: './blog.component.html',
   styleUrls: ['./blog.component.css']
 })
-export class BlogComponent implements OnInit {
+export class BlogComponent implements OnInit, OnDestroy {
   blogContentsObserver: Observable<BlogContent[]>;
   blogContents: BlogContent[];
   blogContensSub: Subscription;
@@ -173,7 +173,7 @@ export class BlogComponent implements OnInit {
 
   }
 
-  OnDestroy() {
+  ngOnDestroy() {
     this.paramSub?.unsubscribe();
     this.blogContensSub?.unsubscribe();
   }

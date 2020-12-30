@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { AngularFirestore, DocumentReference } from '@angular/fire/firestore';
 import { ToastHelper } from 'src/app/helper/toast.helper';
 import { Subscription, Observable } from 'rxjs';
@@ -13,7 +13,7 @@ import { resolve } from 'dns';
   templateUrl: './room.component.html',
   styleUrls: ['../talk.component.css', './room.component.css'],
 })
-export class RoomComponent implements OnInit {
+export class RoomComponent implements OnInit, OnDestroy {
   // WebRTC Connection
   public localStream: MediaStream;
   public canvasStream: MediaStream;
@@ -93,6 +93,8 @@ export class RoomComponent implements OnInit {
       iceServers: [
         {
           urls: [
+            'stun:stun1.l.google.com:19302',
+            'stun:stun2.l.google.com:19302',
             'stun:socket.sansoohan.ga:443',
           ],
         },
@@ -104,7 +106,6 @@ export class RoomComponent implements OnInit {
           credential: 'kznEtvX/flyC+5+WRpYELPa5Yz0=',
         }
       ],
-      iceCandidatePoolSize: 10,
     };
     // tslint:disable-next-line: deprecation
     if (window.orientation === undefined) {
@@ -241,6 +242,9 @@ export class RoomComponent implements OnInit {
 
   async handleClickCreateRoom() {
     this.isInRoom = true;
+    // console.log('Create PeerConnection with configuration: ', this.configuration);
+    this.peerConnection = new RTCPeerConnection(this.configuration);
+
     await this.openUserMedia();
     let roomRef: DocumentReference;
     if (this.roomId) {
@@ -254,17 +258,13 @@ export class RoomComponent implements OnInit {
     }
 
     // tslint:disable-next-line: no-console
-    console.log('Create PeerConnection with configuration: ', this.configuration);
-    this.peerConnection = new RTCPeerConnection(this.configuration);
-
     this.registerPeerConnectionListeners();
-
     this.canvasStream.getTracks().forEach(track => {
       this.peerConnection.addTrack(track, this.canvasStream);
     });
 
     // Uncomment to collect ICE candidates below
-    await this.collectIceCandidates(roomRef, this.peerConnection, this.callerCandidatesString, this.calleeCandidatesString);
+    this.collectIceCandidates(roomRef, this.peerConnection, this.callerCandidatesString, this.calleeCandidatesString);
 
     // Code for creating a room below
     const offer = await this.peerConnection.createOffer();
@@ -299,7 +299,7 @@ export class RoomComponent implements OnInit {
     // Listening for remote session description below
     roomRef.onSnapshot(async snapshot => {
       const data = snapshot.data();
-      if (!this.peerConnection.currentRemoteDescription && data && data.answer) {
+      if (!this.peerConnection.remoteDescription && data && data.answer) {
         // tslint:disable-next-line: no-console
         console.log('Got remote description: ', data.answer);
         const rtcSessionDescription = new RTCSessionDescription(data.answer);
@@ -325,28 +325,28 @@ export class RoomComponent implements OnInit {
   }
 
   async joinRoomById(roomId: string) {
+    this.peerConnection = new RTCPeerConnection(this.configuration);
     this.createdRoomUrl = `${window.location.href}/room/${this.roomId}`;
     this.isInRoom = true;
     await this.openUserMedia();
-    const roomRef = this.firestore
+    const roomDoc = this.firestore
     .collection('talks').doc(this.talkContents[0].id)
     .collection('rooms').doc(`${roomId}`);
-
-    const roomSnapshot = roomRef.get();
+    const roomRef = roomDoc.ref;
     // tslint:disable-next-line: no-console
-    console.log('Got room:', roomRef.ref.id);
+    console.log('Got room:', roomRef.id);
 
-    if (roomRef.ref.id) {
+    const roomSnapshot = roomDoc.get();
+    if (roomRef.id) {
       // tslint:disable-next-line: no-console
-      console.log('Create PeerConnection with configuration: ', this.configuration);
-      this.peerConnection = new RTCPeerConnection(this.configuration);
+      // console.log('Create PeerConnection with configuration: ', this.configuration);
       this.registerPeerConnectionListeners();
       this.canvasStream.getTracks().forEach(track => {
         this.peerConnection.addTrack(track, this.canvasStream);
       });
 
       // Uncomment to collect ICE candidates below
-      await this.collectIceCandidates(roomRef.ref, this.peerConnection, this.calleeCandidatesString, this.callerCandidatesString);
+      this.collectIceCandidates(roomRef, this.peerConnection, this.calleeCandidatesString, this.callerCandidatesString);
 
       this.peerConnection.addEventListener('track', event => {
         // tslint:disable-next-line: no-console
@@ -359,7 +359,7 @@ export class RoomComponent implements OnInit {
       });
 
       // Code for creating SDP answer below
-      this.roomJoinSubscribe = roomSnapshot.subscribe(async (roomData) => {
+      roomSnapshot.forEach(async (roomData) => {
         const offer = roomData.data().offer;
         // tslint:disable-next-line: no-console
         console.log('Got offer:', offer);
@@ -375,25 +375,23 @@ export class RoomComponent implements OnInit {
             sdp: answer.sdp,
           },
         };
-        await roomRef.update(roomWithAnswer);
+        await roomRef.set(roomWithAnswer);
         // Code for creating SDP answer above
       });
     }
   }
 
   // collect ICE Candidates function below
-  async collectIceCandidates(
+  collectIceCandidates(
     roomRef: DocumentReference,
     peerConnection: RTCPeerConnection,
     localName: string,
     remoteName: string,
   ) {
-    const candidatesCollection = roomRef.collection(localName);
-
     peerConnection.addEventListener('icecandidate', event => {
       if (event.candidate) {
         const json = event.candidate.toJSON();
-        candidatesCollection.add(json);
+        roomRef.collection(localName).add(json);
       }
     });
 
@@ -401,7 +399,10 @@ export class RoomComponent implements OnInit {
       snapshot.docChanges().forEach(change => {
         if (change.type === 'added') {
           const candidate = new RTCIceCandidate(change.doc.data());
-          peerConnection.addIceCandidate(candidate);
+          console.warn('new candidate : ', candidate);
+          setTimeout(() => {
+            peerConnection.addIceCandidate(candidate);
+          }, 500);
         }
       });
     });
@@ -502,11 +503,11 @@ export class RoomComponent implements OnInit {
         this.hasRemoteConnection = true;
       }
 
-      if (this.peerConnection.connectionState === 'disconnected') {
-        await this.handleClickCreateRoom();
+      if (/(disconnected)|(failed)/g.test(this.peerConnection.connectionState)) {
+        this.hasRemoteConnection = false;
         const roomRef = this.firestore
-        .collection('talks').doc(this.talkContents[0].id)
-        .collection('rooms').doc(this.roomId);
+          .collection('talks').doc(this.talkContents[0].id)
+          .collection('rooms').doc(this.roomId);
         const calleeCandidates = await roomRef.collection(this.calleeCandidatesString).get();
         calleeCandidates.forEach(async candidate => {
           candidate.forEach(async can => {
@@ -591,7 +592,7 @@ export class RoomComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  OnDestroy() {
+  ngOnDestroy(): void {
     clearInterval(this.localCanvasInterval);
     this.handleClickLeaveRoom();
     this.talkSub?.unsubscribe();

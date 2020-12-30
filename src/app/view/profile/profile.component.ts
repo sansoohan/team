@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { ProfileService } from 'src/app/services/profile.service';
@@ -15,7 +15,7 @@ import { ToastHelper } from 'src/app/helper/toast.helper';
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css']
 })
-export class ProfileComponent implements OnInit {
+export class ProfileComponent implements OnInit, OnDestroy {
   profileContentsObserver: Observable<ProfileContent[]>;
   profileContents: ProfileContent[];
   defaultSrc: any;
@@ -130,7 +130,7 @@ export class ProfileComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  OnDestroy() {
+  ngOnDestroy(): void {
     this.paramSub.unsubscribe();
     this.profileSub.unsubscribe();
   }

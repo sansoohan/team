@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { PostContent } from './post.content';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
@@ -18,7 +18,7 @@ import Swal from 'sweetalert2';
   templateUrl: './post.component.html',
   styleUrls: ['../blog.component.css', './post.component.css']
 })
-export class PostComponent implements OnInit {
+export class PostComponent implements OnInit, OnDestroy {
   @Output() goToPost: EventEmitter<string> = new EventEmitter();
   @Output() goToCategory: EventEmitter<string> = new EventEmitter();
   @Input() isEditingPost;
@@ -235,7 +235,7 @@ export class PostComponent implements OnInit {
 
   }
 
-  OnDestroy() {
+  ngOnDestroy() {
     this.paramSub?.unsubscribe();
     this.postContentsSub?.unsubscribe();
     this.categoryContentsSub?.unsubscribe();

@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { PostContent } from '../post/post.content';
 import { ActivatedRoute } from '@angular/router';
@@ -16,7 +16,7 @@ import { DataTransferHelper } from 'src/app/helper/data-transefer.helper';
   templateUrl: './category.component.html',
   styleUrls: ['../blog.component.css', './category.component.css']
 })
-export class CategoryComponent implements OnInit {
+export class CategoryComponent implements OnInit, OnDestroy {
   categoryContentsObserver: Observable<CategoryContent[]>;
   categoryContents: CategoryContent[];
   categoryContentsSub: Subscription;
@@ -183,7 +183,7 @@ export class CategoryComponent implements OnInit {
 
   }
 
-  OnDestroy() {
+  ngOnDestroy() {
     this.paramSub?.unsubscribe();
     this.queryParamSub?.unsubscribe();
     this.postListSub?.unsubscribe();
