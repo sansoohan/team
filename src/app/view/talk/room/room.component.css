@@ -162,8 +162,8 @@ div#videos > div > span.horizontal {
   bottom: 0 !important;
 }
 
-video#localVideo {
-  width: 0;
-  height: 0;
-  position: fixed;
+.hidden-video {
+  width: 0 !important;
+  height: 0 !important;
+  position: fixed !important;
 }

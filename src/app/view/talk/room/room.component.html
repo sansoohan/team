@@ -8,13 +8,9 @@
   <div *ngIf="isLoading">
     <app-modules-page-loading style="color:'white'"></app-modules-page-loading>
   </div>
-  <canvas
-    id="localCanvas"
-    hidden
-    #localCanvas
-  ></canvas>
   <app-talk-left-sidebar
     [isInRoom]="isInRoom"
+    [isMobileDevice]="isMobileDevice"
     [isScreenSharing]="isScreenSharing"
     (clickCreateRoom)="handleClickCreateRoom()"
     (clickJoinRoom)="handleClickJoinRoom()"
@@ -36,9 +32,9 @@
   </div>
 
 
-
   <video
     id="localVideo"
+    class="hidden-video"
     #localVideo
     autoplay
     playsinline
@@ -53,14 +49,18 @@
       #localVideoGroup
       [class.horizontal]="isHorizontalVideo"
     >
+      <canvas
+        id="localCanvas"
+        [ngStyle]="{'zoom': localCanvasZoom}"
+        #localCanvas
+      ></canvas>
       <video
         *ngIf="isInRoom"
         id="canvasVideo"
         #canvasVideo
-        autoplay
-        playsinline
         [class.horizontal]="isHorizontalVideo"
         [class.full-screen-zoom]="isFullScreen"
+        [class.hidden-video]="isMobileDevice"
       >
       </video>
       <span

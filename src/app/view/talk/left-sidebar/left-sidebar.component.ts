@@ -26,6 +26,7 @@ export class LeftSidebarComponent implements OnInit, OnDestroy {
 
   @Input() isInRoom: boolean;
   @Input() isScreenSharing: boolean;
+  @Input() isMobileDevice: boolean;
 
   paramSub: Subscription;
   params: any;
@@ -36,9 +37,7 @@ export class LeftSidebarComponent implements OnInit, OnDestroy {
 
   constructor(
     public profileService: ProfileService,
-    private toastHelper: ToastHelper,
     private route: ActivatedRoute,
-    private domSanitizer: DomSanitizer,
     public authService: AuthService,
     public dataTransferHelper: DataTransferHelper,
     public routerHelper: RouterHelper,
@@ -53,30 +52,6 @@ export class LeftSidebarComponent implements OnInit, OnDestroy {
       }, 500);
     });
   }
-
-  @Input()
-  get profileForm(): FormGroup { return this._profileForm; }
-  set profileForm(profileForm: FormGroup) {
-    this._profileForm = profileForm;
-    this.talkContent = profileForm.value;
-    if (profileForm.value.profileImageSrc !== ''){
-      this.defaultSrc = profileForm.value.profileImageSrc;
-    }
-    else {
-      const hash = profileForm.value.ownerId;
-      const options = {
-        // foreground: [0, 0, 0, 255],               // rgba black
-        background: [230, 230, 230, 230],         // rgba white
-        margin: 0.2,                              // 20% margin
-        size: 420,                                // 420px square
-        format: 'png'                             // use SVG instead of PNG
-      };
-      const data = new Identicon(hash, options).toString();
-      this.defaultSrc = this.domSanitizer.bypassSecurityTrustUrl(`data:image/png;base64,${data}`);
-    }
-  }
-  // tslint:disable-next-line: variable-name
-  _profileForm: FormGroup;
 
   handleClickCreateRoom() {
     this.clickCreateRoom.emit();

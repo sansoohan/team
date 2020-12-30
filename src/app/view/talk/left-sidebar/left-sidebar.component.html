@@ -22,14 +22,12 @@
             </div>
           </ul>
           <ul *ngIf="isInRoom" class="navbar-nav">
-            <div *ngIf="!isScreenSharing" class="nav-item">
+            <div *ngIf="!isScreenSharing && !isMobileDevice" class="nav-item">
               <a class="nav-link" (click)="handleClickStartScreenSharing()">Start Screen Share</a>
             </div>
-
-            <div *ngIf="isScreenSharing" class="nav-item">
+            <div *ngIf="isScreenSharing && !isMobileDevice" class="nav-item">
               <a class="nav-link" (click)="handleClickStopScreenSharing()">Stop Screen Share</a>
             </div>
-
             <div class="nav-item">
               <a class="nav-link" (click)="handleClickLeaveRoom()">Leave</a>
             </div>
