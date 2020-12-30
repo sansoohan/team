@@ -12,7 +12,4 @@ export class TalkComponent implements OnInit {
 
   ngOnInit(): void {
   }
-
-  OnDestroy() {
-  }
 }

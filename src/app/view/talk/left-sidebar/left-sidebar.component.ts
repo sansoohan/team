@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { AuthService } from 'src/app/services/auth.service';
 import { FormGroup } from '@angular/forms';
 import { DataTransferHelper } from 'src/app/helper/data-transefer.helper';
@@ -17,7 +17,7 @@ import { ToastHelper } from 'src/app/helper/toast.helper';
   templateUrl: './left-sidebar.component.html',
   styleUrls: ['../talk.component.css', './left-sidebar.component.css']
 })
-export class LeftSidebarComponent implements OnInit {
+export class LeftSidebarComponent implements OnInit, OnDestroy {
   @Output() clickCreateRoom: EventEmitter<null> = new EventEmitter();
   @Output() clickJoinRoom: EventEmitter<null> = new EventEmitter();
   @Output() clickLeaveRoom: EventEmitter<null> = new EventEmitter();
@@ -101,7 +101,7 @@ export class LeftSidebarComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  OnDestroy() {
+  ngOnDestroy() {
     this.paramSub.unsubscribe();
   }
 }
