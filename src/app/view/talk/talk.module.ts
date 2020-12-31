@@ -5,12 +5,14 @@ import { PageLoadingModule } from 'src/app/modules/page-loading/page-loading.mod
 import { TalkComponent } from './talk.component';
 import { LeftSidebarComponent } from './left-sidebar/left-sidebar.component';
 import { RoomComponent } from './room/room.component';
+import { EntranceComponent } from './room/entrance/entrance.component';
 
 @NgModule({
   declarations: [
     TalkComponent,
     LeftSidebarComponent,
     RoomComponent,
+    EntranceComponent,
   ],
   imports: [
     CommonModule,

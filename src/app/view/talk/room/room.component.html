@@ -17,9 +17,15 @@
     (clickLeaveRoom)="handleClickLeaveRoom()"
     (clickStartScreenSharing)="handleClickStartScreenSharing()"
     (clickStopScreenSharing)="handleClickStopScreenSharing()"
-    (clickBackToCreatedRoom)="handleClickBackToCreatedRoom()"
-    (clickBackToJoinedRoom)="handleClickBackToJoinedRoom()"
+    (clickBackToCreatedRoom)="handleClickBackToCreatedRoom($event)"
+    (clickBackToJoinedRoom)="handleClickBackToJoinedRoom($event)"    
   ></app-talk-left-sidebar>
+  <app-talk-room-entrance
+    *ngIf="!isInRoom && talkContents"
+    [talkContents]="talkContents"
+    (clickBackToCreatedRoom)="handleClickBackToCreatedRoom($event)"
+    (clickBackToJoinedRoom)="handleClickBackToJoinedRoom($event)"
+  ></app-talk-room-entrance>
   <div class="copy-to-clipboard">
     <button
       *ngIf="isInRoom"
