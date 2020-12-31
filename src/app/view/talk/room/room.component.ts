@@ -7,6 +7,7 @@ import { TalkService } from 'src/app/services/talk.service';
 import { ActivatedRoute } from '@angular/router';
 import { RouterHelper } from 'src/app/helper/router.helper';
 import { resolve } from 'dns';
+import * as firebase from 'firebase';
 
 @Component({
   selector: 'app-talk-room',
@@ -59,6 +60,10 @@ export class RoomComponent implements OnInit, OnDestroy {
   deviceRotation: number;
   isMobileDevice: boolean;
   localCanvasZoom: number;
+  sessionStorage: Storage;
+
+  // sessionStorage.getItem('createdRoomId');
+  // sessionStorage.getItem('joinedRoomUrl');
 
   constructor(
     private firestore: AngularFirestore,
@@ -83,6 +88,7 @@ export class RoomComponent implements OnInit, OnDestroy {
     this.callerCandidatesString = 'callerCandidates';
     this.calleeCandidatesString = 'calleeCandidates';
     this.localCanvasZoom = 1;
+    this.sessionStorage = window.sessionStorage;
     this.mediaContraints = {
       video: {
         width: { ideal: 640, max: 640 },
@@ -243,6 +249,13 @@ export class RoomComponent implements OnInit, OnDestroy {
   }
 
   async handleClickCreateRoom() {
+    const oldRoomId: string = sessionStorage.getItem('createdRoomId');
+    if (oldRoomId) {
+      this.firestore
+      .collection('talks').doc(this.talkContents[0].id)
+      .collection('rooms').doc(oldRoomId).delete();
+    }
+
     this.isInRoom = true;
     // console.log('Create PeerConnection with configuration: ', this.configuration);
     this.peerConnection = new RTCPeerConnection(this.configuration);
@@ -283,6 +296,8 @@ export class RoomComponent implements OnInit, OnDestroy {
       }
     });
     this.roomId = roomRef.id;
+    sessionStorage.setItem('createdRoomId', this.roomId);
+
     // tslint:disable-next-line: no-console
     console.log(`New room created with SDP offer. Room ID: ${roomRef.id}`);
     this.createdRoomUrl = `${window.location.href}/room/${this.roomId}`;
@@ -317,7 +332,6 @@ export class RoomComponent implements OnInit, OnDestroy {
       if (!roomUrl.value) {
         return;
       }
-      const params = Object.assign({roomUrl: roomUrl.value}, this.params);
       // tslint:disable-next-line: no-console
       console.log('Join Room URL: ', roomUrl.value);
       this.routerHelper.goToUrl(roomUrl.value);
@@ -329,6 +343,7 @@ export class RoomComponent implements OnInit, OnDestroy {
   async joinRoomById(roomId: string) {
     this.peerConnection = new RTCPeerConnection(this.configuration);
     this.createdRoomUrl = `${window.location.href}`;
+    sessionStorage.setItem('joinedRoomUrl', this.createdRoomUrl);
     this.isInRoom = true;
     await this.openUserMedia();
     const roomDoc = this.firestore
@@ -416,14 +431,12 @@ export class RoomComponent implements OnInit, OnDestroy {
     this.localVideo.nativeElement.srcObject = stream;
     this.localVideo.nativeElement.muted = true;
     this.localVideo.nativeElement.autoplay = true;
-    this.localVideo.nativeElement.play();
     this.localVideo.nativeElement.setAttribute('playsinline', '');
     this.localStream = stream;
     this.remoteStream = new MediaStream();
     this.remoteVideo.nativeElement.srcObject = this.remoteStream;
     this.remoteVideo.nativeElement.muted = false;
     this.remoteVideo.nativeElement.autoplay = true;
-    this.remoteVideo.nativeElement.play();
     this.remoteVideo.nativeElement.setAttribute('playsinline', '');
     // tslint:disable-next-line: no-console
     console.log('Stream:', this.localVideo.nativeElement.srcObject);
@@ -446,6 +459,32 @@ export class RoomComponent implements OnInit, OnDestroy {
     this.canvasVideo.nativeElement.setAttribute('playsinline', '');
   }
 
+  onDiesconnectCaller() {
+    const roomDoc = this.firestore
+    .collection('talks').doc(this.talkContents[0].id)
+    .collection('rooms').doc(this.roomId);
+    const callerCandidates = roomDoc.collection(this.callerCandidatesString).get();
+    callerCandidates.forEach(async candidate => {
+      candidate.forEach(async can => {
+        can.ref.delete();
+      });
+    });
+    roomDoc.ref.update({offer: firebase.firestore.FieldValue.delete()});
+  }
+
+  onDiesconnectCallee() {
+    const roomDoc = this.firestore
+    .collection('talks').doc(this.talkContents[0].id)
+    .collection('rooms').doc(this.roomId);
+    const calleeCandidates = roomDoc.collection(this.calleeCandidatesString).get();
+    calleeCandidates.forEach(async candidate => {
+      candidate.forEach(async can => {
+        can.ref.delete();
+      });
+    });
+    roomDoc.ref.update({answer: firebase.firestore.FieldValue.delete()});
+  }
+
   async handleClickLeaveRoom() {
     this.isInRoom = false;
     this.isCopiedToClipboard = false;
@@ -455,29 +494,30 @@ export class RoomComponent implements OnInit, OnDestroy {
     this.canvasStream?.getTracks().forEach(track => { track.stop(); });
     this.peerConnection?.close();
     this.createdRoomUrl = '';
-
     // Delete room on hangup
     if (this.roomId) {
-      // const roomRef = this.firestore
-      // .collection('talks').doc(this.talkContents[0].id)
-      // .collection('rooms').doc(this.roomId);
-      // const calleeCandidates = await roomRef.collection(this.calleeCandidatesString).get();
-      // calleeCandidates.forEach(async candidate => {
-      //   candidate.forEach(async can => {
-      //     can.ref.delete();
-      //   });
-      // });
-      // const callerCandidates = await roomRef.collection(this.callerCandidatesString).get();
-      // callerCandidates.forEach(async candidate => {
-      //   candidate.forEach(async can => {
-      //     can.ref.delete();
-      //   });
-      // });
+      if (this.params.roomId) {
+        this.onDiesconnectCallee();
+      } else {
+        this.onDiesconnectCaller();
+      }
+
       // await roomRef.delete();
       // const params = Object.assign({}, this.params);
       // delete params.roomId;
-      // this.routerHelper.goToTalk(params);
+      this.routerHelper.goToTalk({});
     }
+  }
+
+  handleClickBackToCreatedRoom() {
+    this.roomId = sessionStorage.getItem('createdRoomId');
+    sessionStorage.removeItem('createdRoomId');
+    this.handleClickCreateRoom();
+  }
+
+  handleClickBackToJoinedRoom() {
+    this.createdRoomUrl = sessionStorage.getItem('joinedRoomUrl');
+    this.routerHelper.goToUrl(this.createdRoomUrl);
   }
 
   registerPeerConnectionListeners() {
@@ -494,15 +534,11 @@ export class RoomComponent implements OnInit, OnDestroy {
 
       if (/(disconnected)|(failed)/g.test(this.peerConnection.connectionState)) {
         this.hasRemoteConnection = false;
-        const roomRef = this.firestore
-          .collection('talks').doc(this.talkContents[0].id)
-          .collection('rooms').doc(this.roomId);
-        const calleeCandidates = await roomRef.collection(this.calleeCandidatesString).get();
-        calleeCandidates.forEach(async candidate => {
-          candidate.forEach(async can => {
-            can.ref.delete();
-          });
-        });
+        if (this.params.roomId) {
+          this.onDiesconnectCaller();
+        } else {
+          this.onDiesconnectCallee();
+        }
       }
     });
     this.peerConnection.addEventListener('signalingstatechange', () => {

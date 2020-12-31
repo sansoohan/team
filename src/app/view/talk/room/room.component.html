@@ -17,6 +17,8 @@
     (clickLeaveRoom)="handleClickLeaveRoom()"
     (clickStartScreenSharing)="handleClickStartScreenSharing()"
     (clickStopScreenSharing)="handleClickStopScreenSharing()"
+    (clickBackToCreatedRoom)="handleClickBackToCreatedRoom()"
+    (clickBackToJoinedRoom)="handleClickBackToJoinedRoom()"
   ></app-talk-left-sidebar>
   <div class="copy-to-clipboard">
     <button
@@ -52,6 +54,7 @@
       <canvas
         id="localCanvas"
         [ngStyle]="{'zoom': localCanvasZoom}"
+        [hidden]="!isMobileDevice"
         #localCanvas
       ></canvas>
       <video

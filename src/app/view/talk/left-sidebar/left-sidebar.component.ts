@@ -23,6 +23,8 @@ export class LeftSidebarComponent implements OnInit, OnDestroy {
   @Output() clickLeaveRoom: EventEmitter<null> = new EventEmitter();
   @Output() clickStartScreenSharing: EventEmitter<null> = new EventEmitter();
   @Output() clickStopScreenSharing: EventEmitter<null> = new EventEmitter();
+  @Output() clickBackToCreatedRoom: EventEmitter<null> = new EventEmitter();
+  @Output() clickBackToJoinedRoom: EventEmitter<null> = new EventEmitter();
 
   @Input() isInRoom: boolean;
   @Input() isScreenSharing: boolean;
@@ -34,6 +36,7 @@ export class LeftSidebarComponent implements OnInit, OnDestroy {
   isLoading: boolean;
   defaultSrc: string | SafeUrl;
   talkContent: TalkContent;
+  sessionStorage: Storage;
 
   constructor(
     public profileService: ProfileService,
@@ -43,6 +46,7 @@ export class LeftSidebarComponent implements OnInit, OnDestroy {
     public routerHelper: RouterHelper,
     public formHelper: FormHelper,
   ) {
+    this.sessionStorage = window.sessionStorage;
     this.paramSub = this.route.params.subscribe(params => {
       this.isPage = true;
       this.isLoading = true;
@@ -71,6 +75,14 @@ export class LeftSidebarComponent implements OnInit, OnDestroy {
 
   handleClickStopScreenSharing() {
     this.clickStopScreenSharing.emit();
+  }
+
+  handleClickBackToCreatedRoom() {
+    this.clickBackToCreatedRoom.emit();
+  }
+
+  handleClickBackToJoinedRoom() {
+    this.clickBackToJoinedRoom.emit();
   }
 
   ngOnInit(): void {
