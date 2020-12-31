@@ -1,0 +1,46 @@
+<div class="talk-entrance container">
+  <div class="entrance-title-row">
+    <span class="entrance-title-col">Talk Rooms</span>
+  </div>
+  <div class="room-list-top-row">
+    <span class="col-5 room-list-top-col">Room ID</span>
+    <div class="col-2 room-list-top-col d-flex">
+      <span class="mx-auto">Caller</span> 
+    </div>
+    <div class="col-2 room-list-top-col d-flex">
+      <span class="mx-auto">Callee</span>
+    </div>
+    <div class="col-3 room-list-top-col d-flex">
+      <span class="ml-auto">Created</span>
+    </div>
+  </div>
+  <div
+    *ngFor="let roomContent of roomContents; index as i"
+    class="room-list-row"
+  >
+    <div class="room-list-col col-5">
+      {{roomContent.id}}
+    </div>
+    <div class="col-2 room-list-col d-flex">
+      <span *ngIf="roomContent.offer" class="badge badge-light user-in-room">In Room</span>
+      <button
+        *ngIf="!roomContent.offer"
+        class="btn btn-outline-warning join-button"
+        (click)="handleClickBackToCreatedRoom(roomContent.id)"
+      >Join</button>
+    </div>
+    <div class="col-2 room-list-col d-flex">
+      <span *ngIf="roomContent.answer" class="badge badge-light user-in-room">In Room</span>
+      <button
+        *ngIf="!roomContent.answer"
+        class="btn btn-outline-warning join-button"
+        (click)="handleClickBackToJoinedRoom(roomContent.id)"
+      >Join</button>
+    </div>
+    <div class="room-list-col col-3 d-flex">
+      <span
+        class="ml-auto"
+      >{{dataTransferHelper.numberToDateString(roomContent.createdAt||0)}}</span>
+    </div>
+  </div>
+</div>
