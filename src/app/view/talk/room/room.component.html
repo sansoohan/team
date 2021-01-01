@@ -22,7 +22,7 @@
   ></app-talk-left-sidebar>
   <app-talk-room-entrance
     *ngIf="!isInRoom && talkContents"
-    [talkContents]="talkContents"
+    [roomContents]="roomContents"
     (clickBackToCreatedRoom)="handleClickBackToCreatedRoom($event)"
     (clickBackToJoinedRoom)="handleClickBackToJoinedRoom($event)"
   ></app-talk-room-entrance>

@@ -6,8 +6,8 @@ import { TalkContent } from '../talk.content';
 import { TalkService } from 'src/app/services/talk.service';
 import { ActivatedRoute } from '@angular/router';
 import { RouterHelper } from 'src/app/helper/router.helper';
-import { resolve } from 'dns';
 import * as firebase from 'firebase';
+import { RoomContent } from './room.content';
 
 @Component({
   selector: 'app-talk-room',
@@ -31,6 +31,7 @@ export class RoomComponent implements OnInit, OnDestroy {
   params: any;
   paramSub: Subscription;
   talkSub: Subscription;
+  roomSub: Subscription;
 
   @ViewChild ('videos') public videos: any;
   @ViewChild ('localVideo') public localVideo: ElementRef;
@@ -45,6 +46,8 @@ export class RoomComponent implements OnInit, OnDestroy {
   isCopiedToClipboard: boolean;
   talkContentsObserver: Observable<TalkContent[]>;
   talkContents: Array<TalkContent>;
+  roomsObserver: Observable<RoomContent[]>;
+  roomContents: Array<RoomContent>;
   isHorizontalVideo: boolean;
   isLocalVideoOn: boolean;
   isLocalAudioOn: boolean;
@@ -62,6 +65,7 @@ export class RoomComponent implements OnInit, OnDestroy {
   localCanvasZoom: number;
   sessionStorage: Storage;
   isCaller: boolean;
+  mediaDevices: any;
 
   // sessionStorage.getItem('createdRoomId');
   // sessionStorage.getItem('joinedRoomUrl');
@@ -134,30 +138,40 @@ export class RoomComponent implements OnInit, OnDestroy {
       this.talkContentsObserver = this.talkService.getTalkContentsObserver({params});
       this.talkSub = this.talkContentsObserver.subscribe((talkContents) => {
         this.talkContents = talkContents;
-        const videoFps = this.mediaContraints.video.frameRate.ideal;
-        this.localCanvasInterval = setInterval(this.drawContext.bind(
-          this, this.localVideo, this.localCanvas
-        ), 1000 / videoFps);
-        window.addEventListener('resize', this.onResizeWindow.bind(this));
-        if (params.roomId) {
-          this.firestore
-          .collection('talks').doc(this.talkContents[0].id)
-          .collection('rooms').doc(`${params.roomId}`).get()
-          .forEach(async (roomData) => {
-            let waitTime = 0;
-            if (roomData?.data()?.answer) {
-              waitTime = 10000;
-            }
-            this.roomId = params.roomId;
-            setTimeout(() => {
-              this.joinRoomById(this.roomId);
-              this.isLoading = false;
-              this.onResizeWindow();
-            }, waitTime);
-          });
-          return;
-        }
-        this.isLoading = false;
+        this.roomsObserver = this.talkService.getRoomsObserver(this.talkContents[0].id);
+        this.roomSub = this.roomsObserver.subscribe((roomContents) => {
+          this.roomContents = roomContents;
+          const videoFps = this.mediaContraints.video.frameRate.ideal;
+          this.localCanvasInterval = setInterval(this.drawContext.bind(
+            this, this.localVideo, this.localCanvas
+          ), 1000 / videoFps);
+          window.addEventListener('resize', this.onResizeWindow.bind(this));
+          if (params.roomId) {
+            this.firestore
+            .collection('talks').doc(this.talkContents[0].id)
+            .collection('rooms').doc(`${params.roomId}`).get()
+            .forEach(async (roomData) => {
+              let waitTime = 0;
+              if (roomData?.data()?.answer) {
+                waitTime = 10000;
+              }
+              this.roomId = params.roomId;
+              setTimeout(() => {
+                const currentRoom = this.roomContents.find((roomContent) => roomContent.id === this.roomId);
+                const isCallerDisconnected = !currentRoom.offer;
+                if (isCallerDisconnected) {
+                  this.handleClickCreateRoom();
+                } else {
+                  // this.joinRoomById(this.roomId);
+                }
+                this.isLoading = false;
+                this.onResizeWindow();
+              }, waitTime);
+            });
+            return;
+          }
+          this.isLoading = false;
+        });
       });
       document.addEventListener('fullscreenchange', (event) => {
         setTimeout(() => this.onResizeWindow(), 300);
@@ -222,7 +236,7 @@ export class RoomComponent implements OnInit, OnDestroy {
 
   async handleClickStartScreenSharing() {
     try {
-      this.shareStream = await navigator.mediaDevices[`getDisplayMedia`]({video: true});
+      this.shareStream = await this.mediaDevices[`getDisplayMedia`]({video: true});
       this.setMediaStatus(this.shareStream, 'Video', this.isLocalVideoOn);
       this.canvasVideo.nativeElement.srcObject = this.shareStream;
       const videoSender = this.peerConnection.getSenders().find(sender => {
@@ -251,12 +265,12 @@ export class RoomComponent implements OnInit, OnDestroy {
 
   async handleClickCreateRoom() {
     this.isCaller = true;
-    const oldRoomId: string = sessionStorage.getItem('createdRoomId');
-    if (oldRoomId) {
-      this.firestore
-      .collection('talks').doc(this.talkContents[0].id)
-      .collection('rooms').doc(oldRoomId).delete();
-    }
+    // const oldRoomId: string = sessionStorage.getItem('createdRoomId');
+    // if (oldRoomId) {
+    //   this.firestore
+    //   .collection('talks').doc(this.talkContents[0].id)
+    //   .collection('rooms').doc(oldRoomId).delete();
+    // }
 
     this.isInRoom = true;
     await this.openUserMedia();
@@ -340,6 +354,10 @@ export class RoomComponent implements OnInit, OnDestroy {
   }
 
   async joinRoomById(roomId: string) {
+    if (!roomId) {
+      return;
+    }
+
     this.isCaller = false;
     this.createdRoomUrl = `${window.location.href}`;
     sessionStorage.setItem('joinedRoomUrl', this.createdRoomUrl);
@@ -378,11 +396,6 @@ export class RoomComponent implements OnInit, OnDestroy {
       roomSnapshot.forEach(async (roomData) => {
         const offer = roomData.data().offer;
         // tslint:disable-next-line: no-console
-        if (!offer){
-          this.handleClickCreateRoom();
-          return;
-        }
-
         console.log('Got offer:', offer);
         await this.peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
         const answer = await this.peerConnection.createAnswer();
@@ -432,8 +445,25 @@ export class RoomComponent implements OnInit, OnDestroy {
   // collect ICE Candidates function above
 
   async openUserMedia() {
+    const navi: any = navigator;
     this.peerConnection = new RTCPeerConnection(this.configuration);
-    const stream = await navigator.mediaDevices.getUserMedia({video: true, audio: true});
+    this.mediaDevices = navigator.mediaDevices ||
+    ((navi.mozGetUserMedia || navi.webkitGetUserMedia) ? {
+      getUserMedia(c) {
+        return new Promise((y, n) => {
+          (navi.mozGetUserMedia ||
+            navi.webkitGetUserMedia).call(navigator, c, y, n);
+        });
+      }
+    } : null);
+
+    if (!this.mediaDevices) {
+      // tslint:disable-next-line: no-console
+      console.log('getUserMedia() not supported.');
+      return;
+    }
+
+    const stream = await this.mediaDevices.getUserMedia({video: true, audio: true});
     this.localVideo.nativeElement.srcObject = stream;
     this.localVideo.nativeElement.muted = true;
     this.localVideo.nativeElement.autoplay = true;
@@ -499,7 +529,7 @@ export class RoomComponent implements OnInit, OnDestroy {
     return Promise.all(calleeCandidatesRemovePromises);
   }
 
-  async handleClickLeaveRoom() {
+  async leaveRoom() {
     this.isInRoom = false;
     this.isCopiedToClipboard = false;
     this.isScreenSharing = false;
@@ -510,24 +540,43 @@ export class RoomComponent implements OnInit, OnDestroy {
     this.createdRoomUrl = '';
     // Delete room on hangup
     if (this.roomId) {
+      const currentRoom = this.roomContents.find((roomContent) => roomContent.id === this.roomId);
       if (this.isCaller) {
-        await this.onDisconnectCaller({
-          offer: this.hasRemoteConnection
-          ? 'disconnected'
-          : firebase.firestore.FieldValue.delete()
-        });
+        if (currentRoom.answer === 'disconnected'){
+          await this.onDisconnectCaller({
+            answer: firebase.firestore.FieldValue.delete(),
+            offer: firebase.firestore.FieldValue.delete(),
+          });
+        } else {
+          await this.onDisconnectCaller({
+            offer: this.hasRemoteConnection
+            ? 'disconnected'
+            : firebase.firestore.FieldValue.delete()
+          });
+        }
       } else {
-        await this.onDisconnectCallee({
-          answer: this.hasRemoteConnection
-          ? 'disconnected'
-          : firebase.firestore.FieldValue.delete()
-        });
+        if (currentRoom.offer === 'disconnected'){
+          await this.onDisconnectCaller({
+            answer: firebase.firestore.FieldValue.delete(),
+            offer: firebase.firestore.FieldValue.delete(),
+          });
+        } else{
+          await this.onDisconnectCallee({
+            answer: this.hasRemoteConnection
+            ? 'disconnected'
+            : firebase.firestore.FieldValue.delete()
+          });
+        }
       }
-      const params = Object.assign({}, this.params);
-      delete params.roomId;
-      this.routerHelper.goToTalk(params);
     }
     delete this.roomId;
+  }
+
+  async handleClickLeaveRoom() {
+    this.leaveRoom();
+    const params = Object.assign({}, this.params);
+    delete params.roomId;
+    this.routerHelper.goToTalk(params);
   }
 
   handleClickBackToCreatedRoom(selectedRoomId: string) {
@@ -648,8 +697,9 @@ export class RoomComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     clearInterval(this.localCanvasInterval);
-    this.handleClickLeaveRoom();
+    this.leaveRoom();
     this.talkSub?.unsubscribe();
+    this.roomSub?.unsubscribe();
     this.paramSub?.unsubscribe();
     window.removeEventListener('resize', this.onResizeWindow);
   }
