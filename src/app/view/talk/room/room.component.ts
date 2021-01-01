@@ -265,13 +265,6 @@ export class RoomComponent implements OnInit, OnDestroy {
 
   async handleClickCreateRoom() {
     this.isCaller = true;
-    // const oldRoomId: string = sessionStorage.getItem('createdRoomId');
-    // if (oldRoomId) {
-    //   this.firestore
-    //   .collection('talks').doc(this.talkContents[0].id)
-    //   .collection('rooms').doc(oldRoomId).delete();
-    // }
-
     this.isInRoom = true;
     await this.openUserMedia();
     let roomRef: DocumentReference;
@@ -413,6 +406,13 @@ export class RoomComponent implements OnInit, OnDestroy {
         // Code for creating SDP answer above
       });
     }
+  }
+
+  handleClickRemoveRoom(roomId) {
+    if (!roomId) {
+      return;
+    }
+    this.talkService.delete(`talks/${this.talkContents[0].id}/rooms/${roomId}`);
   }
 
   // collect ICE Candidates function below

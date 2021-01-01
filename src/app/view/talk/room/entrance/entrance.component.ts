@@ -15,6 +15,7 @@ import { DataTransferHelper } from 'src/app/helper/data-transefer.helper';
 export class EntranceComponent implements OnInit, OnDestroy {
   @Output() clickBackToCreatedRoom: EventEmitter<string> = new EventEmitter();
   @Output() clickBackToJoinedRoom: EventEmitter<string> = new EventEmitter();
+  @Output() clickRemoveRoom: EventEmitter<string> = new EventEmitter();
 
   @Input() roomContents: Array<RoomContent>;
 
@@ -39,6 +40,10 @@ export class EntranceComponent implements OnInit, OnDestroy {
 
   handleClickBackToJoinedRoom(roomId: string): void {
     this.clickBackToJoinedRoom.emit(`${window.location.href}/room/${roomId}`);
+  }
+
+  handleClickRemoveRoom(roomId: string): void {
+    this.clickRemoveRoom.emit(roomId);
   }
 
   ngOnInit(): void {
