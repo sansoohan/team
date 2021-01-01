@@ -235,7 +235,7 @@ export class DataTransferHelper {
     if (now - input < 2 * HOUR) { return `${Math.floor((now - input) / HOUR)} hour ago`; }
     if (now - input < DAY) { return `${Math.floor((now - input) / HOUR)} hours ago`; }
     const date = new Date(input);
-    return `${date.getFullYear()}. ${date.getMonth()}. ${date.getDate()}`;
+    return `${date.getFullYear()}. ${date.getMonth() + 1}. ${date.getDate()}`;
   }
   replaceToDateRecursively(content: any): any{
     if (content instanceof Array){

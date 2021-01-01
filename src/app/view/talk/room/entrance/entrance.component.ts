@@ -16,26 +16,12 @@ export class EntranceComponent implements OnInit, OnDestroy {
   @Output() clickBackToCreatedRoom: EventEmitter<string> = new EventEmitter();
   @Output() clickBackToJoinedRoom: EventEmitter<string> = new EventEmitter();
 
+  @Input() roomContents: Array<RoomContent>;
+
   params: any;
   paramSub: Subscription;
   talkRoomsObserver: any;
   talkRoomsSub: Subscription;
-  roomContents: Array<RoomContent>;
-
-  @Input()
-  get talkContents(): Array<TalkContent> { return this._talkContents; }
-  set talkContents(talkContents: Array<TalkContent>) {
-    this._talkContents = talkContents;
-    this.talkRoomsObserver = this.firestore
-    .collection<TalkContent>('talks').doc(this.talkContents[0].id)
-    .collection<RoomContent>('rooms').valueChanges();
-
-    this.talkRoomsSub = this.talkRoomsObserver.subscribe((roomContents) => {
-      this.roomContents = roomContents;
-    });
-  }
-  // tslint:disable-next-line: variable-name
-  _talkContents: Array<TalkContent>;
 
   constructor(
     private route: ActivatedRoute,

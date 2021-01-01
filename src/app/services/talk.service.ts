@@ -4,6 +4,7 @@ import { FormHelper } from 'src/app/helper/form.helper';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { TalkContent } from '../view/talk/talk.content';
+import { RoomContent } from '../view/talk/room/room.content';
 
 @Injectable({
   providedIn: 'root'
@@ -20,5 +21,14 @@ export class TalkService {
     return this.firestore
     .collection<TalkContent>('talks', ref => ref.where('userName', '==', queryUserName))
     .valueChanges();
+  }
+
+  getRoomsObserver(talkId: string): Observable<RoomContent[]> {
+    if (!talkId){
+      return;
+    }
+    return this.firestore
+    .collection<TalkContent>('talks').doc(talkId)
+    .collection<RoomContent>('rooms').valueChanges();
   }
 }
