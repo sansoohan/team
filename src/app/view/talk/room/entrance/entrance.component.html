@@ -22,7 +22,14 @@
       {{roomContent.id}}
     </div>
     <div class="col-2 room-list-col d-flex">
-      <span *ngIf="roomContent.offer" class="badge badge-light user-in-room">In Room</span>
+      <span
+        *ngIf="roomContent.offer && roomContent.offer!=='disconnected'"
+        class="badge badge-light user-in-room"
+      >In Room</span>
+      <span
+        *ngIf="roomContent.offer==='disconnected'"
+        class="badge badge-danger user-in-room"
+      >Disconnected</span>
       <button
         *ngIf="!roomContent.offer"
         class="btn btn-outline-warning join-button"
@@ -30,7 +37,14 @@
       >Join</button>
     </div>
     <div class="col-2 room-list-col d-flex">
-      <span *ngIf="roomContent.answer" class="badge badge-light user-in-room">In Room</span>
+      <span
+        *ngIf="roomContent.answer && roomContent.answer!=='disconnected'"
+        class="badge badge-light user-in-room"
+      >In Room</span>
+      <button
+        *ngIf="roomContent.answer==='disconnected'"
+        class="badge badge-danger user-in-room"
+      >Disconnected</button>
       <button
         *ngIf="!roomContent.answer"
         class="btn btn-outline-warning join-button"

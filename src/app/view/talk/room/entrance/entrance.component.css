@@ -51,6 +51,7 @@
 .user-in-room {
   margin: 0 auto;
   font-size: 0.8rem;
+  border: none;
 }
 
 .join-button {
