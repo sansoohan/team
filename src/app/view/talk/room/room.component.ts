@@ -378,6 +378,11 @@ export class RoomComponent implements OnInit, OnDestroy {
       roomSnapshot.forEach(async (roomData) => {
         const offer = roomData.data().offer;
         // tslint:disable-next-line: no-console
+        if (!offer){
+          this.handleClickCreateRoom();
+          return;
+        }
+
         console.log('Got offer:', offer);
         await this.peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
         const answer = await this.peerConnection.createAnswer();

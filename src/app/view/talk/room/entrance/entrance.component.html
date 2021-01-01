@@ -41,10 +41,10 @@
         *ngIf="roomContent.answer && roomContent.answer!=='disconnected'"
         class="badge badge-light user-in-room"
       >In Room</span>
-      <button
+      <span
         *ngIf="roomContent.answer==='disconnected'"
         class="badge badge-danger user-in-room"
-      >Disconnected</button>
+      >Disconnected</span>
       <button
         *ngIf="!roomContent.answer"
         class="btn btn-outline-warning join-button"
