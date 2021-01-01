@@ -20,6 +20,10 @@
   >
     <div class="room-list-col col-5">
       {{roomContent.id}}
+      <span
+        class="badge badge-danger user-in-room"
+        (click)="handleClickRemoveRoom(roomContent.id)"
+      ><i class="fa fa-trash"></i></span>
     </div>
     <div class="col-2 room-list-col d-flex">
       <span

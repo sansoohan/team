@@ -31,4 +31,8 @@ export class TalkService {
     .collection<TalkContent>('talks').doc(talkId)
     .collection<RoomContent>('rooms').valueChanges();
   }
+
+  async delete(path: string): Promise<void> {
+    return this.firestore.doc(path).delete();
+  }
 }
