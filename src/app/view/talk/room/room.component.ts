@@ -429,12 +429,14 @@ export class RoomComponent implements OnInit, OnDestroy {
     this.localVideo.nativeElement.srcObject = stream;
     this.localVideo.nativeElement.muted = true;
     this.localVideo.nativeElement.autoplay = true;
+    this.localVideo.nativeElement.play();
     this.localVideo.nativeElement.setAttribute('playsinline', '');
     this.localStream = stream;
     this.remoteStream = new MediaStream();
     this.remoteVideo.nativeElement.srcObject = this.remoteStream;
     this.remoteVideo.nativeElement.muted = false;
     this.remoteVideo.nativeElement.autoplay = true;
+    this.remoteVideo.nativeElement.play();
     this.remoteVideo.nativeElement.setAttribute('playsinline', '');
     // tslint:disable-next-line: no-console
     console.log('Stream:', this.localVideo.nativeElement.srcObject);
