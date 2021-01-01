@@ -61,6 +61,7 @@ export class RoomComponent implements OnInit, OnDestroy {
   isMobileDevice: boolean;
   localCanvasZoom: number;
   sessionStorage: Storage;
+  isCaller: boolean;
 
   // sessionStorage.getItem('createdRoomId');
   // sessionStorage.getItem('joinedRoomUrl');
@@ -249,6 +250,7 @@ export class RoomComponent implements OnInit, OnDestroy {
   }
 
   async handleClickCreateRoom() {
+    this.isCaller = true;
     const oldRoomId: string = sessionStorage.getItem('createdRoomId');
     if (oldRoomId) {
       this.firestore
@@ -338,6 +340,7 @@ export class RoomComponent implements OnInit, OnDestroy {
   }
 
   async joinRoomById(roomId: string) {
+    this.isCaller = false;
     this.createdRoomUrl = `${window.location.href}`;
     sessionStorage.setItem('joinedRoomUrl', this.createdRoomUrl);
     this.isInRoom = true;
@@ -459,7 +462,7 @@ export class RoomComponent implements OnInit, OnDestroy {
     this.canvasVideo.nativeElement.setAttribute('playsinline', '');
   }
 
-  async onDiesconnectCaller() {
+  async onDisconnectCaller(data) {
     const roomDoc = this.firestore
     .collection('talks').doc(this.talkContents[0].id)
     .collection('rooms').doc(this.roomId);
@@ -471,13 +474,11 @@ export class RoomComponent implements OnInit, OnDestroy {
         callerCandidatesRemovePromises.push(can.ref.delete());
       });
     });
-    callerCandidatesRemovePromises.push(
-      roomDoc.ref.update({offer: firebase.firestore.FieldValue.delete()})
-    );
+    callerCandidatesRemovePromises.push(roomDoc.ref.update(data));
     return Promise.all(callerCandidatesRemovePromises);
   }
 
-  async onDiesconnectCallee() {
+  async onDisconnectCallee(data) {
     const roomDoc = this.firestore
     .collection('talks').doc(this.talkContents[0].id)
     .collection('rooms').doc(this.roomId);
@@ -489,9 +490,7 @@ export class RoomComponent implements OnInit, OnDestroy {
         calleeCandidatesRemovePromises.push(can.ref.delete());
       });
     });
-    calleeCandidatesRemovePromises.push(
-      roomDoc.ref.update({answer: firebase.firestore.FieldValue.delete()})
-    );
+    calleeCandidatesRemovePromises.push(roomDoc.ref.update(data));
     return Promise.all(calleeCandidatesRemovePromises);
   }
 
@@ -506,16 +505,24 @@ export class RoomComponent implements OnInit, OnDestroy {
     this.createdRoomUrl = '';
     // Delete room on hangup
     if (this.roomId) {
-      if (this.params.roomId) {
-        await this.onDiesconnectCallee();
+      if (this.isCaller) {
+        await this.onDisconnectCaller({
+          offer: this.hasRemoteConnection
+          ? 'disconnected'
+          : firebase.firestore.FieldValue.delete()
+        });
       } else {
-        await this.onDiesconnectCaller();
+        await this.onDisconnectCallee({
+          answer: this.hasRemoteConnection
+          ? 'disconnected'
+          : firebase.firestore.FieldValue.delete()
+        });
       }
-
       const params = Object.assign({}, this.params);
       delete params.roomId;
       this.routerHelper.goToTalk(params);
     }
+    delete this.roomId;
   }
 
   handleClickBackToCreatedRoom(selectedRoomId: string) {
@@ -541,14 +548,12 @@ export class RoomComponent implements OnInit, OnDestroy {
 
       if (/(disconnected)|(failed)/g.test(this.peerConnection.connectionState)) {
         this.hasRemoteConnection = false;
-        if (this.params.roomId) {
-          await this.onDiesconnectCaller();
-          await this.onDiesconnectCallee();
-          await this.handleClickCreateRoom();
+        if (this.isCaller) {
+          await this.onDisconnectCallee({answer: firebase.firestore.FieldValue.delete()});
         } else {
-          await this.onDiesconnectCallee();
-          await this.handleClickCreateRoom();
+          await this.onDisconnectCaller({offer: firebase.firestore.FieldValue.delete()});
         }
+        await this.handleClickCreateRoom();
       }
     });
     this.peerConnection.addEventListener('signalingstatechange', () => {
