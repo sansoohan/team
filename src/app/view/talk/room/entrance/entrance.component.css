@@ -30,7 +30,7 @@
 .room-list-top-col {
   margin: 0;
   padding: 0;
-  font-size: 0.8rem;
+  font-size: 1.2rem;
 }
 
 .room-list-row {
@@ -45,17 +45,16 @@
   margin: 0;
   padding: 0;
   color: white;
-  font-size: 0.8rem;
+  font-size: 1.2rem;
 }
 
 .user-in-room {
-  margin: 0 auto;
-  font-size: 0.8rem;
+  font-size: 1.2rem;
   border: none;
 }
 
 .join-button {
-  margin: 0 auto;
+  margin-left: auto;
   padding: 0 0.5rem;
-  font-size: 0.8rem;
+  font-size: 1.2rem;
 }

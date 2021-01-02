@@ -20,11 +20,8 @@
             <div class="nav-item">
               <a class="nav-link" (click)="handleClickJoinRoom()">Join Talk Room</a>
             </div>
-            <div *ngIf="sessionStorage.getItem('createdRoomId')"  class="nav-item">
-              <a class="nav-link" (click)="handleClickBackToCreatedRoom()">Back to Created Room</a>
-            </div>
-            <div *ngIf="sessionStorage.getItem('joinedRoomUrl')"  class="nav-item">
-              <a class="nav-link" (click)="handleClickBackToJoinedRoom()">Back to Joined Room</a>
+            <div *ngIf="sessionStorage.getItem('beforeRoomId')"  class="nav-item">
+              <a class="nav-link" (click)="clickBackToRoom()">Back to Talk Room</a>
             </div>
           </ul>
           <ul *ngIf="isInRoom" class="navbar-nav">

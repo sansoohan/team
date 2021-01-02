@@ -3,62 +3,58 @@
     <span class="entrance-title-col">Talk Rooms</span>
   </div>
   <div class="room-list-top-row">
-    <span class="col-5 room-list-top-col">Room ID</span>
+    <span class="col-7 room-list-top-col">Join Room</span>
     <div class="col-2 room-list-top-col d-flex">
-      <span class="mx-auto">Caller</span> 
+      <span>Status</span>
     </div>
     <div class="col-2 room-list-top-col d-flex">
-      <span class="mx-auto">Callee</span>
-    </div>
-    <div class="col-3 room-list-top-col d-flex">
       <span class="ml-auto">Created</span>
     </div>
   </div>
-  <div
-    *ngFor="let roomContent of roomContents; index as i"
-    class="room-list-row"
-  >
-    <div class="room-list-col col-5">
-      {{roomContent.id}}
-      <span
-        class="badge badge-danger user-in-room"
-        (click)="handleClickRemoveRoom(roomContent.id)"
-      ><i class="fa fa-trash"></i></span>
-    </div>
-    <div class="col-2 room-list-col d-flex">
-      <span
-        *ngIf="roomContent.offer && roomContent.offer!=='disconnected'"
-        class="badge badge-light user-in-room"
-      >In Room</span>
-      <span
-        *ngIf="roomContent.offer==='disconnected'"
-        class="badge badge-danger user-in-room"
-      >Disconnected</span>
-      <button
-        *ngIf="!roomContent.offer"
-        class="btn btn-outline-warning join-button"
-        (click)="handleClickBackToCreatedRoom(roomContent.id)"
-      >Join</button>
-    </div>
-    <div class="col-2 room-list-col d-flex">
-      <span
-        *ngIf="roomContent.answer && roomContent.answer!=='disconnected'"
-        class="badge badge-light user-in-room"
-      >In Room</span>
-      <span
-        *ngIf="roomContent.answer==='disconnected'"
-        class="badge badge-danger user-in-room"
-      >Disconnected</span>
-      <button
-        *ngIf="!roomContent.answer"
-        class="btn btn-outline-warning join-button"
-        (click)="handleClickBackToJoinedRoom(roomContent.id)"
-      >Join</button>
-    </div>
-    <div class="room-list-col col-3 d-flex">
-      <span
-        class="ml-auto"
-      >{{dataTransferHelper.numberToDateString(roomContent.createdAt||0)}}</span>
+  <div *ngFor="let roomContent of roomContents; index as i">
+    <div
+      *ngIf="roomContent.id"
+      class="room-list-row"
+    >
+      <div class="room-list-col col-7 d-flex mt-auto">
+        <button
+          class="btn"
+          [class.btn-outline-warning]="!roomContent.answer || !roomContent.offer"
+          [class.btn-outline-secondary]="roomContent.answer && roomContent.offer"
+          [disabled]="roomContent.answer && roomContent.offer"
+          (click)="goToRoom(roomContent.id)"
+        >{{roomContent.id}}</button>
+      </div>
+      <div class="room-list-col col-2 d-flex">
+        <span
+          *ngIf="!roomContent.answer && !roomContent.offer"
+          class="badge badge-light user-in-room my-auto"
+        >Empty</span>
+        <span
+          *ngIf="
+            (!roomContent.answer && roomContent.offer) ||
+            (roomContent.answer && !roomContent.offer)
+          "
+          class="badge badge-success user-in-room my-auto"
+        >Waiting</span>
+        <span
+          *ngIf="roomContent.answer && roomContent.offer"
+          class="badge badge-secondary user-in-room my-auto"
+        >Full</span>
+      </div>
+      <div class="room-list-col col-2 d-flex mt-auto">
+        <span
+          class="ml-auto"
+        >{{dataTransferHelper.numberToDateString(roomContent.createdAt||0)}}</span>
+      </div>
+      <div class="room-list-col col-1 d-flex mt-auto">
+        <span class="ml-auto">
+          <button
+            class="btn btn-danger user-in-room"
+            (click)="handleClickRemoveRoom(roomContent.id)"
+          ><i class="fa fa-trash"></i></button>
+        </span>
+      </div>
     </div>
   </div>
 </div>
