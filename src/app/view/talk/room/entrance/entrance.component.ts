@@ -6,6 +6,7 @@ import { TalkContent } from '../../talk.content';
 import { TransitionCheckState } from '@angular/material/checkbox';
 import { RoomContent } from '../room.content';
 import { DataTransferHelper } from 'src/app/helper/data-transefer.helper';
+import { RouterHelper } from 'src/app/helper/router.helper';
 
 @Component({
   selector: 'app-talk-room-entrance',
@@ -13,8 +14,6 @@ import { DataTransferHelper } from 'src/app/helper/data-transefer.helper';
   styleUrls: ['./entrance.component.css']
 })
 export class EntranceComponent implements OnInit, OnDestroy {
-  @Output() clickBackToCreatedRoom: EventEmitter<string> = new EventEmitter();
-  @Output() clickBackToJoinedRoom: EventEmitter<string> = new EventEmitter();
   @Output() clickRemoveRoom: EventEmitter<string> = new EventEmitter();
 
   @Input() roomContents: Array<RoomContent>;
@@ -26,7 +25,7 @@ export class EntranceComponent implements OnInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
-    private firestore: AngularFirestore,
+    private routerHelper: RouterHelper,
     public dataTransferHelper: DataTransferHelper,
   ) {
     this.paramSub = this.route.params.subscribe((params) => {
@@ -34,16 +33,17 @@ export class EntranceComponent implements OnInit, OnDestroy {
     });
   }
 
-  handleClickBackToCreatedRoom(roomId: string): void {
-    this.clickBackToCreatedRoom.emit(roomId);
-  }
-
-  handleClickBackToJoinedRoom(roomId: string): void {
-    this.clickBackToJoinedRoom.emit(`${window.location.href}/room/${roomId}`);
-  }
-
   handleClickRemoveRoom(roomId: string): void {
     this.clickRemoveRoom.emit(roomId);
+  }
+
+  goToRoom(roomId: string) {
+    if (!roomId) {
+      return;
+    }
+    this.routerHelper.goToUrl(
+      `${window.location.origin}/#/talk/${this.params.userName}/room/${roomId}`
+    );
   }
 
   ngOnInit(): void {

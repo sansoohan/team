@@ -1,16 +1,12 @@
 import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { AuthService } from 'src/app/services/auth.service';
-import { FormGroup } from '@angular/forms';
 import { DataTransferHelper } from 'src/app/helper/data-transefer.helper';
 import { RouterHelper } from 'src/app/helper/router.helper';
 import { FormHelper } from 'src/app/helper/form.helper';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
-import Identicon from 'identicon.js';
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { TalkContent } from '../talk.content';
 import { ProfileService } from 'src/app/services/profile.service';
-import { ToastHelper } from 'src/app/helper/toast.helper';
 
 @Component({
   selector: 'app-talk-left-sidebar',
@@ -23,8 +19,6 @@ export class LeftSidebarComponent implements OnInit, OnDestroy {
   @Output() clickLeaveRoom: EventEmitter<null> = new EventEmitter();
   @Output() clickStartScreenSharing: EventEmitter<null> = new EventEmitter();
   @Output() clickStopScreenSharing: EventEmitter<null> = new EventEmitter();
-  @Output() clickBackToCreatedRoom: EventEmitter<string> = new EventEmitter();
-  @Output() clickBackToJoinedRoom: EventEmitter<string> = new EventEmitter();
 
   @Input() isInRoom: boolean;
   @Input() isScreenSharing: boolean;
@@ -34,7 +28,6 @@ export class LeftSidebarComponent implements OnInit, OnDestroy {
   params: any;
   isPage: boolean;
   isLoading: boolean;
-  defaultSrc: string | SafeUrl;
   talkContent: TalkContent;
   sessionStorage: Storage;
 
@@ -77,14 +70,11 @@ export class LeftSidebarComponent implements OnInit, OnDestroy {
     this.clickStopScreenSharing.emit();
   }
 
-  handleClickBackToCreatedRoom() {
-    const roomId = sessionStorage.getItem('createdRoomId');
-    sessionStorage.removeItem('createdRoomId');
-    this.clickBackToCreatedRoom.emit(roomId);
-  }
-
-  handleClickBackToJoinedRoom() {
-    this.clickBackToJoinedRoom.emit(sessionStorage.getItem('joinedRoomUrl'));
+  clickBackToRoom() {
+    const roomId = sessionStorage.getItem('beforeRoomId');
+    this.routerHelper.goToUrl(
+      `${window.location.origin}/#/talk/${this.params.userName}/room/${roomId}`
+    );
   }
 
   ngOnInit(): void {
