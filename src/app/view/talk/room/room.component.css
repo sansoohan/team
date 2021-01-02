@@ -3,6 +3,7 @@
   color: white;
   background-color: #333333;
   scroll-behavior: smooth;
+  min-height: calc(100vh - 56px);
 }
 
 div#videos {
