@@ -1,8 +1,21 @@
 {
+  "database": {
+    "rules": "database.rules.json"
+  },
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "functions": {
+    "predeploy": [
+      "npm --prefix \"$RESOURCE_DIR\" run lint",
+      "npm --prefix \"$RESOURCE_DIR\" run build"
+    ]
+  },
   "hosting": [
     {
-      "target": "developer-new",
-      "public": "dist/developer-new",
+      "target": "teams",
+      "public": "dist/teams",
       "ignore": [
         "firebase.json",
         "**/.*",
@@ -16,8 +29,8 @@
       ]
     },
     {
-      "target": "TestAngular",
-      "public": "dist/TestAngular",
+      "target": "teams-staging",
+      "public": "dist/teams-teams-staging",
       "ignore": [
         "firebase.json",
         "**/.*",
@@ -30,5 +43,8 @@
         }
       ]
     }
-  ]
+  ],
+  "storage": {
+    "rules": "storage.rules"
+  }
 }
