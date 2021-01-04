@@ -1,16 +1,15 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { MessageService } from '../services/message.service';
+import { ToastHelper } from '../helper/toast.helper';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { ProfileService } from './profile.service';
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-
   constructor(
     private router: Router,
-    private message: MessageService,
+    private toastHelper: ToastHelper,
     private afAuth: AngularFireAuth,
     private profileService: ProfileService
   ) { }
@@ -20,13 +19,13 @@ export class AuthService {
    * @param email email of the user
    */
   resetPassword() {
-    this.message.showPrompt('Reset Password', 'Please Enter your email').then(email => {
+    this.toastHelper.showPrompt('Reset Password', 'Please Enter your email').then(email => {
       this.afAuth.sendPasswordResetEmail(`${email}`, { url: `${window.location.origin}/sign-in` })
       .then(
-        () => alert('A password reset link has been sent to your email address'),
-        (rejectionReason) => this.message.showError('An error occurred while attempting to reset your password', rejectionReason))
+        () => this.toastHelper.showInfo('Reset Password', 'A password reset link has been sent to your email address'),
+        (rejectionReason) => this.toastHelper.showError('An error occurred while attempting to reset your password', rejectionReason))
       .catch(e => {
-        this.message.showError('An error occurred while attempting to reset your password', e);
+        this.toastHelper.showError('An error occurred while attempting to reset your password', e);
       });
     });
   }
@@ -51,29 +50,35 @@ export class AuthService {
       uid: event.uid
     };
     localStorage.setItem('currentUser', JSON.stringify(currentUser));
-    console.log(JSON.parse(localStorage.getItem('currentUser')));
-    this.message.showSuccess(`Hello ${currentUser.displayName ? currentUser.displayName : currentUser.email}`, null);
+    this.toastHelper.showSuccess(`Hello ${currentUser.displayName ? currentUser.displayName : currentUser.email}`, null);
     this.profileService.createNewProfile();
     this.router.navigate(['/profile']);
   }
 
+  getCurrentUser() {
+    return JSON.parse(localStorage.getItem('currentUser'));
+  }
+
   signInFailed(event): void {
-    console.log(event);
-    this.message.showError('Sign in failed', event.message);
+    this.toastHelper.showError('Sign In failed', event.toast);
   }
 
   signUpSuccess(): void {
-    this.message.showSuccess('Sign up Success', null);
+    this.toastHelper.showSuccess('Sign Up Success', null);
     this.router.navigate(['/sign-in']);
   }
 
   signUpFailed(event): void {
-    console.log(event);
     if (event.code){
-      this.message.showError('Sign up failed', event.message);
+      this.toastHelper.showError('Sign up failed', event.toast);
     }
     else{
       this.signUpSuccess();
     }
+  }
+
+  onSignOut(): void{
+    localStorage.removeItem('currentUser');
+    this.router.navigate(['/sign-in']);
   }
 }

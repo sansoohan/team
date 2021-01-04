@@ -1,0 +1,92 @@
+<div class="top-nav-block"></div>
+
+<nav
+  class="header-navbar navbar navbar-expand-lg selected-header"
+>
+  <div class="collapse navbar-collapse">
+    <a
+      *ngIf="router.url.includes('/talk')"
+      class="navbar-brand selected-header-link"
+      (click)="routerHelper.goToTalk(params)"
+    >Talk</a>
+  </div>
+</nav>
+
+<nav
+  class="header-navbar navbar navbar-expand-lg navbar-dark bg-dark fixed-top header-common"
+  [class.main-header]="router.url.includes('/main')"
+  [class.talk-header]="router.url.includes('/talk')"
+  [class.blog-header]="router.url.includes('/blog')"
+  [class.profile-header]="router.url.includes('/profile')"
+>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTopCollapse" aria-controls="navbarTopCollapse" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarTopCollapse">
+    <a
+      *ngIf="!router.url.includes('/talk')"
+      class="navbar-brand header-link"
+      (click)="routerHelper.goToTalk(params)"
+    >Talk</a>
+    <ngx-auth-firebaseui-avatar
+      *ngIf="authService.isSignedIn()"
+      (onSignOut)="authService.onSignOut()"
+      [canEditAccount]="true"
+    ></ngx-auth-firebaseui-avatar>
+
+    <!-- Right Side -->
+    <div style="margin-left:auto">
+      <div class="input-group">
+        <input
+          [value]="searchValue"
+          (keyup)="changeSearch($event)"
+          class="search-input form-control mr-2"
+          type="search"
+          list="staticUserIds"
+          placeholder="Search"
+          aria-label="Search"
+        >
+  
+        <div
+          class="dropdown-menu search-drop-down"
+          [class.show]="searchValue&&!isSearchValueSelected"
+        >
+          <div
+            *ngFor="let result of searchResults | async"
+            class="d-flex mr-2"
+            (click)="setSearchValue(result.aboutContent.userName)"
+          >
+            <img class="rounded-circle search-profile" [src]="getSearchProfileImage(result)">
+            <a>
+              {{result.aboutContent.userName}}
+              <br>
+              ({{result.aboutContent.email}})
+            </a>
+          </div>
+          <a
+            class="dropdown-item"
+            (click)="closeSearchListDropDown()"
+          >Close</a>
+        </div>
+    
+        <div [class]="searchValue&&isSearchValueSelected?'dropdown-menu show':'dropdown-menu'">
+          <a
+            class="dropdown-item"
+            (click)="routerHelper.goToTalk({userName:searchValue})"
+          >{{searchValue}}'s Talk</a>
+          <a
+            class="dropdown-item"
+            (click)="closeProfileLinkDropDown()"
+          >Close</a>
+        </div>
+      </div>
+    </div>
+    <button
+      *ngIf="!authService.isSignedIn()"
+      routerLink="/sign-in"
+      routerLinkActive="active"
+      class="btn btn-secondary sign-in-button"
+    >Sign In</button>
+  </div>
+</nav>

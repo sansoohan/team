@@ -1,1 +1,17 @@
 /* You can add global styles to this file, and also import other style files */
+
+html, body { height: 100%; scroll-behavior: smooth; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+table {
+  background-color: #333333;
+}
+table thead tr th{
+  border: 1px solid #888888;
+  border-bottom: 1px solid white;
+  padding: 3px 6px;
+}
+
+table tbody tr td{
+  border: 1px solid #888888;
+  padding: 0px 6px;
+}

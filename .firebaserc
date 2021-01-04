@@ -2,10 +2,16 @@
   "targets": {
     "developers-8a830": {
       "hosting": {
-        "developer-new": [
-          "developers-8a830"
+        "teams": [
+          "teams-5d42a"
+        ],
+        "teams-staging": [
+          "teams-5d42a-staging"
         ]
       }
     }
+  },
+  "projects": {
+    "default": "developers-8a830"
   }
 }

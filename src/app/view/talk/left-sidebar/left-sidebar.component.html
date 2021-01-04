@@ -1,0 +1,42 @@
+<div *ngIf=!isPage>
+  <app-not-found></app-not-found>
+</div>
+<div>
+  <form>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary" id="sideNav">
+      <!-- Collapse button -->
+      <div>
+        <div class="fixed-top">
+          <button class="navbar-toggler nav-collapse-button fixed-top" type="button" data-toggle="collapse" data-target="#navbarSideCollapse" aria-controls="navbarSideCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+        </div>
+
+        <div class="collapse navbar-collapse" id="navbarSideCollapse">
+          <ul *ngIf="!isInRoom" class="navbar-nav">
+            <div class="nav-item">
+              <a class="nav-link" (click)="handleClickCreateRoom()">Create Talk Room</a>
+            </div>
+            <div class="nav-item">
+              <a class="nav-link" (click)="handleClickJoinRoom()">Join Talk Room</a>
+            </div>
+            <div *ngIf="sessionStorage.getItem('beforeRoomId')"  class="nav-item">
+              <a class="nav-link" (click)="clickBackToRoom()">Back to Talk Room</a>
+            </div>
+          </ul>
+          <ul *ngIf="isInRoom" class="navbar-nav">
+            <div *ngIf="!isScreenSharing && !isMobileDevice" class="nav-item">
+              <a class="nav-link" (click)="handleClickStartScreenSharing()">Start Screen Share</a>
+            </div>
+            <div *ngIf="isScreenSharing && !isMobileDevice" class="nav-item">
+              <a class="nav-link" (click)="handleClickStopScreenSharing()">Stop Screen Share</a>
+            </div>
+            <div class="nav-item">
+              <a class="nav-link" (click)="handleClickLeaveRoom()">Leave</a>
+            </div>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </form>
+</div>

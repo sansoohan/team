@@ -1,10 +1,18 @@
-<div class="container-fluid">
+<div class="container">
   <div class="row">
-    <button class="btn btn-outline-secondary col-6" type="button" style="padding-left: 0; padding-right: 0;"
-      (click)="removeInput(targetArray,targetArrayIndex)"><i class="fa fa-trash"></i>
+    <button
+      class="btn btn-outline-secondary col-6 add-remove-button"
+      (click)="removeInput()"
+      *ngIf="targetArrayForm.length !== 0"
+    >
+      <i class="fa fa-trash"></i>
     </button>
-    <button class="btn btn-outline-success col-6" type="button" style="padding-left: 0; padding-right: 0;"
-      (click)="addInput(targetArray)" *ngIf="targetArray.length-1 == targetArrayIndex"><i class="fa fa-plus"></i>
+    <button
+      class="btn btn-outline-success col-6 add-remove-button"
+      (click)="addInput()"
+      *ngIf="targetArrayForm.length-1 === targetArrayIndex || targetArrayForm.length === 0"
+    >
+      <i class="fa fa-plus"></i>
     </button>
   </div>
 </div>

@@ -1,54 +1,48 @@
+// Angular core
 import {APP_BASE_HREF} from '@angular/common';
-import { environment } from '../environments/environment';
-
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { NgModule, SecurityContext } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-import { AppRoutingModule } from './app-routing.module';
-
-// import * as firebase from 'firebase/app';
-// currently there is a bug while building the app with --prod
-// - https://github.com/RaphaelJenni/FirebaseUI-Angular/issues/76
-// the plugin exposes the two libraries as well. You can use those:
-// import {FirebaseUIModule, firebase, firebaseui} from 'firebaseui-angular';
-import { AngularFireAuthModule } from '@angular/fire/auth';
-import { AngularFireModule } from '@angular/fire';
-import { AngularFireAnalyticsModule } from '@angular/fire/analytics';
-import { AngularFireStorageModule, BUCKET } from '@angular/fire/storage';
-import { AngularFirestoreModule } from '@angular/fire/firestore';
-import { ToastrModule } from 'ngx-toastr';
-import { NgxAuthFirebaseUIModule } from 'ngx-auth-firebaseui';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatPasswordStrengthModule } from '@angular-material-extensions/password-strength';
+import { AppRoutingModule } from 'src/app/app-routing.module';
+
+// Angular Material
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatToolbarModule } from '@angular/material/toolbar';
+
+// Firebase
+import { AngularFireAuthModule } from '@angular/fire/auth';
+import { AngularFireAnalyticsModule } from '@angular/fire/analytics';
+import { AngularFireStorageModule } from '@angular/fire/storage';
+import { AngularFirestoreModule } from '@angular/fire/firestore';
+import { NgxAuthFirebaseUIModule } from 'ngx-auth-firebaseui';
+import { environment } from 'src/environments/environment';
+
+// ngx module
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
-// import { NgwWowModule } from 'ngx-wow';
+import { MarkdownModule } from 'ngx-markdown';
 
-import { EmbededGooglemapModule } from './modules/embeded-googlemap/embeded-googlemap.module';
+// View
+import { AppComponent } from 'src/app/app.component';
+import { HeaderComponent } from './header/header.component';
+import { TalkModule } from './view/talk/talk.module';
+import { ContactComponent } from 'src/app/view/contact/contact.component';
+import { MainComponent } from 'src/app/view/main/main.component';
+import { ProfileModule } from 'src/app/view/profile/profile.module';
+import { SignInComponent } from 'src/app/view/sign-in/sign-in.component';
+import { SignUpComponent } from 'src/app/view/sign-up/sign-up.component';
 
-
-import { AppComponent } from './app.component';
-
-import { ProfileModule } from './profile/profile.module';
-import { ContactComponent } from './contact/contact.component';
-import { MainComponent } from './main/main.component';
-
-import { SignInComponent } from './sign-in/sign-in.component';
-import { SignUpComponent } from './sign-up/sign-up.component';
-
-// See the Moment.js docs for the meaning of these formats:
-// https://momentjs.com/docs/#/displaying/format/
-export const MY_FORMATS = {
-  parse: {
-    dateInput: 'MM/YYYY',
-  },
-  display: {
-    dateInput: 'MM/YYYY',
-    monthYearLabel: 'MMM YYYY',
-    dateA11yLabel: 'LL',
-    monthYearA11yLabel: 'MMMM YYYY',
-  },
-};
+// Moudles
+import { EmbededGooglemapModule } from 'src/app/modules/embeded-googlemap/embeded-googlemap.module';
+import { NotFoundModule } from 'src/app/modules/not-found/not-found.module';
 
 @NgModule({
   declarations: [
@@ -56,18 +50,29 @@ export const MY_FORMATS = {
     SignInComponent,
     SignUpComponent,
     ContactComponent,
-    MainComponent
+    MainComponent,
+    HeaderComponent,
   ],
   imports: [
     BrowserModule,
     FormsModule,
+    ReactiveFormsModule,
     HttpClientModule,
     BrowserAnimationsModule,
-    // NgwWowModule,
     SweetAlert2Module.forRoot(),
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    HttpClientModule,
+    MarkdownModule.forRoot({
+      sanitize: SecurityContext.NONE,
+    }),
+    MatButtonModule,
+    MatIconModule,
+    MatTabsModule,
+    MatToolbarModule,
     NgxAuthFirebaseUIModule.forRoot(
       environment.firebase,
-      () => 'Developers',
+      () => 'developer',
       {
         enableFirestoreSync: true, // enable/disable autosync users with firestore
         toastMessageOnAuthSuccess: false, // whether to open/show a snackbar message on auth success - default : true
@@ -86,13 +91,19 @@ export const MY_FORMATS = {
       }
     ),
     ProfileModule,
+    TalkModule,
     AngularFireAnalyticsModule,
     AngularFireAuthModule,
     AngularFirestoreModule,
     AngularFireStorageModule,
     AppRoutingModule,
     MatPasswordStrengthModule,
-    EmbededGooglemapModule
+    MatInputModule,
+    MatSelectModule,
+    MatCheckboxModule,
+    MatChipsModule,
+    EmbededGooglemapModule,
+    NotFoundModule,
   ],
   providers: [
     {provide: APP_BASE_HREF, useValue: '/'}

@@ -1,0 +1,117 @@
+.profile-link:hover {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.profiles {
+  font-family: 'Open Sans', serif;
+  color: #868e96;
+  scroll-behavior: smooth;
+}
+
+@media (min-width: 992px) {
+  .profiles {
+    padding-left: 17rem;
+  }
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Saira Extra Condensed', serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #343a40;
+}
+
+h1 {
+  font-size: 6rem;
+  line-height: 5.5rem;
+}
+
+h2 {
+  font-size: 3.5rem;
+}
+
+.subheading {
+  text-transform: uppercase;
+  font-weight: 500;
+  font-family: 'Saira Extra Condensed', serif;
+  font-size: 1.35rem;
+}
+
+.list-social-icons a {
+  color: #495057;
+}
+
+.list-social-icons a:hover {
+  color: #BD5D38;
+}
+
+.list-social-icons a .fa-lg {
+  font-size: 1.75rem;
+}
+
+.list-icons {
+  font-size: 1rem;
+}
+
+.list-icons .list-inline-item i:hover {
+  color: #BD5D38;
+}
+
+.list-inline-item-description{
+  color: #BD5D38;
+}
+
+section.profile-section {
+  border-bottom: 1px solid #dee2e6;
+  padding-top: 5rem !important;
+  padding-bottom: 5rem !important;
+}
+
+section.profile-section .profile-item .profile-date {
+  min-width: none;
+}
+
+@media (min-width: 768px) {
+  section.profile-section {
+    min-height: 100vh;
+  }
+  section.profile-section .profile-item .profile-date {
+    min-width: 18rem;
+  }
+}
+
+@media (min-width: 992px) {
+  section.profile-section {
+    padding-top: 3rem !important;
+    padding-bottom: 3rem !important;
+  }
+}
+
+.bg-primary {
+  background-color: #BD5D38 !important;
+}
+
+.text-primary {
+  color: #BD5D38 !important;
+}
+
+a {
+  color: #BD5D38;
+}
+
+a:hover, a:focus, a:active {
+  color: #824027;
+}
+
+.btn-circle {
+  border-radius: 20px; 
+  text-align: center; 
+  font-weight: bold;
+  margin: 20px;
+}
