@@ -2,13 +2,16 @@
   "targets": {
     "developers-8a830": {
       "hosting": {
-        "TestAngular": [
-          "developers-8a830"
+        "teams": [
+          "teams-5d42a"
+        ],
+        "teams-staging": [
+          "teams-5d42a-staging"
         ]
       }
     }
   },
   "projects": {
-    "Developer": "developers-8a830"
+    "default": "developers-8a830"
   }
 }

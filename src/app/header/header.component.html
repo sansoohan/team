@@ -5,16 +5,6 @@
 >
   <div class="collapse navbar-collapse">
     <a
-      *ngIf="router.url.includes('/profile')"
-      class="navbar-brand selected-header-link"
-      (click)="routerHelper.goToProfile(params)"
-    >Profile</a>
-    <a
-      *ngIf="router.url.includes('/blog')"
-      class="navbar-brand selected-header-link"
-      (click)="routerHelper.goToBlogPrologue(params)"
-    >Blog</a>
-    <a
       *ngIf="router.url.includes('/talk')"
       class="navbar-brand selected-header-link"
       (click)="routerHelper.goToTalk(params)"
@@ -34,16 +24,6 @@
   </button>
 
   <div class="collapse navbar-collapse" id="navbarTopCollapse">
-    <a
-      *ngIf="!router.url.includes('/profile')"
-      class="navbar-brand header-link"
-      (click)="routerHelper.goToProfile(params)"
-    >Profile</a>
-    <a
-      *ngIf="!router.url.includes('/blog')"
-      class="navbar-brand header-link"
-      (click)="routerHelper.goToBlogPrologue(params)"
-    >Blog</a>
     <a
       *ngIf="!router.url.includes('/talk')"
       class="navbar-brand header-link"
@@ -91,14 +71,6 @@
         </div>
     
         <div [class]="searchValue&&isSearchValueSelected?'dropdown-menu show':'dropdown-menu'">
-          <a
-            class="dropdown-item"
-            (click)="routerHelper.goToProfile({userName:searchValue})"
-          >{{searchValue}}'s Profile</a>
-          <a
-            class="dropdown-item"
-            (click)="routerHelper.goToBlogPrologue({userName:searchValue})"
-          >{{searchValue}}'s Blog</a>
           <a
             class="dropdown-item"
             (click)="routerHelper.goToTalk({userName:searchValue})"
