@@ -18,6 +18,17 @@ export class RouterHelper {
     });
   }
 
+  goToMeeting(params: any): void {
+    this.router.onSameUrlNavigation = 'reload';
+    const currentUser = JSON.parse(localStorage.currentUser || null);
+    const queryUser = currentUser?.userName || currentUser?.uid || params?.userName || 'sansoohan';
+    this.router.navigate([
+      '/meeting', queryUser, params.roomId ? 'room' : null, params.roomId,
+    ].filter(Boolean)).finally(() => {
+      this.router.onSameUrlNavigation = 'ignore'; // Restore config after navigation completes
+    });
+  }
+
   goToTalk(params: any): void {
     this.router.onSameUrlNavigation = 'reload';
     const currentUser = JSON.parse(localStorage.currentUser || null);

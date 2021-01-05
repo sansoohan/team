@@ -1,4 +1,4 @@
-export class TalkContent {
+export class MeetingContent {
   id: string;
   ownerId: string;
   userName?: string;

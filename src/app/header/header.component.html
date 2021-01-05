@@ -5,19 +5,17 @@
 >
   <div class="collapse navbar-collapse">
     <a
-      *ngIf="router.url.includes('/talk')"
+      *ngIf="router.url.includes('/meeting')"
       class="navbar-brand selected-header-link"
-      (click)="routerHelper.goToTalk(params)"
-    >Talk</a>
+      (click)="routerHelper.goToMeeting(params)"
+    >Meeting</a>
   </div>
 </nav>
 
 <nav
   class="header-navbar navbar navbar-expand-lg navbar-dark bg-dark fixed-top header-common"
   [class.main-header]="router.url.includes('/main')"
-  [class.talk-header]="router.url.includes('/talk')"
-  [class.blog-header]="router.url.includes('/blog')"
-  [class.profile-header]="router.url.includes('/profile')"
+  [class.meeting-header]="router.url.includes('/meeting')"
 >
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTopCollapse" aria-controls="navbarTopCollapse" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
@@ -25,10 +23,10 @@
 
   <div class="collapse navbar-collapse" id="navbarTopCollapse">
     <a
-      *ngIf="!router.url.includes('/talk')"
+      *ngIf="!router.url.includes('/meeting')"
       class="navbar-brand header-link"
-      (click)="routerHelper.goToTalk(params)"
-    >Talk</a>
+      (click)="routerHelper.goToMeeting(params)"
+    >Meeting</a>
     <ngx-auth-firebaseui-avatar
       *ngIf="authService.isSignedIn()"
       (onSignOut)="authService.onSignOut()"
@@ -69,7 +67,7 @@
             (click)="closeSearchListDropDown()"
           >Close</a>
         </div>
-    
+
         <div [class]="searchValue&&isSearchValueSelected?'dropdown-menu show':'dropdown-menu'">
           <a
             class="dropdown-item"

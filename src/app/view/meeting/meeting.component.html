@@ -1,0 +1,14 @@
+firebase signaling for multi-party (trickle ICE)<br />
+<button type="button" (click)='startVideo()'>Start Video</button>
+<button type="button" (click)='stopVideo()'>Stop Video</button>
+&nbsp;
+<button type="button" (click)='connect()'>Connect</button>
+<button type="button" (click)='hangUp()'>Hang Up</button> 
+&nbsp;
+<a id="room_link" href="" target="_blank">Open another window (link to this room)</a>
+<a id="mail_link" href="" target="_blank">Mail link of this room</a>
+<div>
+  <video id="localVideo" #localVideo autoplay style="width: 160px; height: 120px; border: 1px solid black;"></video>
+</div>
+<div id="remoteContainer" #remoteContainer>
+</div>

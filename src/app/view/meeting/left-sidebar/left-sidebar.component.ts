@@ -5,13 +5,13 @@ import { RouterHelper } from 'src/app/helper/router.helper';
 import { FormHelper } from 'src/app/helper/form.helper';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
-import { TalkContent } from '../talk.content';
+import { MeetingContent } from '../meeting.content';
 import { ProfileService } from 'src/app/services/profile.service';
 
 @Component({
-  selector: 'app-talk-left-sidebar',
+  selector: 'app-meeting-left-sidebar',
   templateUrl: './left-sidebar.component.html',
-  styleUrls: ['../talk.component.css', './left-sidebar.component.css']
+  styleUrls: ['../meeting.component.css', './left-sidebar.component.css']
 })
 export class LeftSidebarComponent implements OnInit, OnDestroy {
   @Output() clickCreateRoom: EventEmitter<null> = new EventEmitter();
@@ -28,7 +28,7 @@ export class LeftSidebarComponent implements OnInit, OnDestroy {
   params: any;
   isPage: boolean;
   isLoading: boolean;
-  talkContent: TalkContent;
+  talkContent: MeetingContent;
   sessionStorage: Storage;
 
   constructor(
