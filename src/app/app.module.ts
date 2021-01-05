@@ -33,7 +33,7 @@ import { MarkdownModule } from 'ngx-markdown';
 // View
 import { AppComponent } from 'src/app/app.component';
 import { HeaderComponent } from './header/header.component';
-import { TalkModule } from './view/talk/talk.module';
+import { MeetingModule } from './view/meeting/meeting.module';
 import { ContactComponent } from 'src/app/view/contact/contact.component';
 import { MainComponent } from 'src/app/view/main/main.component';
 import { ProfileModule } from 'src/app/view/profile/profile.module';
@@ -91,7 +91,7 @@ import { NotFoundModule } from 'src/app/modules/not-found/not-found.module';
       }
     ),
     ProfileModule,
-    TalkModule,
+    MeetingModule,
     AngularFireAnalyticsModule,
     AngularFireAuthModule,
     AngularFirestoreModule,

@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, Input, Output, EventEmitter } from '@angu
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AngularFirestore } from '@angular/fire/firestore';
-import { TalkContent } from '../../talk.content';
+import { MeetingContent } from '../../meeting.content';
 import { TransitionCheckState } from '@angular/material/checkbox';
 import { RoomContent } from '../room.content';
 import { DataTransferHelper } from 'src/app/helper/data-transefer.helper';

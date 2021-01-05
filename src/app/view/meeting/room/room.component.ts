@@ -2,17 +2,17 @@ import { Component, OnInit, ViewChild, ElementRef, OnDestroy, ɵCodegenComponent
 import { AngularFirestore, DocumentReference, AngularFirestoreDocument } from '@angular/fire/firestore';
 import { ToastHelper } from 'src/app/helper/toast.helper';
 import { Subscription, Observable } from 'rxjs';
-import { TalkContent } from '../talk.content';
-import { TalkService } from 'src/app/services/talk.service';
+import { MeetingContent } from '../meeting.content';
+import { MeetingService } from 'src/app/services/meeting.service';
 import { ActivatedRoute } from '@angular/router';
 import { RouterHelper } from 'src/app/helper/router.helper';
 import * as firebase from 'firebase';
 import { RoomContent } from './room.content';
 
 @Component({
-  selector: 'app-talk-room',
+  selector: 'app-meeting-room',
   templateUrl: './room.component.html',
-  styleUrls: ['../talk.component.css', './room.component.css'],
+  styleUrls: ['../meeting.component.css', './room.component.css'],
 })
 export class RoomComponent implements OnInit, OnDestroy {
   // WebRTC Connection
@@ -45,8 +45,8 @@ export class RoomComponent implements OnInit, OnDestroy {
   isPage: boolean;
   isLoading: boolean;
   isCopiedToClipboard: boolean;
-  talkContentsObserver: Observable<TalkContent[]>;
-  talkContents: Array<TalkContent>;
+  talkContentsObserver: Observable<MeetingContent[]>;
+  talkContents: Array<MeetingContent>;
   roomsObserver: Observable<RoomContent[]>;
   roomContents: Array<RoomContent>;
   isHorizontalVideo: boolean;
@@ -74,7 +74,7 @@ export class RoomComponent implements OnInit, OnDestroy {
   constructor(
     private firestore: AngularFirestore,
     private toastHelper: ToastHelper,
-    private talkService: TalkService,
+    private meetingService: MeetingService,
     private route: ActivatedRoute,
     private routerHelper: RouterHelper,
   ) {
@@ -136,10 +136,10 @@ export class RoomComponent implements OnInit, OnDestroy {
     });
     this.paramSub = this.route.params.subscribe((params) => {
       this.params = params;
-      this.talkContentsObserver = this.talkService.getTalkContentsObserver({params});
+      this.talkContentsObserver = this.meetingService.getTalkContentsObserver({params});
       this.talkSub = this.talkContentsObserver.subscribe((talkContents) => {
         this.talkContents = talkContents;
-        this.roomsObserver = this.talkService.getRoomsObserver(this.talkContents[0].id);
+        this.roomsObserver = this.meetingService.getRoomsObserver(this.talkContents[0].id);
         this.roomSub = this.roomsObserver.subscribe(async (roomContents) => {
           this.roomContents = roomContents;
 
@@ -287,7 +287,7 @@ export class RoomComponent implements OnInit, OnDestroy {
     this.isInRoom = true;
     this.isCaller = isCaller;
     const roomDoc: AngularFirestoreDocument<RoomContent> = this.firestore
-    .collection<TalkContent>('talks').doc(this.talkContents[0].id)
+    .collection<MeetingContent>('talks').doc(this.talkContents[0].id)
     .collection<RoomContent>('rooms').doc(`${roomId}`);
     const roomRef = roomDoc.ref;
     // tslint:disable-next-line: no-console
@@ -391,7 +391,7 @@ export class RoomComponent implements OnInit, OnDestroy {
     if (!roomId) {
       return;
     }
-    this.talkService.delete(`talks/${this.talkContents[0].id}/rooms/${roomId}`);
+    this.meetingService.delete(`talks/${this.talkContents[0].id}/rooms/${roomId}`);
   }
 
   collectIceCandidates(
