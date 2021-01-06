@@ -15,8 +15,11 @@ import { ActivatedRoute } from '@angular/router';
 export class MeetingComponent implements OnInit, OnDestroy {
   @ViewChild ('localVideo') public localVideo: ElementRef;
   @ViewChild ('remoteContainer') public remoteContainer: ElementRef;
+  @ViewChild ('canvasVideo') public canvasVideo: ElementRef;
+  @ViewChild ('localCanvas') public localCanvas: ElementRef;
 
   localStream: any;
+  canvasStream: any;
   peerConnections: Array<RTCPeerConnection>;
   remoteStreams: Array<MediaStream>;
   remoteVideos: Array<any>;
@@ -33,12 +36,34 @@ export class MeetingComponent implements OnInit, OnDestroy {
   peerConnection: RTCPeerConnection;
   rtcConfiguration: RTCConfiguration;
 
+  deviceRotation: number;
+  isMobileDevice: boolean;
+  localCanvasZoom: number;
+  isLocalVideoOn: boolean;
+  isLocalAudioOn: boolean;
+  isRemoteVideoOns: Array<boolean>;
+  isRemoteAudioOns: Array<boolean>;
+  isScreenSharing: boolean;
+  shareStream: MediaStream;
+  mediaContraints: any;
+  localCanvasInterval: any;
+  mediaDevices: any;
+
   constructor(
     private database: AngularFireDatabase,
     private routerHelper: RouterHelper,
     private route: ActivatedRoute,
   ) {
     this.paramSub = this.route.params.subscribe((params) => {
+      this.mediaContraints = {
+        video: {
+          width: { ideal: 640, max: 640 },
+          height: { ideal: 480, max: 480 },
+          frameRate: { ideal: 15, max: 15 },
+        },
+        audio: true,
+      };
+
       this.params = params;
       this.databaseRoot = 'talk/meeting_room/';
       // this.remoteVideo = document.getElementById('remote_video');
@@ -51,6 +76,8 @@ export class MeetingComponent implements OnInit, OnDestroy {
       this.peerConnections = [];
       this.remoteStreams = [];
       this.remoteVideos = [];
+      this.isRemoteAudioOns = [];
+      this.isRemoteVideoOns = [];
       this.MAX_CONNECTION_COUNT = 3;
 
       // --- multi video ---
@@ -85,10 +112,151 @@ export class MeetingComponent implements OnInit, OnDestroy {
         ],
       };
 
-      this.joinRoom(this.room);
-      // this.setRoomLink(this.room);
+      this.isScreenSharing = false;
+
+      // tslint:disable-next-line: deprecation
+      if (window.orientation === undefined) {
+        this.deviceRotation = 90;
+        this.isMobileDevice = false;
+      } else {
+        // tslint:disable-next-line: deprecation
+        this.deviceRotation = Number(window.orientation);
+        this.isMobileDevice = true;
+      }
+      window.addEventListener('orientationchange', () => {
+        // tslint:disable-next-line: deprecation
+        this.deviceRotation = Number(window.orientation);
+      });
+      this.localCanvasZoom = 1;
+
+      this.joinRoom(this.room).then(() => {
+        this.startVideo().then(() => {
+          this.connect();
+        });
+      });
     });
   }
+
+  setMediaStatus(stream: MediaStream, mediaType: string, status: boolean): void {
+    stream[`get${mediaType}Tracks`]().forEach((track) => track.enabled = status);
+  }
+
+  clickLocalVideoToggle(): void {
+    this.isLocalVideoOn = !this.isLocalVideoOn;
+    if (this.isScreenSharing) {
+      if (this.shareStream) {
+        this.setMediaStatus(this.shareStream, 'Video', this.isLocalVideoOn);
+      }
+    } else {
+      if (this.canvasStream) {
+        this.setMediaStatus(this.canvasStream, 'Video', this.isLocalVideoOn);
+      }
+    }
+  }
+
+  clickLocalAudioToggle(): void {
+    this.isLocalAudioOn = !this.isLocalAudioOn;
+    if (this.canvasStream) {
+      this.setMediaStatus(this.canvasStream, 'Audio', this.isLocalAudioOn);
+    }
+  }
+
+  clickRemoteVideoToggle(id: string): void {
+    this.isRemoteVideoOns[id] = !this.isRemoteVideoOns[id];
+    if (this.remoteStreams[id]) {
+      this.setMediaStatus(this.remoteStreams[id], 'Video', this.isRemoteVideoOns[id]);
+    }
+  }
+
+  clickRemoteAudioToggle(id: string): void {
+    this.isRemoteAudioOns[id] = !this.isRemoteAudioOns[id];
+    if (this.remoteStreams[id]) {
+      this.setMediaStatus(this.remoteStreams[id], 'Audio', this.isRemoteAudioOns[id]);
+    }
+  }
+
+  getVideoLength(): number {
+    return Object.keys(this.remoteVideos).length + 1;
+  }
+
+  toggleFullScreen(videoGroup: ElementRef): void {
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    } else {
+      const el: any = videoGroup;
+      if (el.requestFullscreen) { el.requestFullscreen(); }
+      else if (el.msRequestFullscreen) { el.msRequestFullscreen(); }
+      else if (el.mozRequestFullScreen) { el.mozRequestFullScreen(); }
+      else if (el.webkitRequestFullscreen) { el.webkitRequestFullscreen(); }
+    }
+  }
+
+  async handleClickStartScreenSharing(): Promise<void> {
+    try {
+      this.shareStream = await navigator.mediaDevices[`getDisplayMedia`]({video: true});
+      this.setMediaStatus(this.shareStream, 'Video', this.isLocalVideoOn);
+      this.canvasVideo.nativeElement.srcObject = this.shareStream;
+      const videoSender = this.peerConnection.getSenders().find(sender => {
+        return sender.track.kind === 'video';
+      });
+      const [screenVideoTrack] = this.shareStream.getVideoTracks();
+      videoSender.replaceTrack(screenVideoTrack);
+      screenVideoTrack.addEventListener('ended', () => {
+        this.handleClickStopScreenSharing();
+      }, {once: true});
+      this.isScreenSharing = true;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  handleClickStopScreenSharing() {
+    this.canvasVideo.nativeElement.srcObject = this.canvasStream;
+    const videoSender = this.peerConnection.getSenders().find(sender => {
+      return sender.track.kind === 'video';
+    });
+    const [screenVideoTrack] = this.canvasStream.getVideoTracks();
+    videoSender.replaceTrack(screenVideoTrack);
+    this.isScreenSharing = false;
+  }
+
+  drawContext(videoTag: ElementRef, canvasTag: ElementRef) {
+    if (!videoTag?.nativeElement) {
+      return;
+    }
+
+    const isHorizontal = this.deviceRotation === 90 || this.deviceRotation === -90;
+    const width = videoTag.nativeElement.videoWidth;
+    const height = videoTag.nativeElement.videoHeight;
+    if (width / 4 > height / 3){
+      const overWidth = (width / 4 - height / 3) * 4;
+      const canvasWidth = canvasTag.nativeElement.width = width - overWidth;
+      const canvasHeight = canvasTag.nativeElement.height = height;
+      canvasTag.nativeElement.getContext('2d').drawImage(
+        videoTag.nativeElement,
+        overWidth / 2, 0, canvasWidth, canvasHeight,
+        0, 0, canvasWidth, canvasHeight,
+      );
+    }
+    else if (width / 4 < height / 3) {
+      const overHeight = (width / 4 - height / 3) * (-3);
+      const canvasWidth = canvasTag.nativeElement.width = width;
+      const canvasHeight = canvasTag.nativeElement.height = height - overHeight;
+      canvasTag.nativeElement.getContext('2d').drawImage(
+        videoTag.nativeElement,
+        0, overHeight / 2, canvasWidth, canvasHeight,
+        0, 0, canvasWidth, canvasHeight,
+      );
+    }
+    else {
+      const canvasWidth = canvasTag.nativeElement.width = isHorizontal ? width : height;
+      const canvasHeight = canvasTag.nativeElement.height = isHorizontal ? height : height * 3 / 4;
+      canvasTag.nativeElement.getContext('2d').drawImage(videoTag.nativeElement,
+        0, 0, canvasWidth, canvasHeight
+      );
+    }
+  }
+
 
   /*---
   // ----- use socket.io ---
@@ -178,100 +346,103 @@ export class MeetingComponent implements OnInit, OnDestroy {
     }
   }
 
-  joinRoom(room) {
-    // tslint:disable-next-line: no-console
-    console.log('join room name = ' + room);
-    const key = this.database.list(this.databaseRoot + room + '/_join_')
-    .push({ joined : 'unknown'}).key;
-    this.clientId = 'member_' + key;
-    // tslint:disable-next-line: no-console
-    console.log('joined to room=' + room + ' as this.clientId=' + this.clientId);
-    this.database.object(this.databaseRoot + room + '/_join_/' + key)
-    .update({ joined : this.clientId});
-
-    // remove join object
-    if (!this.dataDebugFlag) {
-      const jooinRef =  this.database.object(this.databaseRoot + room + '/_join_/' + key);
-      jooinRef.remove();
-    }
-
-    this.roomBroadcastRef = this.database.list(this.databaseRoot + room + '/_broadcast_');
-    this.roomBroadcastRef.stateChanges(['child_added']).forEach((data) => {
+  async joinRoom(room) {
+    return new Promise((resolve) => {
       // tslint:disable-next-line: no-console
-      console.log('roomBroadcastRef.on(data) data.key=' + data.key + ', data.val():', data.payload.val());
-      const message = data.payload.val();
-      const fromId = message.from;
-      if (fromId === this.clientId) {
-        // ignore self message
-        return;
+      console.log('join room name = ' + room);
+      const key = this.database.list(this.databaseRoot + room + '/_join_')
+      .push({ joined : 'unknown'}).key;
+      this.clientId = 'member_' + key;
+      // tslint:disable-next-line: no-console
+      console.log('joined to room=' + room + ' as this.clientId=' + this.clientId);
+      this.database.object(this.databaseRoot + room + '/_join_/' + key)
+      .update({ joined : this.clientId});
+
+      // remove join object
+      if (!this.dataDebugFlag) {
+        const jooinRef =  this.database.object(this.databaseRoot + room + '/_join_/' + key);
+        jooinRef.remove();
       }
 
-      if (message.type === 'call me') {
-        if (! this.isReadyToConnect()) {
-          // tslint:disable-next-line: no-console
-          console.log('Not ready to connect, so ignore');
+      this.roomBroadcastRef = this.database.list(this.databaseRoot + room + '/_broadcast_');
+      this.roomBroadcastRef.stateChanges(['child_added']).forEach((data) => {
+        // tslint:disable-next-line: no-console
+        console.log('roomBroadcastRef.on(data) data.key=' + data.key + ', data.val():', data.payload.val());
+        const message = data.payload.val();
+        const fromId = message.from;
+        if (fromId === this.clientId) {
+          // ignore self message
           return;
         }
-        else if (! this.canConnectMore()) {
-          console.warn('TOO MANY connections, so ignore');
-        }
 
-        if (this.isConnectedWith(fromId)) {
-          // already connnected, so skip
+        if (message.type === 'call me') {
+          if (! this.isReadyToConnect()) {
+            // tslint:disable-next-line: no-console
+            console.log('Not ready to connect, so ignore');
+            return;
+          }
+          else if (! this.canConnectMore()) {
+            console.warn('TOO MANY connections, so ignore');
+          }
+
+          if (this.isConnectedWith(fromId)) {
+            // already connnected, so skip
+            // tslint:disable-next-line: no-console
+            console.log('already connected, so ignore');
+          }
+          else {
+            // connect new party
+            this.makeOffer(fromId);
+          }
+        }
+        else if (message.type === 'bye') {
+          if (this.isConnectedWith(fromId)) {
+            this.stopConnection(fromId);
+          }
+        }
+      });
+
+      this.clientRef = this.database.list(this.databaseRoot + room + '/_direct_/' + this.clientId);
+      this.clientRef.stateChanges(['child_added']).forEach((data) => {
+        // tslint:disable-next-line: no-console
+        console.log('clientRef.on(data)  data.key=' + data.key + ', data.val():', data.payload.val());
+        const message = data.payload.val();
+        const fromId = message.from;
+
+        if (message.type === 'offer') {
+          // -- got offer ---
+          // let offer = message.sessionDescription;
+          const offer: any = new RTCSessionDescription(message);
           // tslint:disable-next-line: no-console
-          console.log('already connected, so ignore');
+          console.log('Received offer ... fromId=' + fromId, offer);
+          this.setOffer(fromId, offer);
         }
-        else {
-          // connect new party
-          this.makeOffer(fromId);
+        else if (message.type === 'answer') {
+          // --- got answer ---
+          // tslint:disable-next-line: no-console
+          console.log('Received answer ... fromId=' + fromId);
+          // const answer = message.sessionDescription;
+          const answer = new RTCSessionDescription(message);
+          this.setAnswer(fromId, answer);
         }
-      }
-      else if (message.type === 'bye') {
-        if (this.isConnectedWith(fromId)) {
-          this.stopConnection(fromId);
+        else if (message.type === 'candidate') {
+          // --- got ICE candidate ---
+          // tslint:disable-next-line: no-console
+          console.log('Received ICE candidate ... fromId=' + fromId);
+          // const candidate = new RTCIceCandidate(message.ice);
+          const candidate: any = new RTCIceCandidate(JSON.parse(message.ice)); // <---- JSON
+          // tslint:disable-next-line: no-console
+          console.log(message.ice);
+          this.addIceCandidate(fromId, candidate);
         }
-      }
-    });
 
-    this.clientRef = this.database.list(this.databaseRoot + room + '/_direct_/' + this.clientId);
-    this.clientRef.stateChanges(['child_added']).forEach((data) => {
-      // tslint:disable-next-line: no-console
-      console.log('clientRef.on(data)  data.key=' + data.key + ', data.val():', data.payload.val());
-      const message = data.payload.val();
-      const fromId = message.from;
-
-      if (message.type === 'offer') {
-        // -- got offer ---
-        // let offer = message.sessionDescription;
-        const offer: any = new RTCSessionDescription(message);
-        // tslint:disable-next-line: no-console
-        console.log('Received offer ... fromId=' + fromId, offer);
-        this.setOffer(fromId, offer);
-      }
-      else if (message.type === 'answer') {
-        // --- got answer ---
-        // tslint:disable-next-line: no-console
-        console.log('Received answer ... fromId=' + fromId);
-        // const answer = message.sessionDescription;
-        const answer = new RTCSessionDescription(message);
-        this.setAnswer(fromId, answer);
-      }
-      else if (message.type === 'candidate') {
-        // --- got ICE candidate ---
-        // tslint:disable-next-line: no-console
-        console.log('Received ICE candidate ... fromId=' + fromId);
-        // const candidate = new RTCIceCandidate(message.ice);
-        const candidate: any = new RTCIceCandidate(JSON.parse(message.ice)); // <---- JSON
-        // tslint:disable-next-line: no-console
-        console.log(message.ice);
-        this.addIceCandidate(fromId, candidate);
-      }
-
-      if (!this.dataDebugFlag) {
-        // remove direct message
-        const messageRef =  this.database.object(this.databaseRoot + room + '/_direct_/' + this.clientId + '/' + data.key);
-        messageRef.remove();
-      }
+        if (!this.dataDebugFlag) {
+          // remove direct message
+          const messageRef =  this.database.object(this.databaseRoot + room + '/_direct_/' + this.clientId + '/' + data.key);
+          messageRef.remove();
+        }
+      });
+      resolve();
     });
   }
 
@@ -432,6 +603,9 @@ export class MeetingComponent implements OnInit, OnDestroy {
 
   detachVideo(id) {
     const video = this.getRemoteVideoElement(id);
+    if (!video) {
+      return;
+    }
     this.pauseVideo(video);
     this.deleteRemoteVideoElement(id);
   }
@@ -449,6 +623,8 @@ export class MeetingComponent implements OnInit, OnDestroy {
     this._assert('this.addRemoteVideoElement() video must NOT EXIST', (! this.remoteVideos[id]));
     const video = this.createVideoElement('remote_video_' + id);
     this.remoteVideos[id] = video;
+    this.isRemoteVideoOns[id] = false;
+    this.isRemoteAudioOns[id] = false;
     return video;
   }
 
@@ -462,19 +638,14 @@ export class MeetingComponent implements OnInit, OnDestroy {
     this._assert('this.deleteRemoteVideoElement() stream must exist', this.remoteVideos[id]);
     this.removeVideoElement('remote_video_' + id);
     delete this.remoteVideos[id];
+    delete this.isRemoteVideoOns[id];
+    delete this.isRemoteAudioOns[id];
   }
 
   createVideoElement(elementId) {
     const video: any = document.createElement('video');
-    video.width = '240';
-    video.height = '180';
     video.id = elementId;
-
-    video.style.border = 'solid black 1px';
-    video.style.margin = '2px';
-
     this.remoteContainer.nativeElement.appendChild(video);
-
     return video;
   }
 
@@ -488,15 +659,49 @@ export class MeetingComponent implements OnInit, OnDestroy {
 
   // ---------------------- media handling -----------------------
   // start local video
-  startVideo() {
-    this.getDeviceStream({video: true, audio: true}) // audio: false <-- ontrack once, audio:true --> ontrack twice!!
-    // navigator.mediaDevices.getUserMedia({video: true, audio: true})
-    .then((stream) => { // success
-      this.localStream = stream;
-      this.playVideo(this.localVideo.nativeElement, stream);
-    }).catch((error) => { // error
-      console.error('getUserMedia error:', error);
+  async startVideo() {
+    const navi: any = navigator;
+    this.mediaDevices = navigator.mediaDevices ||
+    ((navi.mozGetUserMedia || navi.webkitGetUserMedia) ? {
+      getUserMedia(c) {
+        return new Promise((y, n) => {
+          (navi.mozGetUserMedia ||
+            navi.webkitGetUserMedia).call(navigator, c, y, n);
+        });
+      }
+    } : null);
+
+    if (!this.mediaDevices) {
+      // tslint:disable-next-line: no-console
+      console.log('getUserMedia() not supported.');
       return;
+    }
+
+    this.localStream = await this.mediaDevices.getUserMedia(this.mediaContraints);
+    this.playVideo(this.localVideo.nativeElement, this.localStream);
+    if (/Firefox/g.test(navigator.userAgent)) {
+      await new Promise((resolve) => {
+        setTimeout(async () => {
+          resolve();
+        }, 3000);
+      });
+    }
+
+    this.canvasStream = this.localCanvas.nativeElement.captureStream();
+    const [localVideoAudio] = this.localStream.getAudioTracks();
+    this.canvasStream.addTrack(localVideoAudio);
+    this.playVideo(this.canvasVideo.nativeElement, this.canvasStream);
+
+    const videoFps = this.mediaContraints.video.frameRate.ideal;
+    clearInterval(this.localCanvasInterval);
+    this.localCanvasInterval = setInterval(this.drawContext.bind(
+      this, this.localVideo, this.localCanvas
+    ), 1000 / videoFps);
+
+    await new Promise((resolve) => {
+      setTimeout(async () => {
+        resolve();
+      }, 2000);
     });
   }
 
@@ -714,10 +919,10 @@ export class MeetingComponent implements OnInit, OnDestroy {
     };
 
     // -- add local stream --
-    if (this.localStream) {
+    if (this.canvasStream) {
       // tslint:disable-next-line: no-console
       console.log('Adding local stream...');
-      peer.addStream(this.localStream);
+      peer.addStream(this.canvasStream);
     }
     else {
       console.warn('no local stream, but continue.');
@@ -880,5 +1085,8 @@ export class MeetingComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    clearInterval(this.localCanvasInterval);
+    this.hangUp();
+    this.stopVideo();
   }
 }
