@@ -45,9 +45,9 @@ export class MeetingComponent implements OnInit, OnDestroy {
   isRemoteAudioOns: Array<boolean>;
   isScreenSharing: boolean;
   shareStream: MediaStream;
-  mediaContraints: any;
   localCanvasInterval: any;
   mediaDevices: any;
+  roomLayout: any;
 
   constructor(
     private database: AngularFireDatabase,
@@ -55,15 +55,6 @@ export class MeetingComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
   ) {
     this.paramSub = this.route.params.subscribe((params) => {
-      this.mediaContraints = {
-        video: {
-          width: { ideal: 640, max: 640 },
-          height: { ideal: 480, max: 480 },
-          frameRate: { ideal: 15, max: 15 },
-        },
-        audio: true,
-      };
-
       this.params = params;
       this.databaseRoot = 'talk/meeting_room/';
       // this.remoteVideo = document.getElementById('remote_video');
@@ -129,12 +120,50 @@ export class MeetingComponent implements OnInit, OnDestroy {
       });
       this.localCanvasZoom = 1;
 
-      this.joinRoom(this.room).then(() => {
-        this.startVideo().then(() => {
-          this.connect();
+      this.joinRoom(this.room).then(async () => {
+        await this.updateVideoState();
+        await new Promise((resolve) => {
+          setTimeout(async () => {
+            resolve();
+          }, 2000);
         });
+        this.connect();
       });
     });
+  }
+
+  getMediaConstrains(memberCount: number): any {
+    if (memberCount > 15) {
+      return {
+        video: false,
+        audio: true,
+      };
+    }
+
+    const frameRate =
+    memberCount <= 1 ? { ideal: 30, max: 30 } :
+    memberCount <= 2 ? { ideal: 30, max: 30 } :
+    memberCount <= 3 ? { ideal: 20, max: 20 } :
+    memberCount <= 4 ? { ideal: 15, max: 15 } :
+    memberCount <= 6 ? { ideal: 12, max: 12 } :
+    memberCount <= 9 ? { ideal: 9, max: 9 } :
+    memberCount <= 12 ? { ideal: 7, max: 7 } :
+      { ideal: 5, max: 5 };
+    const {width, height} =
+    memberCount <= 4 ? {width: { ideal: 640, max: 640 }, height: { ideal: 480, max: 480 }} :
+    memberCount <= 6 ? {width: { ideal: 480, max: 480 }, height: { ideal: 360, max: 360 }} :
+    memberCount <= 9 ? {width: { ideal: 320, max: 320 }, height: { ideal: 240, max: 240 }} :
+    memberCount <= 12 ? {width: { ideal: 240, max: 240 }, height: { ideal: 180, max: 180 }} :
+      {width: { ideal: 160, max: 160 }, height: { ideal: 120, max: 120 }};
+
+    return {
+      video: {
+        width,
+        height,
+        frameRate,
+      },
+      audio: true,
+    };
   }
 
   setMediaStatus(stream: MediaStream, mediaType: string, status: boolean): void {
@@ -224,7 +253,6 @@ export class MeetingComponent implements OnInit, OnDestroy {
     if (!videoTag?.nativeElement) {
       return;
     }
-
     const isHorizontal = this.deviceRotation === 90 || this.deviceRotation === -90;
     const width = videoTag.nativeElement.videoWidth;
     const height = videoTag.nativeElement.videoHeight;
@@ -625,6 +653,8 @@ export class MeetingComponent implements OnInit, OnDestroy {
     this.remoteVideos[id] = video;
     this.isRemoteVideoOns[id] = false;
     this.isRemoteAudioOns[id] = false;
+    const videoCouont = Object.keys(this.remoteVideos).length + 1;
+    this.updateVideoState(videoCouont);
     return video;
   }
 
@@ -640,6 +670,8 @@ export class MeetingComponent implements OnInit, OnDestroy {
     delete this.remoteVideos[id];
     delete this.isRemoteVideoOns[id];
     delete this.isRemoteAudioOns[id];
+    const videoCouont = Object.keys(this.remoteVideos).length + 1;
+    this.updateVideoState(videoCouont);
   }
 
   createVideoElement(elementId) {
@@ -658,8 +690,27 @@ export class MeetingComponent implements OnInit, OnDestroy {
   }
 
   // ---------------------- media handling -----------------------
+  async updateVideoResolution(videoCount: number) {
+    this.localStream = await this.mediaDevices.getUserMedia(this.getMediaConstrains(videoCount));
+    this.playVideo(this.localVideo.nativeElement, this.localStream);
+  }
+
+  updateVideoFrameRate(videoCount: number): void {
+    const {
+      video: {
+        frameRate: {
+          ideal: videoFps
+        }
+      }
+    } = this.getMediaConstrains(videoCount);
+    clearInterval(this.localCanvasInterval);
+    this.localCanvasInterval = setInterval(this.drawContext.bind(
+      this, this.localVideo, this.localCanvas
+    ), 1000 / videoFps);
+  }
+
   // start local video
-  async startVideo() {
+  async updateVideoState(videoCount = 1) {
     const navi: any = navigator;
     this.mediaDevices = navigator.mediaDevices ||
     ((navi.mozGetUserMedia || navi.webkitGetUserMedia) ? {
@@ -677,8 +728,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.localStream = await this.mediaDevices.getUserMedia(this.mediaContraints);
-    this.playVideo(this.localVideo.nativeElement, this.localStream);
+    await this.updateVideoResolution(videoCount);
     if (/Firefox/g.test(navigator.userAgent)) {
       await new Promise((resolve) => {
         setTimeout(async () => {
@@ -691,18 +741,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
     const [localVideoAudio] = this.localStream.getAudioTracks();
     this.canvasStream.addTrack(localVideoAudio);
     this.playVideo(this.canvasVideo.nativeElement, this.canvasStream);
-
-    const videoFps = this.mediaContraints.video.frameRate.ideal;
-    clearInterval(this.localCanvasInterval);
-    this.localCanvasInterval = setInterval(this.drawContext.bind(
-      this, this.localVideo, this.localCanvas
-    ), 1000 / videoFps);
-
-    await new Promise((resolve) => {
-      setTimeout(async () => {
-        resolve();
-      }, 2000);
-    });
+    this.updateVideoFrameRate(videoCount);
   }
 
   // stop local video
