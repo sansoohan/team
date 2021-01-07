@@ -104,6 +104,8 @@ export class MeetingComponent implements OnInit, OnDestroy {
       };
 
       this.isScreenSharing = false;
+      this.isLocalVideoOn = true;
+      this.isLocalAudioOn = true;
 
       // tslint:disable-next-line: deprecation
       if (window.orientation === undefined) {
@@ -740,6 +742,16 @@ export class MeetingComponent implements OnInit, OnDestroy {
     this.canvasStream = this.localCanvas.nativeElement.captureStream();
     const [localVideoAudio] = this.localStream.getAudioTracks();
     this.canvasStream.addTrack(localVideoAudio);
+
+    this.setMediaStatus(
+      this.isMobileDevice ? this.canvasStream : this.localStream,
+      'Video', this.isLocalVideoOn
+    );
+    this.setMediaStatus(
+      this.isMobileDevice ? this.canvasStream : this.localStream,
+      'Audio', this.isLocalAudioOn
+    );
+
     this.playVideo(this.canvasVideo.nativeElement, this.canvasStream);
     this.updateVideoFrameRate(videoCount);
   }
