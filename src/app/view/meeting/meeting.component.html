@@ -1,5 +1,7 @@
 <video id="localVideo" #localVideo class="hidden-video" autoplay playsinline></video>
-<video id="canvasVideo" #canvasVideo class="hidden-video" autoplay playsinline></video>
-<div id="remoteContainer" #remoteContainer class="d-flex">
-  <canvas id="localCanvas" #localCanvas></canvas>
+<div id="videoBackground" #videoBackground>
+  <div id="videoContainer" #videoContainer>
+    <video id="canvasVideo" #canvasVideo autoplay playsinline></video>
+    <canvas id="localCanvas" #localCanvas></canvas>
+  </div>
 </div>

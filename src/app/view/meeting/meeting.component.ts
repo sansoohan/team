@@ -14,7 +14,8 @@ import { ActivatedRoute } from '@angular/router';
 
 export class MeetingComponent implements OnInit, OnDestroy {
   @ViewChild ('localVideo') public localVideo: ElementRef;
-  @ViewChild ('remoteContainer') public remoteContainer: ElementRef;
+  @ViewChild ('videoContainer') public videoContainer: ElementRef;
+  @ViewChild ('videoBackground') public videoBackground: ElementRef;
   @ViewChild ('canvasVideo') public canvasVideo: ElementRef;
   @ViewChild ('localCanvas') public localCanvas: ElementRef;
 
@@ -48,6 +49,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
   localCanvasInterval: any;
   mediaDevices: any;
   roomLayout: any;
+  availableGrids: Array<Array<any>>;
 
   constructor(
     private database: AngularFireDatabase,
@@ -72,7 +74,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
       this.MAX_CONNECTION_COUNT = 3;
 
       // --- multi video ---
-      // this._assert('remoteContainer', this.remoteContainer.nativeElement);
+      // this._assert('videoContainer', this.videoContainer.nativeElement);
       this.dataDebugFlag = false;
       this.room = params.roomId;
       this.getRoomName();
@@ -121,9 +123,11 @@ export class MeetingComponent implements OnInit, OnDestroy {
         this.deviceRotation = Number(window.orientation);
       });
       this.localCanvasZoom = 1;
+      this.setAvailableGrids(30);
 
       this.joinRoom(this.room).then(async () => {
         await this.updateVideoState();
+        window.addEventListener('resize', this.onResize.bind(this));
         await new Promise((resolve) => {
           setTimeout(async () => {
             resolve();
@@ -132,6 +136,78 @@ export class MeetingComponent implements OnInit, OnDestroy {
         this.connect();
       });
     });
+  }
+
+  setAvailableGrids(until = 30){
+    this.availableGrids = [[]];
+    for (let videoCount = 1; videoCount < until; videoCount++){
+      const availableShortLengthMax = Math.ceil(Math.sqrt(videoCount));
+      this.availableGrids.push([]);
+      for (let col = 1; col <= availableShortLengthMax; col++){
+        const row = Math.ceil(videoCount / col);
+        if (col === row) {
+          this.availableGrids[videoCount].push({col, row});
+        } else {
+          this.availableGrids[videoCount].push({col, row}, {col: row, row: col});
+        }
+      }
+    }
+  }
+
+  onResize() {
+    const backGroundWidth = this.videoBackground.nativeElement.offsetWidth;
+    const backGroundHeight = this.videoBackground.nativeElement.offsetHeight;
+    const videoCount = this.getVideoLength();
+    const availableGrids = JSON.parse(JSON.stringify(this.availableGrids[videoCount]));
+    const availableSizes = availableGrids.map((grid) => {
+      if (backGroundHeight / (grid.row * 3) < backGroundWidth / (grid.col * 4)) {
+        grid.videoHeight = backGroundHeight / grid.row;
+        grid.videoWidth = grid.videoHeight / 3 * 4;
+      } else {
+        grid.videoWidth = backGroundWidth / grid.col;
+        grid.videoHeight = grid.videoWidth / 4 * 3;
+      }
+      return grid;
+    });
+
+    const indexOfMax = (arr) => {
+      if (arr.length === 0) {
+          return -1;
+      }
+      let max = arr[0];
+      let maxIndex = 0;
+      for (let i = 1; i < arr.length; i++) {
+          if (arr[i] > max) {
+              maxIndex = i;
+              max = arr[i];
+          }
+      }
+      return maxIndex;
+    };
+
+    const selectedIndex = indexOfMax(availableSizes.map((size) => size.videoWidth * size.videoHeight));
+    const selectedGrid = availableSizes[selectedIndex];
+
+    this.videoContainer.nativeElement.style.width = `${selectedGrid.videoWidth * selectedGrid.col}px`;
+    this.videoContainer.nativeElement.style.height = `${selectedGrid.videoHeight * selectedGrid.row}px`;
+    for (const videoElement of Object.values(this.remoteVideos)) {
+      videoElement.style.width = `${selectedGrid.videoWidth}px`;
+      videoElement.style.height = `${selectedGrid.videoHeight}px`;
+      videoElement.style.margin = 'auto';
+    }
+
+    if (this.isMobileDevice) {
+      const localVideoZoomRate = selectedGrid.videoWidth / this.canvasVideo.nativeElement.width;
+      this.localCanvas.nativeElement.style.zoom = localVideoZoomRate;
+      this.localCanvas.nativeElement.hidden = false;
+      this.canvasVideo.nativeElement.style.width = 0;
+      this.canvasVideo.nativeElement.style.height = 0;
+    } else {
+      this.localCanvas.nativeElement.hidden = true;
+      this.canvasVideo.nativeElement.style.width = `${selectedGrid.videoWidth}px`;
+      this.canvasVideo.nativeElement.style.height = `${selectedGrid.videoHeight}px`;
+      this.canvasVideo.nativeElement.style.margin = 'auto';
+    }
   }
 
   getMediaConstrains(memberCount: number): any {
@@ -287,7 +363,6 @@ export class MeetingComponent implements OnInit, OnDestroy {
     }
   }
 
-
   /*---
   // ----- use socket.io ---
   let port = 3002;
@@ -397,7 +472,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
       this.roomBroadcastRef = this.database.list(this.databaseRoot + room + '/_broadcast_');
       this.roomBroadcastRef.stateChanges(['child_added']).forEach((data) => {
         // tslint:disable-next-line: no-console
-        console.log('roomBroadcastRef.on(data) data.key=' + data.key + ', data.val():', data.payload.val());
+        // console.log('roomBroadcastRef.on(data) data.key=' + data.key + ', data.val():', data.payload.val());
         const message = data.payload.val();
         const fromId = message.from;
         if (fromId === this.clientId) {
@@ -491,7 +566,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
     // socket.emit('message', msg);
 
     // tslint:disable-next-line: no-console
-    console.log('===== sending from=' + this.clientId + ' ,  to=' + id);
+    // console.log('===== sending from=' + this.clientId + ' ,  to=' + id);
     msg.from = this.clientId;
     this.database.list(this.databaseRoot + this.room + '/_direct_/' + id).push(msg);
   }
@@ -655,8 +730,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
     this.remoteVideos[id] = video;
     this.isRemoteVideoOns[id] = false;
     this.isRemoteAudioOns[id] = false;
-    const videoCouont = Object.keys(this.remoteVideos).length + 1;
-    this.updateVideoState(videoCouont);
+    this.updateVideoState(this.getVideoLength());
     return video;
   }
 
@@ -672,14 +746,13 @@ export class MeetingComponent implements OnInit, OnDestroy {
     delete this.remoteVideos[id];
     delete this.isRemoteVideoOns[id];
     delete this.isRemoteAudioOns[id];
-    const videoCouont = Object.keys(this.remoteVideos).length + 1;
-    this.updateVideoState(videoCouont);
+    this.updateVideoState(this.getVideoLength());
   }
 
   createVideoElement(elementId) {
     const video: any = document.createElement('video');
     video.id = elementId;
-    this.remoteContainer.nativeElement.appendChild(video);
+    this.videoContainer.nativeElement.appendChild(video);
     return video;
   }
 
@@ -687,7 +760,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
     const video = document.getElementById(elementId);
     this._assert('this.removeVideoElement() video must exist', video);
 
-    this.remoteContainer.nativeElement.removeChild(video);
+    this.videoContainer.nativeElement.removeChild(video);
     return video;
   }
 
@@ -754,6 +827,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
 
     this.playVideo(this.canvasVideo.nativeElement, this.canvasStream);
     this.updateVideoFrameRate(videoCount);
+    this.onResize();
   }
 
   // stop local video
@@ -845,7 +919,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
 
   sendSdp(id, sessionDescription) {
     // tslint:disable-next-line: no-console
-    console.log('---sending sdp ---');
+    // console.log('---sending sdp ---');
 
     /*---
     textForSendSdp.value = sessionDescription.sdp;
@@ -855,7 +929,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
 
     const message = { type: sessionDescription.type, sdp: sessionDescription.sdp };
     // tslint:disable-next-line: no-console
-    console.log('sending SDP=' + message);
+    // console.log('sending SDP=' + message);
     // ws.send(message);
     // socket.emit('message', message);
     this.emitTo(id, message);
@@ -863,11 +937,11 @@ export class MeetingComponent implements OnInit, OnDestroy {
 
   sendIceCandidate(id, candidate) {
     // tslint:disable-next-line: no-console
-    console.log('---sending ICE candidate ---');
+    // console.log('---sending ICE candidate ---');
     const obj = { type: 'candidate', ice: JSON.stringify(candidate) }; // <--- JSON
     const message = JSON.stringify(obj);
     // tslint:disable-next-line: no-console
-    console.log('sending candidate=' + message);
+    // console.log('sending candidate=' + message);
     // ws.send(message);
     // socket.emit('message', obj);
     this.emitTo(id, obj);
@@ -907,7 +981,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
     peer.onicecandidate = (evt) => {
       if (evt.candidate) {
         // tslint:disable-next-line: no-console
-        console.log(evt.candidate);
+        // console.log(evt.candidate);
 
         // Trickle ICE の場合は、ICE candidateを相手に送る
         this.sendIceCandidate(id, evt.candidate);
@@ -927,7 +1001,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
     // --- when need to exchange SDP ---
     peer.onnegotiationneeded = (evt) => {
       // tslint:disable-next-line: no-console
-      console.log('-- onnegotiationneeded() ---');
+      // console.log('-- onnegotiationneeded() ---');
     };
 
     // --- other events ----
@@ -1001,7 +1075,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
 
       // -- Vanilla ICE の場合には、まだSDPは送らない --
     }).catch((err) => {
-      console.error(err);
+      // console.error(err);
     });
   }
 
@@ -1018,7 +1092,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
     peerConnection.setRemoteDescription(sessionDescription)
     .then(() => {
       // tslint:disable-next-line: no-console
-      console.log('setRemoteDescription(offer) succsess in promise');
+      // console.log('setRemoteDescription(offer) succsess in promise');
       this.makeAnswer(id);
     }).catch((err) => {
       console.error('setRemoteDescription(offer) ERROR: ', err);
@@ -1136,6 +1210,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    window.removeEventListener('resize', this.onResize);
     clearInterval(this.localCanvasInterval);
     this.hangUp();
     this.stopVideo();
