@@ -15,3 +15,22 @@
   flex-wrap: wrap;
   margin: auto;
 }
+
+.video-button-group {
+  display: flex;
+  position: fixed;
+  line-height: 0;
+}
+
+.video-button {
+  opacity: 0.2;
+}
+
+.video-button:hover {
+  opacity: 0.7;
+}
+
+.full-screen-zoom {
+  width: 100vw !important;
+  height: 100vh !important;
+}
