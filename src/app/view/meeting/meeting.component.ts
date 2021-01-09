@@ -1,6 +1,6 @@
 'use strict';
 
-import { Component, OnInit, ElementRef, ViewChild, OnDestroy } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, OnDestroy, Renderer2 } from '@angular/core';
 import { AngularFireDatabase, AngularFireList } from '@angular/fire/database';
 import { Subscription } from 'rxjs';
 import { RouterHelper } from 'src/app/helper/router.helper';
@@ -16,14 +16,19 @@ export class MeetingComponent implements OnInit, OnDestroy {
   @ViewChild ('localVideo') public localVideo: ElementRef;
   @ViewChild ('videoContainer') public videoContainer: ElementRef;
   @ViewChild ('videoBackground') public videoBackground: ElementRef;
+  @ViewChild ('localVideoGroup') public localVideoGroup: ElementRef;
   @ViewChild ('canvasVideo') public canvasVideo: ElementRef;
   @ViewChild ('localCanvas') public localCanvas: ElementRef;
+  @ViewChild ('localButtonGroup') public localButtonGroup: ElementRef;
 
   localStream: any;
   canvasStream: any;
   peerConnections: Array<RTCPeerConnection>;
   remoteStreams: Array<MediaStream>;
   remoteVideos: Array<any>;
+  videoWrapers: Array<any>;
+  videoButtonGroups: Array<any>;
+  isShowingRemoteControl: Array<any>;
   paramSub: Subscription;
   params: any;
   room: string;
@@ -38,6 +43,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
   rtcConfiguration: RTCConfiguration;
 
   deviceRotation: number;
+  isFullScreen: boolean;
   isMobileDevice: boolean;
   localCanvasZoom: number;
   isLocalVideoOn: boolean;
@@ -55,13 +61,20 @@ export class MeetingComponent implements OnInit, OnDestroy {
     private database: AngularFireDatabase,
     private routerHelper: RouterHelper,
     private route: ActivatedRoute,
+    private renderer: Renderer2,
   ) {
-    this.paramSub = this.route.params.subscribe((params) => {
+    if (!navigator.mediaDevices) {
+      // tslint:disable-next-line: no-console
+      console.log('getUserMedia() not supported.');
+      return;
+    }
+
+    this.paramSub = this.route.params.subscribe(async (params) => {
       this.params = params;
       this.databaseRoot = 'talk/meeting_room/';
       // this.remoteVideo = document.getElementById('remote_video');
       this.localStream = null;
-      this.peerConnection = null;
+      // this.peerConnection = null;
       // this.textForSendSdp = document.getElementById('text_for_send_sdp');
       // this.textToReceiveSdp = document.getElementById('text_for_receive_sdp');
 
@@ -69,6 +82,9 @@ export class MeetingComponent implements OnInit, OnDestroy {
       this.peerConnections = [];
       this.remoteStreams = [];
       this.remoteVideos = [];
+      this.videoWrapers = [];
+      this.videoButtonGroups = [];
+      this.isShowingRemoteControl = [];
       this.isRemoteAudioOns = [];
       this.isRemoteVideoOns = [];
       this.MAX_CONNECTION_COUNT = 3;
@@ -122,12 +138,21 @@ export class MeetingComponent implements OnInit, OnDestroy {
         // tslint:disable-next-line: deprecation
         this.deviceRotation = Number(window.orientation);
       });
+      this.isFullScreen = false;
+      document.addEventListener('fullscreenchange', (event) => {
+        setTimeout(() => this.onResizeWindow(), 300);
+        if (document.fullscreenElement) {
+          this.isFullScreen = true;
+        } else {
+          this.isFullScreen = false;
+        }
+      });
       this.localCanvasZoom = 1;
       this.setAvailableGrids(30);
-
+      await this.updateVideoState(this.getVideoLength());
+      // this.updateVideoFrameRate(this.getVideoLength());
       this.joinRoom(this.room).then(async () => {
-        await this.updateVideoState();
-        window.addEventListener('resize', this.onResize.bind(this));
+        window.addEventListener('resize', this.onResizeWindow.bind(this));
         await new Promise((resolve) => {
           setTimeout(async () => {
             resolve();
@@ -154,7 +179,11 @@ export class MeetingComponent implements OnInit, OnDestroy {
     }
   }
 
-  onResize() {
+  onResizeWindow() {
+    if (this.isFullScreen) {
+      return;
+    }
+
     const backGroundWidth = this.videoBackground.nativeElement.offsetWidth;
     const backGroundHeight = this.videoBackground.nativeElement.offsetHeight;
     const videoCount = this.getVideoLength();
@@ -193,7 +222,6 @@ export class MeetingComponent implements OnInit, OnDestroy {
     for (const videoElement of Object.values(this.remoteVideos)) {
       videoElement.style.width = `${selectedGrid.videoWidth}px`;
       videoElement.style.height = `${selectedGrid.videoHeight}px`;
-      videoElement.style.margin = 'auto';
     }
 
     if (this.isMobileDevice) {
@@ -207,6 +235,30 @@ export class MeetingComponent implements OnInit, OnDestroy {
       this.canvasVideo.nativeElement.style.width = `${selectedGrid.videoWidth}px`;
       this.canvasVideo.nativeElement.style.height = `${selectedGrid.videoHeight}px`;
       this.canvasVideo.nativeElement.style.margin = 'auto';
+    }
+
+    const buttonSize = selectedGrid.videoWidth / 10;
+    for (const buttonGroupElement of Object.values(this.videoButtonGroups)) {
+      buttonGroupElement.style.width = `${selectedGrid.videoWidth}px`;
+      buttonGroupElement.style.height = `${selectedGrid.videoHeight}px`;
+      for (const buttonElement of buttonGroupElement.childNodes) {
+        buttonElement.style.padding = '0';
+        buttonElement.style.fontSize = `${buttonSize * 3 / 4}px`;
+        buttonElement.style.height = `${buttonSize}px`;
+        buttonElement.style.width = `${buttonSize}px`;
+        buttonElement.style.borderRadius = `${buttonSize}px`;
+        buttonElement.style.margin = `0 0 ${buttonSize / 3}px ${buttonSize / 2}px`;
+      }
+    }
+    this.localButtonGroup.nativeElement.style.width = `${selectedGrid.videoWidth}px`;
+    this.localButtonGroup.nativeElement.style.height = `${selectedGrid.videoHeight}px`;
+    for (const buttonElement of this.localButtonGroup.nativeElement.childNodes) {
+      buttonElement.style.padding = '0';
+      buttonElement.style.fontSize = `${buttonSize * 3 / 4}px`;
+      buttonElement.style.height = `${buttonSize}px`;
+      buttonElement.style.width = `${buttonSize}px`;
+      buttonElement.style.borderRadius = `${buttonSize}px`;
+      buttonElement.style.margin = `0 0 ${buttonSize / 3}px ${buttonSize / 2}px`;
     }
   }
 
@@ -245,11 +297,13 @@ export class MeetingComponent implements OnInit, OnDestroy {
   }
 
   setMediaStatus(stream: MediaStream, mediaType: string, status: boolean): void {
-    stream[`get${mediaType}Tracks`]().forEach((track) => track.enabled = status);
+    stream[`get${mediaType}Tracks`]().forEach((track) => { track.enabled = status; });
   }
 
   clickLocalVideoToggle(): void {
     this.isLocalVideoOn = !this.isLocalVideoOn;
+    console.log(this.canvasStream);
+    // console.log(this.localStream);
     if (this.isScreenSharing) {
       if (this.shareStream) {
         this.setMediaStatus(this.shareStream, 'Video', this.isLocalVideoOn);
@@ -328,7 +382,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
   }
 
   drawContext(videoTag: ElementRef, canvasTag: ElementRef) {
-    if (!videoTag?.nativeElement) {
+    if (!videoTag?.nativeElement || !canvasTag.nativeElement) {
       return;
     }
     const isHorizontal = this.deviceRotation === 90 || this.deviceRotation === -90;
@@ -654,13 +708,8 @@ export class MeetingComponent implements OnInit, OnDestroy {
 
   // --- remote streams ---
   addRemoteStream(id, stream) {
-    const ID_SPLITER = ':';
-    this._assert('addRemoteStream() id=' + id + 'stream:', stream);
-    const concatId = id + ID_SPLITER + stream.id;
-    // tslint:disable-next-line: no-console
-    console.log('add remote steram, concatId=' + concatId);
-    this._assert('addRemoteStream() stream must NOT EXIST', (! this.remoteStreams[concatId]));
-    this.remoteStreams[concatId] = stream;
+    this._assert('addRemoteStream() stream must NOT EXIST', (! this.remoteStreams[id]));
+    this.remoteStreams[id] = stream;
   }
 
   getRemoteStream(id) {
@@ -702,6 +751,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
   // --- video elements ---
   attachVideo(id, stream) {
     const video = this.addRemoteVideoElement(id);
+    this.addRemoteStream(id, stream);
     this.playVideo(video, stream);
     video.volume = 1.0;
   }
@@ -712,7 +762,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
       return;
     }
     this.pauseVideo(video);
-    this.deleteRemoteVideoElement(id);
+    this.deleteRemoteVideoWraperElement(id);
   }
 
   isRemoteVideoAttached(id) {
@@ -726,10 +776,13 @@ export class MeetingComponent implements OnInit, OnDestroy {
 
   addRemoteVideoElement(id) {
     this._assert('this.addRemoteVideoElement() video must NOT EXIST', (! this.remoteVideos[id]));
-    const video = this.createVideoElement('remote_video_' + id);
+    const [video, videoWraper, buttonGroup] = this.createVideoWraperElement(id);
     this.remoteVideos[id] = video;
-    this.isRemoteVideoOns[id] = false;
-    this.isRemoteAudioOns[id] = false;
+    this.videoWrapers[id] = videoWraper;
+    this.videoButtonGroups[id] = buttonGroup;
+    this.isRemoteVideoOns[id] = true;
+    this.isRemoteAudioOns[id] = true;
+    this.isShowingRemoteControl[id] = false;
     this.updateVideoState(this.getVideoLength());
     return video;
   }
@@ -740,33 +793,108 @@ export class MeetingComponent implements OnInit, OnDestroy {
     return video;
   }
 
-  deleteRemoteVideoElement(id) {
-    this._assert('this.deleteRemoteVideoElement() stream must exist', this.remoteVideos[id]);
-    this.removeVideoElement('remote_video_' + id);
+  deleteRemoteVideoWraperElement(id) {
+    this._assert('this.deleteRemoteVideoWraperElement() stream must exist', this.remoteVideos[id]);
+    this.removeVideoWraperElement(id);
     delete this.remoteVideos[id];
+    delete this.videoWrapers[id];
     delete this.isRemoteVideoOns[id];
     delete this.isRemoteAudioOns[id];
+    delete this.isShowingRemoteControl[id];
     this.updateVideoState(this.getVideoLength());
   }
 
-  createVideoElement(elementId) {
-    const video: any = document.createElement('video');
-    video.id = elementId;
-    this.videoContainer.nativeElement.appendChild(video);
-    return video;
+  createVideoWraperElement(id) {
+    const videoWraper = this.renderer.createElement('div');
+    videoWraper.style.lineHeight = '0';
+    videoWraper.id = 'video_wraper_' + id;
+    const video = this.renderer.createElement('video');
+    video.id = 'remote_video_' + id;
+    const buttonGroup = document.createElement('div');
+    buttonGroup.style.zIndex = '2';
+    buttonGroup.style.display = 'flex';
+    buttonGroup.style.position = 'fixed';
+    const videoToggleButton = document.createElement('button');
+    videoToggleButton.className = 'btn fa mt-auto btn-danger fa-eye-slash';
+    videoToggleButton.style.opacity = '0.2';
+    videoToggleButton.onclick = () => {
+      this.clickRemoteVideoToggle(id);
+      videoToggleButton.className = `btn fa mt-auto ${
+        this.isRemoteVideoOns[id] ? 'btn-danger fa-eye-slash' : 'btn-secondary fa-eye'
+      }`;
+    };
+    videoToggleButton.onmouseenter = () => {
+      videoToggleButton.style.opacity = '0.7';
+    };
+    videoToggleButton.onmouseleave = () => {
+      videoToggleButton.style.opacity = '0.2';
+    };
+
+    const audioToggleButton = document.createElement('button');
+    audioToggleButton.className = 'btn video-button fa mt-auto btn-danger fa-microphone-slash';
+    audioToggleButton.style.opacity = '0.2';
+    audioToggleButton.onclick = () => {
+      this.clickRemoteAudioToggle(id);
+      audioToggleButton.className = `btn video-button fa mt-auto ${
+        this.isRemoteAudioOns[id] ? 'btn-danger fa-microphone-slash' : 'btn-secondary fa-microphone'
+      }`;
+    };
+    audioToggleButton.onmouseenter = () => {
+      audioToggleButton.style.opacity = '0.7';
+    };
+    audioToggleButton.onmouseleave = () => {
+      audioToggleButton.style.opacity = '0.2';
+    };
+
+    const fullscreenToggleButton = document.createElement('button');
+    fullscreenToggleButton.className = 'btn btn-secondary video-button fa fa-expand mt-auto';
+    fullscreenToggleButton.style.opacity = '0.2';
+    fullscreenToggleButton.onclick = () => {
+      this.toggleFullScreen(videoWraper);
+      fullscreenToggleButton.className = `btn btn-secondary video-button fa mt-auto ${
+        this.isFullScreen ? 'fa-expand' : 'fa-compress'
+      }`;
+      video.style.width = this.isFullScreen ? 'unset' : '100vw';
+      video.style.height = this.isFullScreen ? 'unset' : '100vh';
+      buttonGroup.style.width = this.isFullScreen ? 'unset' : '100vw';
+      buttonGroup.style.height = this.isFullScreen ? 'unset' : '100vh';
+    };
+    fullscreenToggleButton.onmouseenter = () => {
+      fullscreenToggleButton.style.opacity = '0.7';
+    };
+    fullscreenToggleButton.onmouseleave = () => {
+      fullscreenToggleButton.style.opacity = '0.2';
+    };
+
+
+    buttonGroup.appendChild(videoToggleButton);
+    buttonGroup.appendChild(audioToggleButton);
+    buttonGroup.appendChild(fullscreenToggleButton);
+    videoWraper.appendChild(buttonGroup);
+    videoWraper.appendChild(video);
+    videoWraper.onclick = () => {
+      this.isShowingRemoteControl[id] = !this.isShowingRemoteControl[id];
+    };
+    videoWraper.onmouseenter = () => {
+      this.isShowingRemoteControl[id] = true;
+    };
+    videoWraper.onmouseleave = () => {
+      this.isShowingRemoteControl[id] = false;
+    };
+    this.videoContainer.nativeElement.appendChild(videoWraper);
+    return [video, videoWraper, buttonGroup];
   }
 
-  removeVideoElement(elementId) {
-    const video = document.getElementById(elementId);
-    this._assert('this.removeVideoElement() video must exist', video);
-
-    this.videoContainer.nativeElement.removeChild(video);
-    return video;
+  removeVideoWraperElement(id) {
+    const videoWraper = document.getElementById('video_wraper_' + id);
+    this._assert('removeVideoWraperElement() video must exist', videoWraper);
+    this.videoContainer.nativeElement.removeChild(videoWraper);
+    return videoWraper;
   }
 
   // ---------------------- media handling -----------------------
   async updateVideoResolution(videoCount: number) {
-    this.localStream = await this.mediaDevices.getUserMedia(this.getMediaConstrains(videoCount));
+    this.localStream = await navigator.mediaDevices.getUserMedia(this.getMediaConstrains(videoCount));
     this.playVideo(this.localVideo.nativeElement, this.localStream);
   }
 
@@ -804,6 +932,9 @@ export class MeetingComponent implements OnInit, OnDestroy {
     }
 
     await this.updateVideoResolution(videoCount);
+    this.updateVideoFrameRate(videoCount);
+    this.onResizeWindow();
+
     if (/Firefox/g.test(navigator.userAgent)) {
       await new Promise((resolve) => {
         setTimeout(async () => {
@@ -812,32 +943,30 @@ export class MeetingComponent implements OnInit, OnDestroy {
       });
     }
 
-    this.canvasStream = this.localCanvas.nativeElement.captureStream();
-    const [localVideoAudio] = this.localStream.getAudioTracks();
-    this.canvasStream.addTrack(localVideoAudio);
-
-    this.setMediaStatus(
-      this.isMobileDevice ? this.canvasStream : this.localStream,
-      'Video', this.isLocalVideoOn
-    );
-    this.setMediaStatus(
-      this.isMobileDevice ? this.canvasStream : this.localStream,
-      'Audio', this.isLocalAudioOn
-    );
-
-    this.playVideo(this.canvasVideo.nativeElement, this.canvasStream);
-    this.updateVideoFrameRate(videoCount);
-    this.onResize();
+    if (!this.canvasStream) {
+      this.canvasStream = this.localCanvas.nativeElement.captureStream();
+      const [localVideoAudio] = this.localStream.getAudioTracks();
+      this.canvasStream.addTrack(localVideoAudio);
+      this.canvasVideo.nativeElement.srcObject = this.canvasStream;
+      this.canvasVideo.nativeElement.muted = true;
+      this.canvasVideo.nativeElement.autoplay = true;
+      this.canvasVideo.nativeElement.setAttribute('playsinline', '');
+    }
   }
 
   // stop local video
   stopVideo() {
     this.pauseVideo(this.localVideo.nativeElement);
-    this.stopLocalStream(this.localStream);
-    this.localStream = null;
+    this.pauseVideo(this.canvasVideo.nativeElement);
+    this.stopStream(this.localStream);
+    this.stopStream(this.canvasStream);
+    this.stopStream(this.shareStream);
+    delete this.localStream;
+    delete this.canvasStream;
+    delete this.shareStream;
   }
 
-  stopLocalStream(stream) {
+  stopStream(stream) {
     const tracks = stream.getTracks();
     if (! tracks) {
       console.warn('NO tracks');
@@ -1058,20 +1187,20 @@ export class MeetingComponent implements OnInit, OnDestroy {
 
   makeOffer(id) {
     this._assert('this.makeOffer must not connected yet', (! this.isConnectedWith(id)) );
-    this.peerConnection = this.prepareNewConnection(id);
-    this.addConnection(id, this.peerConnection);
+    const peerConnection = this.prepareNewConnection(id);
+    this.addConnection(id, peerConnection);
 
-    this.peerConnection.createOffer()
+    peerConnection.createOffer()
     .then((sessionDescription) => {
       // tslint:disable-next-line: no-console
       console.log('createOffer() succsess in promise');
-      return this.peerConnection.setLocalDescription(sessionDescription);
+      return peerConnection.setLocalDescription(sessionDescription);
     }).then(() => {
       // tslint:disable-next-line: no-console
       console.log('setLocalDescription() succsess in promise');
 
       // -- Trickle ICE の場合は、初期SDPを相手に送る --
-      this.sendSdp(id, this.peerConnection.localDescription);
+      this.sendSdp(id, peerConnection.localDescription);
 
       // -- Vanilla ICE の場合には、まだSDPは送らない --
     }).catch((err) => {
@@ -1183,18 +1312,15 @@ export class MeetingComponent implements OnInit, OnDestroy {
 
   // close PeerConnection
   hangUp() {
-    /*
-    if (peerConnection) {
-      // tslint:disable-next-line: no-console
-      console.log('Hang up.');
-      peerConnection.close();
-      peerConnection = null;
-      this.pauseVideo(remoteVideo);
-    }
-    else {
-      console.warn('peer NOT exist.');
-    }
-    */
+    // if (this.peerConnection) {
+    //   // tslint:disable-next-line: no-console
+    //   console.log('Hang up.');
+    //   this.peerConnection.close();
+    //   this.peerConnection = null;
+    // }
+    // else {
+    //   console.warn('peer NOT exist.');
+    // }
 
     this.emitRoom({ type: 'bye' });
     this.clearMessage(); // clear firebase
@@ -1210,7 +1336,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    window.removeEventListener('resize', this.onResize);
+    window.removeEventListener('resize', this.onResizeWindow);
     clearInterval(this.localCanvasInterval);
     this.hangUp();
     this.stopVideo();
