@@ -1,109 +1,114 @@
-import { Component, OnInit, ViewChild, ElementRef, OnDestroy, ɵCodegenComponentFactoryResolver } from '@angular/core';
-import { AngularFirestore, DocumentReference, AngularFirestoreDocument } from '@angular/fire/firestore';
-import { ToastHelper } from 'src/app/helper/toast.helper';
-import { Subscription, Observable } from 'rxjs';
-import { MeetingContent } from '../meeting.content';
-import { MeetingService } from 'src/app/services/meeting.service';
-import { ActivatedRoute } from '@angular/router';
+'use strict';
+
+import { Component, OnInit, ElementRef, ViewChild, OnDestroy } from '@angular/core';
+import { AngularFireDatabase, AngularFireList } from '@angular/fire/database';
+import { Subscription } from 'rxjs';
 import { RouterHelper } from 'src/app/helper/router.helper';
-import * as firebase from 'firebase';
-import { RoomContent } from './room.content';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-meeting-room',
   templateUrl: './room.component.html',
-  styleUrls: ['../meeting.component.css', './room.component.css'],
+  styleUrls: ['./room.component.css']
 })
-export class RoomComponent implements OnInit, OnDestroy {
-  // WebRTC Connection
-  public localStream: MediaStream;
-  public canvasStream: MediaStream;
-  public shareStream: MediaStream;
-  public remoteStream: MediaStream;
-  peerConnection: RTCPeerConnection;
-  roomId: string;
-  createdRoomUrl: string;
-  callerCandidatesString: string;
-  calleeCandidatesString: string;
-  mediaContraints: any;
-  configuration: any;
-  isInRoom: boolean;
-  params: any;
-  paramSub: Subscription;
-  talkSub: Subscription;
-  roomSub: Subscription;
-  selectedRoomSub: Subscription;
 
-  @ViewChild ('videos') public videos: any;
+export class RoomComponent implements OnInit, OnDestroy {
   @ViewChild ('localVideo') public localVideo: ElementRef;
+  @ViewChild ('videoContainer') public videoContainer: ElementRef;
+  @ViewChild ('videoBackground') public videoBackground: ElementRef;
+  @ViewChild ('localVideoGroup') public localVideoGroup: ElementRef;
   @ViewChild ('canvasVideo') public canvasVideo: ElementRef;
   @ViewChild ('localCanvas') public localCanvas: ElementRef;
-  @ViewChild ('remoteVideo') public remoteVideo: ElementRef;
-  @ViewChild ('localVideoGroup') public localVideoGroup: ElementRef;
-  @ViewChild ('remoteVideoGroup') public remoteVideoGroup: ElementRef;
+  @ViewChild ('localButtonGroup') public localButtonGroup: ElementRef;
 
   isPage: boolean;
-  isLoading: boolean;
-  isCopiedToClipboard: boolean;
-  talkContentsObserver: Observable<MeetingContent[]>;
-  talkContents: Array<MeetingContent>;
-  roomsObserver: Observable<RoomContent[]>;
-  roomContents: Array<RoomContent>;
-  isHorizontalVideo: boolean;
-  isLocalVideoOn: boolean;
-  isLocalAudioOn: boolean;
-  isRemoteVideoOn: boolean;
-  isRemoteAudioOn: boolean;
-  hasRemoteConnection: boolean;
-  isVideoButtonGroupHeightMininum: boolean;
-  isScreenSharing: boolean;
-  isFullScreen: boolean;
-  isShowingLocalControl: boolean;
-  isShowingRemoteControl: boolean;
-  localCanvasInterval: any;
+  localStream: MediaStream;
+  canvasStream: MediaStream;
+  peerConnections: Array<RTCPeerConnection>;
+  remoteStreams: Array<MediaStream>;
+  remoteVideos: Array<HTMLVideoElement>;
+  videoWrapers: Array<HTMLDivElement>;
+  videoButtonGroups: Array<HTMLDivElement>;
+  isShowingRemoteControl: Array<boolean>;
+  paramSub: Subscription;
+  params: any;
+  roomId: string;
+  databaseRoot: string;
+  roomBroadcastRef: AngularFireList<any>;
+  clientRef: AngularFireList<any>;
+  clientId: string;
+  dataDebugFlag: boolean;
+  MAX_CONNECTION_COUNT: number;
+  peerConnection: RTCPeerConnection;
+  rtcConfiguration: RTCConfiguration;
+
   deviceRotation: number;
+  isFullScreen: boolean;
   isMobileDevice: boolean;
   localCanvasZoom: number;
-  sessionStorage: Storage;
-  isCaller: boolean;
+  isLocalVideoOn: boolean;
+  isLocalAudioOn: boolean;
+  isRemoteVideoOns: Array<boolean>;
+  isRemoteAudioOns: Array<boolean>;
+  isScreenSharing: boolean;
+  shareStream: MediaStream;
+  localCanvasInterval: NodeJS.Timeout;
   mediaDevices: any;
-
-  // sessionStorage.getItem('createdRoomId');
-  // sessionStorage.getItem('joinedRoomUrl');
+  availableGrids: Array<Array<any>>;
+  createdRoomUrl: string;
+  isInRoom: boolean;
+  isCopiedToClipboard: boolean;
 
   constructor(
-    private firestore: AngularFirestore,
-    private toastHelper: ToastHelper,
-    private meetingService: MeetingService,
-    private route: ActivatedRoute,
+    private database: AngularFireDatabase,
     private routerHelper: RouterHelper,
+    private route: ActivatedRoute,
   ) {
+    this.paramSub = this.route.params.subscribe((params) => {
+      if (params?.roomId) {
+        this.startMeeting(params);
+      }
+    });
+  }
+
+  async startMeeting(params: any) {
+    this.createdRoomUrl = `${window.location.href}`;
     this.isPage = true;
-    this.isLoading = true;
-    this.isLocalVideoOn = true;
-    this.isLocalAudioOn = true;
-    this.isRemoteVideoOn = true;
-    this.isRemoteAudioOn = true;
-    this.hasRemoteConnection = false;
+    this.params = params;
+    this.isInRoom = this.params.roomId ? true : false;
+    this.roomId = this.params.roomId;
     this.isCopiedToClipboard = false;
-    this.isVideoButtonGroupHeightMininum = false;
-    this.isScreenSharing = false;
-    this.isFullScreen = false;
-    this.isShowingLocalControl = false;
-    this.isShowingRemoteControl = false;
-    this.callerCandidatesString = 'callerCandidates';
-    this.calleeCandidatesString = 'calleeCandidates';
-    this.localCanvasZoom = 1;
-    this.sessionStorage = window.sessionStorage;
-    this.mediaContraints = {
-      video: {
-        width: { ideal: 640, max: 640 },
-        height: { ideal: 480, max: 480 },
-        frameRate: { ideal: 15, max: 15 },
-      },
-      audio: true,
-    };
-    this.configuration = {
+    this.databaseRoot = 'talk/meeting_room/';
+    // this.remoteVideo = document.getElementById('remote_video');
+    this.localStream = null;
+    // this.peerConnection = null;
+    // this.textForSendSdp = document.getElementById('text_for_send_sdp');
+    // this.textToReceiveSdp = document.getElementById('text_for_receive_sdp');
+
+    // ---- for multi party -----
+    this.peerConnections = [];
+    this.remoteStreams = [];
+    this.remoteVideos = [];
+    this.videoWrapers = [];
+    this.videoButtonGroups = [];
+    this.isShowingRemoteControl = [];
+    this.isRemoteAudioOns = [];
+    this.isRemoteVideoOns = [];
+    this.MAX_CONNECTION_COUNT = 3;
+
+    // --- multi video ---
+    // this._assert('videoContainer', this.videoContainer.nativeElement);
+    this.dataDebugFlag = false;
+    this.getRoomName();
+    if (!this.roomId) {
+      const newParams = Object.assign({}, params);
+      newParams.roomId = this.getRoomName();
+      this.routerHelper.goToMeeting(newParams);
+      return;
+    }
+    // Initialize Firebase
+
+    this.rtcConfiguration = {
       iceServers: [
         {
           urls: [
@@ -121,6 +126,11 @@ export class RoomComponent implements OnInit, OnDestroy {
         }
       ],
     };
+
+    this.isScreenSharing = false;
+    this.isLocalVideoOn = true;
+    this.isLocalAudioOn = true;
+
     // tslint:disable-next-line: deprecation
     if (window.orientation === undefined) {
       this.deviceRotation = 90;
@@ -134,415 +144,27 @@ export class RoomComponent implements OnInit, OnDestroy {
       // tslint:disable-next-line: deprecation
       this.deviceRotation = Number(window.orientation);
     });
-    this.paramSub = this.route.params.subscribe((params) => {
-      this.params = params;
-      this.talkContentsObserver = this.meetingService.getTalkContentsObserver({params});
-      this.talkSub = this.talkContentsObserver.subscribe((talkContents) => {
-        this.talkContents = talkContents;
-        this.roomsObserver = this.meetingService.getRoomsObserver(this.talkContents[0].id);
-        this.roomSub = this.roomsObserver.subscribe(async (roomContents) => {
-          this.roomContents = roomContents;
-
-          // Run on First Rendering
-          if (params.roomId && !this.roomId) {
-            this.roomId = params.roomId;
-            this.isInRoom = true;
-            await this.openUserMedia();
-            const videoFps = this.mediaContraints.video.frameRate.ideal;
-            this.localCanvasInterval = setInterval(this.drawContext.bind(
-              this, this.localVideo, this.localCanvas
-            ), 1000 / videoFps);
-            window.addEventListener('resize', this.onResizeWindow.bind(this));
-            const currentRoom = this.roomContents.find(
-              (roomContent) => roomContent.id === params.roomId
-            );
-            if (
-              !currentRoom ||
-              (currentRoom.answer && currentRoom.offer)
-            ) {
-              const paramss = Object.assign({}, this.params);
-              delete paramss.roomId;
-              this.routerHelper.goToTalk(paramss);
-              return;
-            }
-            const isCaller = !currentRoom.offer;
-            this.joinRoomById(params.roomId, isCaller);
-            this.isLoading = false;
-            this.onResizeWindow();
-            return;
-          }
-          this.isLoading = false;
-        });
-      });
-      document.addEventListener('fullscreenchange', (event) => {
-        setTimeout(() => this.onResizeWindow(), 300);
-        if (document.fullscreenElement) {
-          this.isFullScreen = true;
-        } else {
-          this.isFullScreen = false;
-        }
-      });
-    });
-  }
-
-  setMediaStatus(stream: MediaStream, mediaType: string, status: boolean) {
-    stream[`get${mediaType}Tracks`]().forEach((track) => track.enabled = status);
-  }
-
-  clickLocalVideoToggle() {
-    this.isLocalVideoOn = !this.isLocalVideoOn;
-    if (this.isScreenSharing) {
-      if (this.shareStream) {
-        this.setMediaStatus(this.shareStream, 'Video', this.isLocalVideoOn);
-      }
-    } else {
-      if (this.canvasStream) {
-        this.setMediaStatus(this.canvasStream, 'Video', this.isLocalVideoOn);
-      }
-    }
-  }
-
-  clickLocalAudioToggle() {
-    this.isLocalAudioOn = !this.isLocalAudioOn;
-    if (this.canvasStream) {
-      this.setMediaStatus(this.canvasStream, 'Audio', this.isLocalAudioOn);
-    }
-  }
-
-  clickRemoteVideoToggle() {
-    this.isRemoteVideoOn = !this.isRemoteVideoOn;
-    if (this.remoteStream) {
-      this.setMediaStatus(this.remoteStream, 'Video', this.isRemoteVideoOn);
-    }
-  }
-
-  clickRemoteAudioToggle() {
-    this.isRemoteAudioOn = !this.isRemoteAudioOn;
-    if (this.remoteStream) {
-      this.setMediaStatus(this.remoteStream, 'Audio', this.isRemoteAudioOn);
-    }
-  }
-
-  toggleFullScreen(videoGroup: ElementRef) {
-    if (document.fullscreenElement) {
-      document.exitFullscreen();
-    } else {
-      const el: any = videoGroup;
-      if (el.requestFullscreen) { el.requestFullscreen(); }
-      else if (el.msRequestFullscreen) { el.msRequestFullscreen(); }
-      else if (el.mozRequestFullScreen) { el.mozRequestFullScreen(); }
-      else if (el.webkitRequestFullscreen) { el.webkitRequestFullscreen(); }
-    }
-  }
-
-  async handleClickStartScreenSharing() {
-    try {
-      this.shareStream = await this.mediaDevices[`getDisplayMedia`]({video: true});
-      this.setMediaStatus(this.shareStream, 'Video', this.isLocalVideoOn);
-      this.canvasVideo.nativeElement.srcObject = this.shareStream;
-      const videoSender = this.peerConnection.getSenders().find(sender => {
-        return sender.track.kind === 'video';
-      });
-      const [screenVideoTrack] = this.shareStream.getVideoTracks();
-      videoSender.replaceTrack(screenVideoTrack);
-      screenVideoTrack.addEventListener('ended', () => {
-        this.handleClickStopScreenSharing();
-      }, {once: true});
-      this.isScreenSharing = true;
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  async handleClickStopScreenSharing() {
-    this.canvasVideo.nativeElement.srcObject = this.canvasStream;
-    const videoSender = this.peerConnection.getSenders().find(sender => {
-      return sender.track.kind === 'video';
-    });
-    const [screenVideoTrack] = this.canvasStream.getVideoTracks();
-    videoSender.replaceTrack(screenVideoTrack);
-    this.isScreenSharing = false;
-  }
-
-  handleClickCreateRoom() {
-    this.firestore
-    .collection('talks').doc(this.talkContents[0].id)
-    .collection('rooms').add({}).then(async (roomDoc) => {
-      await roomDoc.update({
-        id: roomDoc.id,
-        createdAt: Number(new Date()),
-      });
-      const params = Object.assign({}, this.params);
-      params.roomId = roomDoc.id;
-      this.routerHelper.goToTalk(params);
-    });
-    return;
-  }
-
-  async joinRoomById(roomId: string, isCaller: boolean) {
-    if (!roomId) {
-      console.error(`There is no roomId`);
-      return;
-    }
-    this.isInRoom = true;
-    this.isCaller = isCaller;
-    const roomDoc: AngularFirestoreDocument<RoomContent> = this.firestore
-    .collection<MeetingContent>('talks').doc(this.talkContents[0].id)
-    .collection<RoomContent>('rooms').doc(`${roomId}`);
-    const roomRef = roomDoc.ref;
-    // tslint:disable-next-line: no-console
-    this.createdRoomUrl = `${window.location.href}`;
-    this.selectedRoomSub = roomDoc.valueChanges().subscribe(async (currrenRoom) => {
-      if (this.peerConnection?.remoteDescription && this.peerConnection?.localDescription) {
-        if (!currrenRoom?.offer || !currrenRoom?.answer) {
-          this.peerConnection.close();
-          delete this.peerConnection;
-          this.remoteStream?.getTracks().forEach(track => { track.stop(); });
-          delete this.remoteStream;
-          if (!isCaller) {
-            await this.onDisconnect(roomId, false, {answer: firebase.firestore.FieldValue.delete()});
-            location.reload();
-          }
-        }
-      }
-
-      if (!this.peerConnection){
-        this.peerConnection = new RTCPeerConnection(this.configuration);
-        this.collectIceCandidates(
-          roomRef,
-          this.peerConnection,
-          isCaller ? this.callerCandidatesString : this.calleeCandidatesString,
-          isCaller ? this.calleeCandidatesString : this.callerCandidatesString,
-        );
-        this.registerPeerConnectionListeners(roomId, isCaller);
-        this.canvasStream.getTracks().forEach(track => {
-          this.peerConnection.addTrack(track, this.canvasStream);
-        });
-        this.remoteStream = new MediaStream();
-        this.remoteVideo.nativeElement.srcObject = this.remoteStream;
-        this.remoteVideo.nativeElement.muted = false;
-        this.remoteVideo.nativeElement.autoplay = true;
-        this.remoteVideo.nativeElement.play();
-        this.remoteVideo.nativeElement.setAttribute('playsinline', '');
-      }
-      if (
-        !this.peerConnection.remoteDescription &&
-        isCaller ? currrenRoom?.answer : currrenRoom?.offer
-      ) {
-        this.peerConnection.addEventListener('track', event => {
-          // tslint:disable-next-line: no-console
-          console.log('Got remote track:', event.streams[0]);
-          event.streams[0].getTracks().forEach(track => {
-            // tslint:disable-next-line: no-console
-            console.log('Add a track to the remoteStream:', track);
-            this.remoteStream.addTrack(track);
-          });
-        });
-        const rtcSessionDescription = new RTCSessionDescription(
-          isCaller ? currrenRoom.answer : currrenRoom.offer
-        );
-        await this.peerConnection.setRemoteDescription(rtcSessionDescription);
-      }
-      if (!this.peerConnection.localDescription) {
-        if (isCaller) {
-          const offer = await this.peerConnection.createOffer();
-          await this.peerConnection.setLocalDescription(offer);
-          // tslint:disable-next-line: no-console
-          console.log('Created offer:', offer);
-          await roomRef.update({
-            offer: {
-              type: offer.type,
-              sdp: offer.sdp,
-            }
-          });
-        }
-        else {
-          const answer = await this.peerConnection.createAnswer();
-          // tslint:disable-next-line: no-console
-          console.log('Created answer:', answer);
-          await this.peerConnection.setLocalDescription(answer);
-          await roomRef.update({
-            answer: {
-              type: answer.type,
-              sdp: answer.sdp,
-            }
-          });
-        }
+    this.isFullScreen = false;
+    document.addEventListener('fullscreenchange', (event) => {
+      setTimeout(() => this.onResizeWindow(), 300);
+      if (document.fullscreenElement) {
+        this.isFullScreen = true;
+      } else {
+        this.isFullScreen = false;
       }
     });
-  }
-
-  handleClickJoinRoom() {
-    this.toastHelper.showPrompt('Join Talk', 'Please Enter TalkRoom Url')
-    .then(async (roomUrl) => {
-      if (!roomUrl.value) {
-        return;
-      }
-      // tslint:disable-next-line: no-console
-      console.log('Join Room URL: ', roomUrl.value);
-      this.routerHelper.goToUrl(roomUrl.value);
-      return;
-    }).catch((error) => {
-      this.toastHelper.showError('Join Talk', error);
-    });
-  }
-
-  handleClickRemoveRoom(roomId) {
-    if (!roomId) {
-      return;
-    }
-    this.meetingService.delete(`talks/${this.talkContents[0].id}/rooms/${roomId}`);
-  }
-
-  collectIceCandidates(
-    roomRef: DocumentReference,
-    peerConnection: RTCPeerConnection,
-    localName: string,
-    remoteName: string,
-  ) {
-    peerConnection.addEventListener('icecandidate', event => {
-      if (event.candidate) {
-        const json = event.candidate.toJSON();
-        roomRef.collection(localName).add(json);
-      }
-    });
-
-    roomRef.collection(remoteName).onSnapshot(snapshot => {
-      snapshot.docChanges().forEach(change => {
-        if (change.type === 'added') {
-          const candidate = new RTCIceCandidate(change.doc.data());
-          console.warn('new candidate : ', candidate);
-          setTimeout(() => {
-            peerConnection.addIceCandidate(candidate);
-          }, 500);
-        }
-      });
-    });
-  }
-
-  async openUserMedia() {
-    if (!this.isInRoom) {
-      console.error(`isInRoom is false`);
-      return;
-    }
-    const navi: any = navigator;
-    this.mediaDevices = navigator.mediaDevices ||
-    ((navi.mozGetUserMedia || navi.webkitGetUserMedia) ? {
-      getUserMedia(c) {
-        return new Promise((y, n) => {
-          (navi.mozGetUserMedia ||
-            navi.webkitGetUserMedia).call(navigator, c, y, n);
-        });
-      }
-    } : null);
-
-    if (!this.mediaDevices) {
-      // tslint:disable-next-line: no-console
-      console.log('getUserMedia() not supported.');
-      return;
-    }
-
-    const stream = await this.mediaDevices.getUserMedia({video: true, audio: true});
-    this.localVideo.nativeElement.srcObject = stream;
-    this.localVideo.nativeElement.muted = true;
-    this.localVideo.nativeElement.autoplay = true;
-    this.localVideo.nativeElement.play();
-    this.localVideo.nativeElement.setAttribute('playsinline', '');
-    this.localStream = stream;
-    if (/Firefox/g.test(navigator.userAgent)) {
+    this.localCanvasZoom = 1;
+    this.setAvailableGrids(30);
+    await this.updateVideoState(this.getVideoLength());
+    // this.updateVideoFrameRate(this.getVideoLength());
+    this.joinRoom(this.roomId).then(async () => {
+      window.addEventListener('resize', this.onResizeWindow.bind(this));
       await new Promise((resolve) => {
         setTimeout(async () => {
           resolve();
-        }, 3000);
+        }, 2000);
       });
-    }
-
-    this.canvasStream = this.localCanvas.nativeElement.captureStream();
-    const [localVideoAudio] = this.localStream.getAudioTracks();
-    this.canvasStream.addTrack(localVideoAudio);
-    this.canvasVideo.nativeElement.srcObject = this.canvasStream;
-    this.canvasVideo.nativeElement.muted = true;
-    this.canvasVideo.nativeElement.autoplay = true;
-    this.canvasVideo.nativeElement.setAttribute('playsinline', '');
-  }
-
-  async onDisconnect(roomId: string, isCaller: boolean, data: any) {
-    const removePromise = [];
-    const roomDoc = this.firestore
-    .collection('talks').doc(this.talkContents[0].id)
-    .collection('rooms').doc(roomId);
-
-    roomDoc.collection(
-      isCaller ? this.callerCandidatesString : this.calleeCandidatesString
-    ).get().forEach(async candidate => {
-      candidate.forEach(async can => {
-        removePromise.push(can.ref.delete());
-      });
-    });
-    removePromise.push(roomDoc.ref.update(data));
-    return Promise.all(removePromise);
-  }
-
-  async leaveRoom(roomId) {
-    this.isInRoom = false;
-    this.isCopiedToClipboard = false;
-    this.isScreenSharing = false;
-    this.localStream?.getTracks().forEach(track => { track.stop(); });
-    this.remoteStream?.getTracks().forEach(track => { track.stop(); });
-    this.canvasStream?.getTracks().forEach(track => { track.stop(); });
-    this.peerConnection?.close();
-    this.createdRoomUrl = '';
-    if (roomId) {
-      const currentRoom = this.roomContents.find((roomContent) => roomContent.id === roomId);
-      await this.onDisconnect(roomId, this.isCaller, {
-        [this.isCaller ? 'offer' : 'answer']: firebase.firestore.FieldValue.delete()
-      });
-    }
-    this.selectedRoomSub?.unsubscribe();
-  }
-
-  async handleClickLeaveRoom() {
-    await this.leaveRoom(this.params.roomId);
-    const params = Object.assign({}, this.params);
-    delete params.roomId;
-    this.routerHelper.goToTalk(params);
-  }
-
-  handleClickBackToCreatedRoom(selectedRoomId: string) {
-    this.roomId = selectedRoomId;
-    this.handleClickCreateRoom();
-  }
-
-  handleClickBackToJoinedRoom(selectedRoomUrl: string) {
-    this.routerHelper.goToUrl(selectedRoomUrl);
-  }
-
-  registerPeerConnectionListeners(roomId: string, isCaller: boolean) {
-    this.peerConnection.addEventListener('icegatheringstatechange', () => {
-      // tslint:disable-next-line: no-console
-      console.log(`ICE gathering state changed: ${this.peerConnection.iceGatheringState}`);
-    });
-    this.peerConnection.addEventListener('connectionstatechange', async () => {
-      // tslint:disable-next-line: no-console
-      console.log(`Connection state change: ${this.peerConnection.connectionState}`);
-      if (this.peerConnection.connectionState === 'connected') {
-        this.hasRemoteConnection = true;
-      }
-
-      if (/(disconnected)|(failed)/g.test(this.peerConnection.connectionState)) {
-        this.hasRemoteConnection = false;
-        await this.onDisconnect(roomId, true, {offer: firebase.firestore.FieldValue.delete()});
-        await this.onDisconnect(roomId, false, {answer: firebase.firestore.FieldValue.delete()});
-        location.reload();
-      }
-    });
-    this.peerConnection.addEventListener('signalingstatechange', () => {
-      // tslint:disable-next-line: no-console
-      console.log(`Signaling state change: ${this.peerConnection.signalingState}`);
-    });
-    this.peerConnection.addEventListener('iceconnectionstatechange ', () => {
-      // tslint:disable-next-line: no-console
-      console.log(`ICE connection state change: ${this.peerConnection.iceConnectionState}`);
+      this.connect();
     });
   }
 
@@ -559,32 +181,217 @@ export class RoomComponent implements OnInit, OnDestroy {
     document.body.removeChild(el);
   }
 
-  onResizeWindow() {
-    if (this.videos) {
-      const width = this.videos.nativeElement.offsetWidth;
-      const height = this.videos.nativeElement.offsetHeight;
-      this.isHorizontalVideo = (width / 4) > (height / 3);
-    }
-    if (this.remoteVideo) {
-      const width = this.remoteVideo.nativeElement.offsetWidth;
-      const height = this.remoteVideo.nativeElement.offsetHeight;
-      this.isVideoButtonGroupHeightMininum = (width / 4) > (height / 3 + 1);
-    }
-    if (!this.isMobileDevice && this.localCanvas) {
-      this.localCanvas.nativeElement.hidden = true;
-    }
-    if (this.canvasVideo && this.remoteVideo) {
-      this.localCanvasZoom =
-        this.remoteVideo.nativeElement.offsetWidth / this.localCanvas.nativeElement.width;
+  async handleClickLeaveRoom() {
+    await this.hangUp();
+    await this.stopVideo();
+    const params = Object.assign({}, this.params);
+    delete params.roomId;
+    this.routerHelper.goToMeeting(params);
+  }
+
+  setAvailableGrids(until = 30): void {
+    this.availableGrids = [[]];
+    for (let videoCount = 1; videoCount < until; videoCount++){
+      const availableShortLengthMax = Math.ceil(Math.sqrt(videoCount));
+      this.availableGrids.push([]);
+      for (let col = 1; col <= availableShortLengthMax; col++){
+        const row = Math.ceil(videoCount / col);
+        if (col === row) {
+          this.availableGrids[videoCount].push({col, row});
+        } else {
+          this.availableGrids[videoCount].push({col, row}, {col: row, row: col});
+        }
+      }
     }
   }
 
-  drawContext(videoTag: ElementRef, canvasTag: ElementRef) {
-
-    if (!videoTag?.nativeElement) {
+  onResizeWindow(): void {
+    if (this.isFullScreen) {
       return;
     }
 
+    const backGroundWidth = this.videoBackground.nativeElement.offsetWidth;
+    const backGroundHeight = this.videoBackground.nativeElement.offsetHeight;
+    const videoCount = this.getVideoLength();
+    const availableGrids = JSON.parse(JSON.stringify(this.availableGrids[videoCount]));
+    const availableLayouts = availableGrids.map((grid) => {
+      if (backGroundHeight / (grid.row * 3) < backGroundWidth / (grid.col * 4)) {
+        grid.videoHeight = backGroundHeight / grid.row;
+        grid.videoWidth = grid.videoHeight / 3 * 4;
+      } else {
+        grid.videoWidth = backGroundWidth / grid.col;
+        grid.videoHeight = grid.videoWidth / 4 * 3;
+      }
+      return grid;
+    });
+
+    const indexOfMax = (arr: Array<number>): number => {
+      if (arr.length === 0) {
+          return -1;
+      }
+      let max = arr[0];
+      let maxIndex = 0;
+      for (let i = 1; i < arr.length; i++) {
+          if (arr[i] > max) {
+              maxIndex = i;
+              max = arr[i];
+          }
+      }
+      return maxIndex;
+    };
+
+    const bestLayoutIndex = indexOfMax(availableLayouts.map((size) => size.videoWidth * size.videoHeight));
+    const bestLayout = availableLayouts[bestLayoutIndex];
+
+    // Resizing Video Container
+    this.videoContainer.nativeElement.style.width = `${bestLayout.videoWidth * bestLayout.col}px`;
+    this.videoContainer.nativeElement.style.height = `${bestLayout.videoHeight * bestLayout.row}px`;
+
+    // Resizing Video
+    if (this.isMobileDevice) {
+      const localVideoZoomRate = bestLayout.videoWidth / this.canvasVideo.nativeElement.width;
+      this.localCanvas.nativeElement.style.zoom = localVideoZoomRate;
+      this.localCanvas.nativeElement.hidden = false;
+      this.canvasVideo.nativeElement.style.width = 0;
+      this.canvasVideo.nativeElement.style.height = 0;
+    } else {
+      this.localCanvas.nativeElement.hidden = true;
+      this.canvasVideo.nativeElement.style.width = `${bestLayout.videoWidth}px`;
+      this.canvasVideo.nativeElement.style.height = `${bestLayout.videoHeight}px`;
+      this.canvasVideo.nativeElement.style.margin = 'auto';
+    }
+    for (const videoElement of Object.values(this.remoteVideos)) {
+      videoElement.style.width = `${bestLayout.videoWidth}px`;
+      videoElement.style.height = `${bestLayout.videoHeight}px`;
+    }
+
+    // Resizing Video Button
+    const buttonSize = bestLayout.videoWidth / 10;
+
+    const buttonGroups: Array<HTMLDivElement> = [
+      this.localButtonGroup.nativeElement,
+      ...Object.values(this.videoButtonGroups)
+    ];
+    for (const buttonGroupElement of buttonGroups) {
+      buttonGroupElement.style.width = `${bestLayout.videoWidth}px`;
+      buttonGroupElement.style.height = `${bestLayout.videoHeight}px`;
+      buttonGroupElement.childNodes.forEach((buttonNode: ChildNode) => {
+        const buttonElement = (buttonNode as HTMLButtonElement);
+        buttonElement.style.padding = '0';
+        buttonElement.style.fontSize = `${buttonSize * 3 / 4}px`;
+        buttonElement.style.height = `${buttonSize}px`;
+        buttonElement.style.width = `${buttonSize}px`;
+        buttonElement.style.borderRadius = `${buttonSize}px`;
+        buttonElement.style.margin = `0 0 ${buttonSize / 3}px ${buttonSize / 2}px`;
+      });
+    }
+  }
+
+  getMediaConstrains(memberCount: number): MediaStreamConstraints {
+    return {
+      video:
+        memberCount <= 1 ? {frameRate: 30, width: 640, height: 480} :
+        memberCount <= 2 ? {frameRate: 30, width: 640, height: 480} :
+        memberCount <= 3 ? {frameRate: 20, width: 640, height: 480} :
+        memberCount <= 4 ? {frameRate: 15, width: 640, height: 480} :
+        memberCount <= 6 ? {frameRate: 12, width: 480, height: 360} :
+        memberCount <= 9 ? {frameRate: 9, width: 320, height: 240} :
+        memberCount <= 12 ? {frameRate: 7, width: 240, height: 180} :
+        memberCount <= 15 ? {frameRate: 5, width: 160, height: 120} : false,
+      audio: true,
+    };
+  }
+
+  setMediaStatus(stream: MediaStream, mediaType: string, status: boolean): void {
+    stream[`get${mediaType}Tracks`]().forEach((track) => { track.enabled = status; });
+  }
+
+  clickLocalVideoToggle(): void {
+    this.isLocalVideoOn = !this.isLocalVideoOn;
+    if (this.isScreenSharing) {
+      if (this.shareStream) {
+        this.setMediaStatus(this.shareStream, 'Video', this.isLocalVideoOn);
+      }
+    } else {
+      if (this.canvasStream) {
+        this.setMediaStatus(this.canvasStream, 'Video', this.isLocalVideoOn);
+      }
+      if (this.isMobileDevice && this.localStream) {
+        this.setMediaStatus(this.localStream, 'Video', this.isLocalVideoOn);
+      }
+    }
+  }
+
+  clickLocalAudioToggle(): void {
+    this.isLocalAudioOn = !this.isLocalAudioOn;
+    if (this.canvasStream) {
+      this.setMediaStatus(this.canvasStream, 'Audio', this.isLocalAudioOn);
+    }
+  }
+
+  clickRemoteVideoToggle(id: string): void {
+    this.isRemoteVideoOns[id] = !this.isRemoteVideoOns[id];
+    if (this.remoteStreams[id]) {
+      this.setMediaStatus(this.remoteStreams[id], 'Video', this.isRemoteVideoOns[id]);
+    }
+  }
+
+  clickRemoteAudioToggle(id: string): void {
+    this.isRemoteAudioOns[id] = !this.isRemoteAudioOns[id];
+    if (this.remoteStreams[id]) {
+      this.setMediaStatus(this.remoteStreams[id], 'Audio', this.isRemoteAudioOns[id]);
+    }
+  }
+
+  getVideoLength(): number {
+    return Object.keys(this.remoteVideos).length + 1;
+  }
+
+  toggleFullScreen(videoGroup: HTMLElement): void {
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    } else {
+      const el: any = videoGroup;
+      if (el.requestFullscreen) { el.requestFullscreen(); }
+      else if (el.msRequestFullscreen) { el.msRequestFullscreen(); }
+      else if (el.mozRequestFullScreen) { el.mozRequestFullScreen(); }
+      else if (el.webkitRequestFullscreen) { el.webkitRequestFullscreen(); }
+    }
+  }
+
+  async handleClickStartScreenSharing(): Promise<void> {
+    try {
+      this.shareStream = await navigator.mediaDevices[`getDisplayMedia`]({video: true});
+      this.setMediaStatus(this.shareStream, 'Video', this.isLocalVideoOn);
+      this.canvasVideo.nativeElement.srcObject = this.shareStream;
+      const videoSender = this.peerConnection.getSenders().find(sender => {
+        return sender.track.kind === 'video';
+      });
+      const [screenVideoTrack] = this.shareStream.getVideoTracks();
+      videoSender.replaceTrack(screenVideoTrack);
+      screenVideoTrack.addEventListener('ended', () => {
+        this.handleClickStopScreenSharing();
+      }, {once: true});
+      this.isScreenSharing = true;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  handleClickStopScreenSharing(): void {
+    this.canvasVideo.nativeElement.srcObject = this.canvasStream;
+    const videoSender = this.peerConnection.getSenders().find(sender => {
+      return sender.track.kind === 'video';
+    });
+    const [screenVideoTrack] = this.canvasStream.getVideoTracks();
+    videoSender.replaceTrack(screenVideoTrack);
+    this.isScreenSharing = false;
+  }
+
+  drawContext(videoTag: ElementRef, canvasTag: ElementRef): void {
+    if (!videoTag?.nativeElement || !canvasTag.nativeElement) {
+      return;
+    }
     const isHorizontal = this.deviceRotation === 90 || this.deviceRotation === -90;
     const width = videoTag.nativeElement.videoWidth;
     const height = videoTag.nativeElement.videoHeight;
@@ -615,20 +422,925 @@ export class RoomComponent implements OnInit, OnDestroy {
         0, 0, canvasWidth, canvasHeight
       );
     }
+  }
+
+  /*---
+  // ----- use socket.io ---
+  let port = 3002;
+  let socket = io.connect('http://localhost:' + port + '/');
+    let room = this.getRoomName();
+  socket.on('connect', function(evt) {
+    // tslint:disable-next-line: no-console
+    console.log('socket.io connected. enter room=' + room );
+    socket.emit('enter', room);
+  });
+  socket.on('message', function(message) {
+    // tslint:disable-next-line: no-console
+    console.log('message:', message);
+    let fromId = message.from;
+
+    if (message.type === 'offer') {
+      // -- got offer ---
+      // tslint:disable-next-line: no-console
+      console.log('Received offer ...');
+      //let offer = message.sessionDescription;
+      let offer = new RTCSessionDescription(message);
+      this.setOffer(fromId, offer);
+    }
+    else if (message.type === 'answer') {
+      // --- got answer ---
+      // tslint:disable-next-line: no-console
+      console.log('Received answer ...');
+      //let answer = message.sessionDescription;
+      let answer = new RTCSessionDescription(message);
+      this.setAnswer(fromId, answer);
+    }
+    else if (message.type === 'candidate') {
+      // --- got ICE candidate ---
+      // tslint:disable-next-line: no-console
+      console.log('Received ICE candidate ...');
+      let candidate = new RTCIceCandidate(message.ice);
+      // tslint:disable-next-line: no-console
+      console.log(candidate);
+      this.addIceCandidate(fromId, candidate);
+    }
+    else if (message.type === 'call me') {
+      if (! this.isReadyToConnect()) {
+        // tslint:disable-next-line: no-console
+        console.log('Not ready to connect, so ignore');
+        return;
+      }
+      else if (! this.canConnectMore()) {
+        console.warn('TOO MANY connections, so ignore');
+      }
+
+      if (this.isConnectedWith(fromId)) {
+        // already connnected, so skip
+        // tslint:disable-next-line: no-console
+        console.log('already connected, so ignore');
+      }
+      else {
+        // connect new party
+        this.makeOffer(fromId);
+      }
+    }
+    else if (message.type === 'bye') {
+      if (this.isConnectedWith(fromId)) {
+        this.stopConnection(fromId);
+      }
+    }
+  });
+  socket.on('user disconnected', function(evt) {
+    // tslint:disable-next-line: no-console
+    console.log('====user disconnected==== evt:', evt);
+    let id = evt.id;
+    if (this.isConnectedWith(id)) {
+      this.stopConnection(id);
+    }
+  });
+  ---*/
+
+  // ----- use firebase.io ----
+
+  _assert(desc: string, v: any): void {
+    if (v) {
+      return;
+    }
+    else {
+      // const caller = this._assert.caller || 'Top level';
+      console.error('ASSERT in %s, %s is :', desc, v);
+    }
+  }
+
+  async joinRoom(roomId: string): Promise<void> {
+    return new Promise((resolve) => {
+      // tslint:disable-next-line: no-console
+      console.log('join roomId = ' + roomId);
+      const key = this.database.list(this.databaseRoot + roomId + '/_join_')
+      .push({ joined : 'unknown'}).key;
+      this.clientId = 'member_' + key;
+      // tslint:disable-next-line: no-console
+      console.log('joined to roomId=' + roomId + ' as this.clientId=' + this.clientId);
+      this.database.object(this.databaseRoot + roomId + '/_join_/' + key)
+      .update({ joined : this.clientId});
+
+      // remove join object
+      if (!this.dataDebugFlag) {
+        const jooinRef =  this.database.object(this.databaseRoot + roomId + '/_join_/' + key);
+        jooinRef.remove();
+      }
+
+      this.roomBroadcastRef = this.database.list(this.databaseRoot + roomId + '/_broadcast_');
+      this.roomBroadcastRef.stateChanges(['child_added']).forEach((data) => {
+        // tslint:disable-next-line: no-console
+        // console.log('roomBroadcastRef.on(data) data.key=' + data.key + ', data.val():', data.payload.val());
+        const message = data.payload.val();
+        const fromId = message.from;
+        if (fromId === this.clientId) {
+          // ignore self message
+          return;
+        }
+
+        if (message.type === 'call me') {
+          if (! this.isReadyToConnect()) {
+            // tslint:disable-next-line: no-console
+            console.log('Not ready to connect, so ignore');
+            return;
+          }
+          else if (! this.canConnectMore()) {
+            console.warn('TOO MANY connections, so ignore');
+          }
+
+          if (this.isConnectedWith(fromId)) {
+            // already connnected, so skip
+            // tslint:disable-next-line: no-console
+            console.log('already connected, so ignore');
+          }
+          else {
+            // connect new party
+            this.makeOffer(fromId);
+          }
+        }
+        else if (message.type === 'bye') {
+          if (this.isConnectedWith(fromId)) {
+            this.stopConnection(fromId);
+          }
+        }
+      });
+
+      this.clientRef = this.database.list(this.databaseRoot + roomId + '/_direct_/' + this.clientId);
+      this.clientRef.stateChanges(['child_added']).forEach((data) => {
+        // tslint:disable-next-line: no-console
+        console.log('clientRef.on(data)  data.key=' + data.key + ', data.val():', data.payload.val());
+        const message = data.payload.val();
+        const fromId = message.from;
+
+        if (message.type === 'offer') {
+          // -- got offer ---
+          // let offer = message.sessionDescription;
+          const offer: any = new RTCSessionDescription(message);
+          // tslint:disable-next-line: no-console
+          console.log('Received offer ... fromId=' + fromId, offer);
+          this.setOffer(fromId, offer);
+        }
+        else if (message.type === 'answer') {
+          // --- got answer ---
+          // tslint:disable-next-line: no-console
+          console.log('Received answer ... fromId=' + fromId);
+          // const answer = message.sessionDescription;
+          const answer = new RTCSessionDescription(message);
+          this.setAnswer(fromId, answer);
+        }
+        else if (message.type === 'candidate') {
+          // --- got ICE candidate ---
+          // tslint:disable-next-line: no-console
+          console.log('Received ICE candidate ... fromId=' + fromId);
+          // const candidate = new RTCIceCandidate(message.ice);
+          const candidate: any = new RTCIceCandidate(JSON.parse(message.ice)); // <---- JSON
+          // tslint:disable-next-line: no-console
+          console.log(message.ice);
+          this.addIceCandidate(fromId, candidate);
+        }
+
+        if (!this.dataDebugFlag) {
+          // remove direct message
+          const messageRef =  this.database.object(this.databaseRoot + roomId + '/_direct_/' + this.clientId + '/' + data.key);
+          messageRef.remove();
+        }
+      });
+      resolve();
+    });
+  }
+
+  // ----- use firebase.io ---- //
+
+
+  // --- broadcast message to all members in room
+  emitRoom(msg: any): void {
+    // socket.emit('message', msg);
+    msg.from = this.clientId;
+    this.roomBroadcastRef.push(msg);
+  }
+
+  emitTo(id: string, msg: any): void {
+    // msg.sendto = id;
+    // socket.emit('message', msg);
+
+    // tslint:disable-next-line: no-console
+    // console.log('===== sending from=' + this.clientId + ' ,  to=' + id);
+    msg.from = this.clientId;
+    this.database.list(this.databaseRoot + this.roomId + '/_direct_/' + id).push(msg);
+  }
+
+  clearMessage(): void {
+    this.clientRef.remove();
+  }
+
+  // -- room名を取得 --
+  getRoomName(): string { // たとえば、 URLに  ?roomname  とする
+    return this.getUniqueStr();
+  }
+
+  // http://qiita.com/coa00@github/items/679b0b5c7c468698d53f
+  // 疑似ユニークIDを生成
+  getUniqueStr(myStrong = null): string {
+    let strong = 1000;
+    if (myStrong) { strong = myStrong; }
+    return new Date().getTime().toString(16)  + Math.floor(strong * Math.random()).toString(16);
+  }
+
+
+  // ---- for multi party -----
+  isReadyToConnect(): boolean {
+    if (this.localStream) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
+  // --- RTCPeerConnections ---
+  getConnectionCount(): number {
+    return this.peerConnections.length;
+  }
+
+  canConnectMore(): boolean {
+    return (this.getConnectionCount() < this.MAX_CONNECTION_COUNT);
+  }
+
+  isConnectedWith(id: string): boolean {
+    if (this.peerConnections[id])  {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
+  addConnection(id: string, peer: RTCPeerConnection): void {
+    this._assert('this.addConnection() peer', peer);
+    this._assert('this.addConnection() peer must NOT EXIST', (! this.peerConnections[id]));
+    this.peerConnections[id] = peer;
+  }
+
+  getConnection(id: string): RTCPeerConnection {
+    const peer = this.peerConnections[id];
+    this._assert('this.getConnection() peer must exist', peer);
+    return peer;
+  }
+
+  deleteConnection(id: string): void {
+    this._assert('this.deleteConnection() peer must exist', this.peerConnections[id]);
+    delete this.peerConnections[id];
+  }
+
+  stopConnection(id: string): void {
+    this.detachVideo(id);
+
+    if (this.isConnectedWith(id)) {
+      const peer = this.getConnection(id);
+      peer.close();
+      this.deleteConnection(id);
+    }
+  }
+
+  stopAllConnection(): void {
+    for (const id in this.peerConnections) {
+      if (id) {
+        this.stopConnection(id);
+      }
+    }
+  }
+
+  // --- remote streams ---
+  addRemoteStream(id: string, stream: MediaStream): void {
+    this._assert('addRemoteStream() stream must NOT EXIST', (! this.remoteStreams[id]));
+    this.remoteStreams[id] = stream;
+  }
+
+  getRemoteStream(id: string): void {
+    const stream = this.remoteStreams[id];
+    this._assert('getRemoteStream() stream must exist', stream);
+    return stream;
+  }
+
+  deleteRemoteStream(id: string): void {
+    const ID_SPLITER = ':';
+    for (const key in this.remoteStreams) {
+      if (key) {
+        // tslint:disable-next-line: no-console
+        console.log('concatId=' + id);
+        const ids = key.split(ID_SPLITER);
+        const peerId = ids[0];
+        const streamId = ids[1];
+        if (peerId === id) {
+          delete this.remoteStreams[id];
+        }
+      }
+    }
+  }
+
+  isRemoteStreamExist(id: string, stream: MediaStream): boolean {
+    const ID_SPLITER = ':';
+    const concatId = id + ID_SPLITER + stream.id;
+    for (const key in this.remoteStreams) {
+      if (key === concatId) {
+        // tslint:disable-next-line: no-console
+        console.log('isRemoteStreamExist key=' + key);
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  // --- video elements ---
+  attachVideo(id: string, stream: MediaStream): void {
+    const video = this.addRemoteVideoElement(id);
+    this.addRemoteStream(id, stream);
+    this.playVideo(video, stream);
+    video.volume = 1.0;
+  }
+
+  detachVideo(id: string): void {
+    const video = this.getRemoteVideoElement(id);
+    if (!video) {
+      return;
+    }
+    this.pauseVideo(video);
+    this.deleteRemoteVideoWraperElement(id);
+  }
+
+  isRemoteVideoAttached(id: string): boolean {
+    if (this.remoteVideos[id]) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
+  addRemoteVideoElement(id: string): HTMLVideoElement {
+    this._assert('this.addRemoteVideoElement() video must NOT EXIST', (! this.remoteVideos[id]));
+    const {video, videoWraper, buttonGroup} = this.createVideoWraperElement(id);
+    this.remoteVideos[id] = video;
+    this.videoWrapers[id] = videoWraper;
+    this.videoButtonGroups[id] = buttonGroup;
+    this.isRemoteVideoOns[id] = true;
+    this.isRemoteAudioOns[id] = true;
+    this.isShowingRemoteControl[id] = false;
+    this.updateVideoState(this.getVideoLength());
+    return video;
+  }
+
+  getRemoteVideoElement(id: string): HTMLVideoElement {
+    const video = this.remoteVideos[id];
+    this._assert('this.getRemoteVideoElement() video must exist', video);
+    return video;
+  }
+
+  deleteRemoteVideoWraperElement(id: string): void {
+    this._assert('this.deleteRemoteVideoWraperElement() stream must exist', this.remoteVideos[id]);
+    this.removeVideoWraperElement(id);
+    delete this.remoteVideos[id];
+    delete this.videoWrapers[id];
+    delete this.isRemoteVideoOns[id];
+    delete this.isRemoteAudioOns[id];
+    delete this.isShowingRemoteControl[id];
+    this.updateVideoState(this.getVideoLength());
+  }
+
+  createVideoWraperElement(id: string)
+  : {
+    video: HTMLVideoElement,
+    videoWraper: HTMLDivElement,
+    buttonGroup: HTMLDivElement,
+  } {
+    const videoWraper: HTMLDivElement = document.createElement('div');
+    videoWraper.style.lineHeight = '0';
+    videoWraper.id = 'video_wraper_' + id;
+    const video: HTMLVideoElement = document.createElement('video');
+    video.id = 'remote_video_' + id;
+    const buttonGroup: HTMLDivElement = document.createElement('div');
+    buttonGroup.style.zIndex = '2';
+    buttonGroup.style.display = 'flex';
+    buttonGroup.style.position = 'fixed';
+    const videoToggleButton: HTMLButtonElement = document.createElement('button');
+    videoToggleButton.className = 'btn fa mt-auto btn-danger fa-eye-slash';
+    videoToggleButton.style.opacity = '0.2';
+    videoToggleButton.onclick = () => {
+      this.clickRemoteVideoToggle(id);
+      videoToggleButton.className = `btn fa mt-auto ${
+        this.isRemoteVideoOns[id] ? 'btn-danger fa-eye-slash' : 'btn-secondary fa-eye'
+      }`;
+    };
+    videoToggleButton.onmouseenter = () => {
+      videoToggleButton.style.opacity = '0.7';
+    };
+    videoToggleButton.onmouseleave = () => {
+      videoToggleButton.style.opacity = '0.2';
+    };
+
+    const audioToggleButton: HTMLButtonElement = document.createElement('button');
+    audioToggleButton.className = 'btn video-button fa mt-auto btn-danger fa-microphone-slash';
+    audioToggleButton.style.opacity = '0.2';
+    audioToggleButton.onclick = () => {
+      this.clickRemoteAudioToggle(id);
+      audioToggleButton.className = `btn video-button fa mt-auto ${
+        this.isRemoteAudioOns[id] ? 'btn-danger fa-microphone-slash' : 'btn-secondary fa-microphone'
+      }`;
+    };
+    audioToggleButton.onmouseenter = () => {
+      audioToggleButton.style.opacity = '0.7';
+    };
+    audioToggleButton.onmouseleave = () => {
+      audioToggleButton.style.opacity = '0.2';
+    };
+
+    const fullscreenToggleButton: HTMLButtonElement = document.createElement('button');
+    fullscreenToggleButton.className = 'btn btn-secondary video-button fa fa-expand mt-auto';
+    fullscreenToggleButton.style.opacity = '0.2';
+    fullscreenToggleButton.onclick = () => {
+      this.toggleFullScreen(videoWraper);
+      fullscreenToggleButton.className = `btn btn-secondary video-button fa mt-auto ${
+        this.isFullScreen ? 'fa-expand' : 'fa-compress'
+      }`;
+      video.style.width = this.isFullScreen ? 'unset' : '100vw';
+      video.style.height = this.isFullScreen ? 'unset' : '100vh';
+      buttonGroup.style.width = this.isFullScreen ? 'unset' : '100vw';
+      buttonGroup.style.height = this.isFullScreen ? 'unset' : '100vh';
+    };
+    fullscreenToggleButton.onmouseenter = () => {
+      fullscreenToggleButton.style.opacity = '0.7';
+    };
+    fullscreenToggleButton.onmouseleave = () => {
+      fullscreenToggleButton.style.opacity = '0.2';
+    };
+
+
+    buttonGroup.appendChild(videoToggleButton);
+    buttonGroup.appendChild(audioToggleButton);
+    buttonGroup.appendChild(fullscreenToggleButton);
+    videoWraper.appendChild(buttonGroup);
+    videoWraper.appendChild(video);
+    videoWraper.onclick = () => {
+      this.isShowingRemoteControl[id] = !this.isShowingRemoteControl[id];
+    };
+    videoWraper.onmouseenter = () => {
+      this.isShowingRemoteControl[id] = true;
+    };
+    videoWraper.onmouseleave = () => {
+      this.isShowingRemoteControl[id] = false;
+    };
+    this.videoContainer.nativeElement.appendChild(videoWraper);
+    return {video, videoWraper, buttonGroup };
+  }
+
+  removeVideoWraperElement(id: string): HTMLDivElement {
+    const videoWraper: HTMLDivElement = (document.getElementById('video_wraper_' + id) as HTMLDivElement);
+    this._assert('removeVideoWraperElement() video must exist', videoWraper);
+    this.videoContainer.nativeElement.removeChild(videoWraper);
+    return videoWraper;
+  }
+
+  // ---------------------- media handling -----------------------
+  async updateVideoResolution(videoCount: number): Promise<void> {
+    this.localStream = await this.getDeviceStream(this.getMediaConstrains(videoCount));
+    this.playVideo(this.localVideo.nativeElement, this.localStream);
+  }
+
+  updateVideoFrameRate(videoCount: number): void {
+    const constrains = (this.getMediaConstrains(videoCount) as any);
+    clearInterval(this.localCanvasInterval);
+    const nextFrameRate = constrains?.video?.frameRate?.ideal || constrains?.video?.frameRate;
+    if (nextFrameRate) {
+      this.localCanvasInterval = setInterval(this.drawContext.bind(
+        this, this.localVideo, this.localCanvas
+      ), 1000 / nextFrameRate);
+    }
+  }
+
+  // start local video
+  async updateVideoState(videoCount = 1): Promise<void> {
+    const navi: any = navigator;
+    this.mediaDevices = navigator.mediaDevices ||
+    ((navi.mozGetUserMedia || navi.webkitGetUserMedia) ? {
+      getUserMedia(c) {
+        return new Promise((y, n) => {
+          (navi.mozGetUserMedia ||
+            navi.webkitGetUserMedia).call(navigator, c, y, n);
+        });
+      }
+    } : null);
+
+    if (!this.mediaDevices) {
+      // tslint:disable-next-line: no-console
+      console.log('getUserMedia() not supported.');
+      return;
+    }
+
+    await this.updateVideoResolution(videoCount);
+    this.updateVideoFrameRate(videoCount);
     this.onResizeWindow();
+
+    if (/Firefox/g.test(navigator.userAgent)) {
+      await new Promise((resolve) => {
+        setTimeout(async () => {
+          resolve();
+        }, 3000);
+      });
+    }
+
+    if (!this.canvasStream) {
+      this.canvasStream = this.localCanvas.nativeElement.captureStream();
+      const [localVideoAudio] = this.localStream.getAudioTracks();
+      this.canvasStream.addTrack(localVideoAudio);
+      this.canvasVideo.nativeElement.srcObject = this.canvasStream;
+      this.canvasVideo.nativeElement.muted = true;
+      this.canvasVideo.nativeElement.autoplay = true;
+      this.canvasVideo.nativeElement.setAttribute('playsinline', '');
+    }
+  }
+
+  // stop local video
+  async stopVideo(): Promise<void> {
+    this.pauseVideo(this.localVideo.nativeElement);
+    this.pauseVideo(this.canvasVideo.nativeElement);
+    this.stopStream(this.localStream);
+    this.stopStream(this.canvasStream);
+    this.stopStream(this.shareStream);
+    delete this.localStream;
+    delete this.canvasStream;
+    delete this.shareStream;
+  }
+
+  stopStream(stream: MediaStream): void {
+    const tracks = stream?.getTracks() || [];
+    if (! tracks) {
+      console.warn('NO tracks');
+      return;
+    }
+
+    for (const track of tracks) {
+      track.stop();
+    }
+  }
+
+  getDeviceStream(option: MediaStreamConstraints): Promise<MediaStream> {
+    if ('getUserMedia' in navigator.mediaDevices) {
+      // tslint:disable-next-line: no-console
+      console.log('navigator.mediaDevices.getUserMadia');
+      return navigator.mediaDevices.getUserMedia(option);
+    }
+    else if ('getUserMedia' in navigator){
+      // tslint:disable-next-line: no-console
+      console.log('wrap navigator.getUserMadia with Promise');
+      return new Promise<MediaStream>((resolve, reject) => {
+        navigator.getUserMedia(option,
+          resolve,
+          reject
+        );
+      });
+    } else {
+      this.isPage = false;
+      return null;
+    }
+  }
+
+  playVideo(element: any, stream: MediaStream): void {
+    if ('srcObject' in element) {
+      element.srcObject = stream;
+    }
+    else {
+      element.src = window.URL.createObjectURL(stream);
+    }
+    element.play();
+    element.volume = 0;
+  }
+
+  pauseVideo(element: any): void {
+    element.pause();
+    if ('srcObject' in element) {
+      element.srcObject = null;
+    }
+    else {
+      if (element.src && (element.src !== '') ) {
+        window.URL.revokeObjectURL(element.src);
+      }
+      element.src = '';
+    }
+  }
+
+  /*--
+  // ----- hand signaling ----
+  function onSdpText() {
+    let text = textToReceiveSdp.value;
+    if (peerConnection) {
+      // tslint:disable-next-line: no-console
+      console.log('Received answer text...');
+      let answer = new RTCSessionDescription({
+        type : 'answer',
+        sdp : text,
+      });
+      this.setAnswer(answer);
+    }
+    else {
+      // tslint:disable-next-line: no-console
+      console.log('Received offer text...');
+      let offer = new RTCSessionDescription({
+        type : 'offer',
+        sdp : text,
+      });
+      this.setOffer(offer);
+    }
+    textToReceiveSdp.value ='';
+  }
+  --*/
+
+  sendSdp(id: string, sessionDescription: RTCSessionDescription): void {
+    // tslint:disable-next-line: no-console
+    // console.log('---sending sdp ---');
+
+    /*---
+    textForSendSdp.value = sessionDescription.sdp;
+    textForSendSdp.focus();
+    textForSendSdp.select();
+    ----*/
+
+    const message = { type: sessionDescription.type, sdp: sessionDescription.sdp };
+    // tslint:disable-next-line: no-console
+    // console.log('sending SDP=' + message);
+    // ws.send(message);
+    // socket.emit('message', message);
+    this.emitTo(id, message);
+  }
+
+  sendIceCandidate(id: string, candidate: RTCIceCandidate): void {
+    // tslint:disable-next-line: no-console
+    // console.log('---sending ICE candidate ---');
+    const obj = { type: 'candidate', ice: JSON.stringify(candidate) }; // <--- JSON
+    const message = JSON.stringify(obj);
+    // tslint:disable-next-line: no-console
+    // console.log('sending candidate=' + message);
+    // ws.send(message);
+    // socket.emit('message', obj);
+    this.emitTo(id, obj);
+  }
+
+  // ---------------------- connection handling -----------------------
+  prepareNewConnection(id: string): RTCPeerConnection {
+    const peer: any = new RTCPeerConnection(this.rtcConfiguration);
+
+    // --- on get remote stream ---
+    if ('ontrack' in peer) {
+      peer.ontrack = (event) => {
+        const stream = event.streams[0];
+        // tslint:disable-next-line: no-console
+        console.log('-- peer.ontrack() stream.id=' + stream.id);
+        if (this.isRemoteVideoAttached(id)) {
+          // tslint:disable-next-line: no-console
+          console.log('stream already attached, so ignore');
+        }
+        else {
+          // this.playVideo(remoteVideo, stream);
+          this.attachVideo(id, stream);
+        }
+      };
+    }
+    else {
+      peer.onaddstream = (event) => {
+        const stream = event.stream;
+        // tslint:disable-next-line: no-console
+        console.log('-- peer.onaddstream() stream.id=' + stream.id);
+        // this.playVideo(remoteVideo, stream);
+        this.attachVideo(id, stream);
+      };
+    }
+
+    // --- on get local ICE candidate
+    peer.onicecandidate = (evt) => {
+      if (evt.candidate) {
+        // tslint:disable-next-line: no-console
+        // console.log(evt.candidate);
+
+        // Trickle ICE の場合は、ICE candidateを相手に送る
+        this.sendIceCandidate(id, evt.candidate);
+
+        // Vanilla ICE の場合には、何もしない
+      } else {
+        // tslint:disable-next-line: no-console
+        console.log('empty ice event');
+
+        // Trickle ICE の場合は、何もしない
+
+        // Vanilla ICE の場合には、ICE candidateを含んだSDPを相手に送る
+        // sendSdp(id, peer.localDescription);
+      }
+    };
+
+    // --- when need to exchange SDP ---
+    peer.onnegotiationneeded = (evt) => {
+      // tslint:disable-next-line: no-console
+      // console.log('-- onnegotiationneeded() ---');
+    };
+
+    // --- other events ----
+    peer.onicecandidateerror = (evt) => {
+      console.error('ICE candidate ERROR:', evt);
+    };
+
+    peer.onsignalingstatechange = () => {
+      // tslint:disable-next-line: no-console
+      console.log('== signaling status=' + peer.signalingState);
+    };
+
+    peer.oniceconnectionstatechange = () => {
+      // tslint:disable-next-line: no-console
+      console.log('== ice connection status=' + peer.iceConnectionState);
+      if (peer.iceConnectionState === 'disconnected') {
+        // tslint:disable-next-line: no-console
+        console.log('-- disconnected --');
+        // hangUp();
+        this.stopConnection(id);
+      }
+    };
+
+    peer.onicegatheringstatechange = () => {
+      // tslint:disable-next-line: no-console
+      console.log('==***== ice gathering state=' + peer.iceGatheringState);
+    };
+
+    peer.onconnectionstatechange = () => {
+      // tslint:disable-next-line: no-console
+      console.log('==***== connection state=' + peer.connectionState);
+    };
+
+    peer.onremovestream = (event) => {
+      // tslint:disable-next-line: no-console
+      console.log('-- peer.onremovestream()');
+      // this.pauseVideo(remoteVideo);
+      this.deleteRemoteStream(id);
+      this.detachVideo(id);
+    };
+
+    // -- add local stream --
+    if (this.canvasStream) {
+      // tslint:disable-next-line: no-console
+      console.log('Adding local stream...');
+      peer.addStream(this.canvasStream);
+    }
+    else {
+      console.warn('no local stream, but continue.');
+    }
+
+    return peer;
+  }
+
+  makeOffer(id: string): void {
+    this._assert('this.makeOffer must not connected yet', (! this.isConnectedWith(id)) );
+    const peerConnection = this.prepareNewConnection(id);
+    this.addConnection(id, peerConnection);
+
+    peerConnection.createOffer()
+    .then((sessionDescription) => {
+      // tslint:disable-next-line: no-console
+      console.log('createOffer() succsess in promise');
+      return peerConnection.setLocalDescription(sessionDescription);
+    }).then(() => {
+      // tslint:disable-next-line: no-console
+      console.log('setLocalDescription() succsess in promise');
+
+      // -- Trickle ICE の場合は、初期SDPを相手に送る --
+      this.sendSdp(id, peerConnection.localDescription);
+
+      // -- Vanilla ICE の場合には、まだSDPは送らない --
+    }).catch((err) => {
+      // console.error(err);
+    });
+  }
+
+  setOffer(id: string, sessionDescription: RTCSessionDescription): void {
+    /*
+    if (peerConnection) {
+      console.error('peerConnection alreay exist!');
+    }
+    */
+    this._assert('this.setOffer must not connected yet', (! this.isConnectedWith(id)) );
+    const peerConnection = this.prepareNewConnection(id);
+    this.addConnection(id, peerConnection);
+
+    peerConnection.setRemoteDescription(sessionDescription)
+    .then(() => {
+      // tslint:disable-next-line: no-console
+      // console.log('setRemoteDescription(offer) succsess in promise');
+      this.makeAnswer(id);
+    }).catch((err) => {
+      console.error('setRemoteDescription(offer) ERROR: ', err);
+    });
+  }
+
+  makeAnswer(id: string): void {
+    // tslint:disable-next-line: no-console
+    console.log('sending Answer. Creating remote session description...' );
+    const peerConnection = this.getConnection(id);
+    if (! peerConnection) {
+      console.error('peerConnection NOT exist!');
+      return;
+    }
+
+    peerConnection.createAnswer()
+    .then((sessionDescription) => {
+      // tslint:disable-next-line: no-console
+      console.log('createAnswer() succsess in promise');
+      return peerConnection.setLocalDescription(sessionDescription);
+    }).then(() => {
+      // tslint:disable-next-line: no-console
+      console.log('setLocalDescription() succsess in promise');
+
+      // -- Trickle ICE の場合は、初期SDPを相手に送る --
+      this.sendSdp(id, peerConnection.localDescription);
+
+      // -- Vanilla ICE の場合には、まだSDPは送らない --
+    }).catch((err) => {
+      console.error(err);
+    });
+  }
+
+  setAnswer(id: string, sessionDescription: RTCSessionDescription): void {
+    const peerConnection = this.getConnection(id);
+    if (! peerConnection) {
+      console.error('peerConnection NOT exist!');
+      return;
+    }
+
+    peerConnection.setRemoteDescription(sessionDescription)
+    .then(() => {
+      // tslint:disable-next-line: no-console
+      console.log('setRemoteDescription(answer) succsess in promise');
+    }).catch((err) => {
+      console.error('setRemoteDescription(answer) ERROR: ', err);
+    });
+  }
+
+  // --- tricke ICE ---
+  addIceCandidate(id: string, candidate: RTCIceCandidate): void {
+    const peerConnection = this.getConnection(id);
+    if (peerConnection) {
+      peerConnection.addIceCandidate(candidate);
+    }
+    else {
+      console.error('PeerConnection not exist!');
+      return;
+    }
+  }
+
+  // start PeerConnection
+  connect(): void {
+    /*
+    debugger; // SHOULD NOT COME HERE
+
+    if (! peerConnection) {
+      // tslint:disable-next-line: no-console
+      console.log('make Offer');
+      this.makeOffer();
+    }
+    else {
+      console.warn('peer already exist.');
+    }
+    */
+
+    if (! this.isReadyToConnect()) {
+      console.warn('NOT READY to connect');
+    }
+    else if (! this.canConnectMore()) {
+      // tslint:disable-next-line: no-console
+      console.log('TOO MANY connections');
+    }
+    else {
+      this.callMe();
+    }
+  }
+
+  // close PeerConnection
+  async hangUp(): Promise<void> {
+    this.emitRoom({ type: 'bye' });
+    this.clearMessage(); // clear firebase
+    this.stopAllConnection();
+  }
+
+  // ---- multi party --
+  callMe(): void {
+    this.emitRoom({type: 'call me'});
   }
 
   ngOnInit(): void {
   }
 
-  ngOnDestroy(): void {
-    if (this.params.roomId) {
-      this.leaveRoom(this.params.roomId);
-    }
-    clearInterval(this.localCanvasInterval);
-    this.talkSub?.unsubscribe();
-    this.roomSub?.unsubscribe();
-    this.paramSub?.unsubscribe();
+  async ngOnDestroy() {
     window.removeEventListener('resize', this.onResizeWindow);
+    clearInterval(this.localCanvasInterval);
+    await this.hangUp();
+    await this.stopVideo();
   }
 }
