@@ -12,18 +12,10 @@
     [isInRoom]="isInRoom"
     [isMobileDevice]="isMobileDevice"
     [isScreenSharing]="isScreenSharing"
-    (clickCreateRoom)="handleClickCreateRoom()"
-    (clickJoinRoom)="handleClickJoinRoom()"
     (clickLeaveRoom)="handleClickLeaveRoom()"
     (clickStartScreenSharing)="handleClickStartScreenSharing()"
     (clickStopScreenSharing)="handleClickStopScreenSharing()"
   ></app-meeting-left-sidebar>
-  <app-meeing-room-entrance
-    *ngIf="!isInRoom && talkContents"
-    [roomContents]="roomContents"
-    (clickBackToJoinedRoom)="handleClickBackToJoinedRoom($event)"
-    (clickRemoveRoom)="handleClickRemoveRoom($event)"
-  ></app-meeing-room-entrance>
   <div class="copy-to-clipboard">
     <button
       *ngIf="isInRoom"
