@@ -421,8 +421,8 @@ export class RoomComponent implements OnInit, OnDestroy {
       canvasTag.nativeElement.getContext('2d').drawImage(videoTag.nativeElement,
         0, 0, canvasWidth, canvasHeight
       );
-      this.onResizeWindow();
     }
+    this.onResizeWindow();
   }
 
   /*---
