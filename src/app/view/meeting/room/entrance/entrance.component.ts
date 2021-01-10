@@ -9,7 +9,7 @@ import { DataTransferHelper } from 'src/app/helper/data-transefer.helper';
 import { RouterHelper } from 'src/app/helper/router.helper';
 
 @Component({
-  selector: 'app-talk-room-entrance',
+  selector: 'app-meeting-room-entrance',
   templateUrl: './entrance.component.html',
   styleUrls: ['./entrance.component.css']
 })
