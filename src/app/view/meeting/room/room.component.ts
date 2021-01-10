@@ -22,6 +22,7 @@ export class RoomComponent implements OnInit, OnDestroy {
   @ViewChild ('localButtonGroup') public localButtonGroup: ElementRef;
 
   isPage: boolean;
+  isLoading: boolean;
   localStream: MediaStream;
   canvasStream: MediaStream;
   peerConnections: Array<RTCPeerConnection>;
@@ -45,7 +46,6 @@ export class RoomComponent implements OnInit, OnDestroy {
   deviceRotation: number;
   isFullScreen: boolean;
   isMobileDevice: boolean;
-  localCanvasZoom: number;
   isLocalVideoOn: boolean;
   isLocalAudioOn: boolean;
   isRemoteVideoOns: Array<boolean>;
@@ -153,7 +153,6 @@ export class RoomComponent implements OnInit, OnDestroy {
         this.isFullScreen = false;
       }
     });
-    this.localCanvasZoom = 1;
     this.setAvailableGrids(30);
     await this.updateVideoState(this.getVideoLength());
     // this.updateVideoFrameRate(this.getVideoLength());
@@ -249,11 +248,11 @@ export class RoomComponent implements OnInit, OnDestroy {
 
     // Resizing Video
     if (this.isMobileDevice) {
-      const localVideoZoomRate = bestLayout.videoWidth / this.canvasVideo.nativeElement.width;
-      this.localCanvas.nativeElement.style.zoom = localVideoZoomRate;
-      this.localCanvas.nativeElement.hidden = false;
       this.canvasVideo.nativeElement.style.width = 0;
       this.canvasVideo.nativeElement.style.height = 0;
+      this.localCanvas.nativeElement.hidden = false;
+      this.localCanvas.nativeElement.style.zoom =
+        bestLayout.videoWidth / this.localCanvas.nativeElement.width;
     } else {
       this.localCanvas.nativeElement.hidden = true;
       this.canvasVideo.nativeElement.style.width = `${bestLayout.videoWidth}px`;
@@ -388,14 +387,15 @@ export class RoomComponent implements OnInit, OnDestroy {
     this.isScreenSharing = false;
   }
 
-  drawContext(videoTag: ElementRef, canvasTag: ElementRef): void {
-    if (!videoTag?.nativeElement || !canvasTag.nativeElement) {
+  drawContext(videoTag: ElementRef, canvasTag: ElementRef) {
+    if (!videoTag?.nativeElement) {
       return;
     }
+
     const isHorizontal = this.deviceRotation === 90 || this.deviceRotation === -90;
     const width = videoTag.nativeElement.videoWidth;
     const height = videoTag.nativeElement.videoHeight;
-    if (width / 4 > height / 3){
+    if (width / 4 > height / 3) {
       const overWidth = (width / 4 - height / 3) * 4;
       const canvasWidth = canvasTag.nativeElement.width = width - overWidth;
       const canvasHeight = canvasTag.nativeElement.height = height;
@@ -421,6 +421,7 @@ export class RoomComponent implements OnInit, OnDestroy {
       canvasTag.nativeElement.getContext('2d').drawImage(videoTag.nativeElement,
         0, 0, canvasWidth, canvasHeight
       );
+      this.onResizeWindow();
     }
   }
 
