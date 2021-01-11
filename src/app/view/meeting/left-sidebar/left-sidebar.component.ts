@@ -19,9 +19,14 @@ export class LeftSidebarComponent implements OnInit, OnDestroy {
   @Output() clickLeaveRoom: EventEmitter<null> = new EventEmitter();
   @Output() clickStartScreenSharing: EventEmitter<null> = new EventEmitter();
   @Output() clickStopScreenSharing: EventEmitter<null> = new EventEmitter();
+  @Output() clickStartRecording: EventEmitter<null> = new EventEmitter();
+  @Output() clickStopRecording: EventEmitter<null> = new EventEmitter();
+  @Output() clickDownloadRecord: EventEmitter<null> = new EventEmitter();
 
   @Input() isInRoom: boolean;
   @Input() isScreenSharing: boolean;
+  @Input() isRecording: boolean;
+  @Input() isFinishedRecording: boolean;
   @Input() isMobileDevice: boolean;
 
   paramSub: Subscription;
@@ -68,6 +73,18 @@ export class LeftSidebarComponent implements OnInit, OnDestroy {
 
   handleClickStopScreenSharing() {
     this.clickStopScreenSharing.emit();
+  }
+
+  handleClickStartRecording() {
+    this.clickStartRecording.emit();
+  }
+
+  handleClickStopRecording() {
+    this.clickStopRecording.emit();
+  }
+
+  handleClickDownloadRecord() {
+    this.clickDownloadRecord.emit();
   }
 
   clickBackToRoom() {
