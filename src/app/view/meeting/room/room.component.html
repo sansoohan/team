@@ -12,10 +12,15 @@
     [isInRoom]="isInRoom"
     [isMobileDevice]="isMobileDevice"
     [isScreenSharing]="isScreenSharing"
+    [isRecording]="isRecording"
+    [isFinishedRecording]="isFinishedRecording"
     (clickLeaveRoom)="handleClickLeaveRoom()"
     (clickStartScreenSharing)="handleClickStartScreenSharing()"
     (clickStopScreenSharing)="handleClickStopScreenSharing()"
-  ></app-meeting-left-sidebar>
+    (clickStartRecording)="handleClickStartRecording()"
+    (clickStopRecording)="handleClickStopRecording()"
+    (clickDownloadRecord)="handleClickDownloadRecord()"
+    ></app-meeting-left-sidebar>
   <div class="copy-to-clipboard">
     <button
       *ngIf="isInRoom"

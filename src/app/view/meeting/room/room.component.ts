@@ -5,6 +5,8 @@ import { AngularFireDatabase, AngularFireList } from '@angular/fire/database';
 import { Subscription } from 'rxjs';
 import { RouterHelper } from 'src/app/helper/router.helper';
 import { ActivatedRoute } from '@angular/router';
+const FFmpeg = require('@ffmpeg/ffmpeg');
+declare var MediaRecorder: any;
 
 @Component({
   selector: 'app-meeting-room',
@@ -58,6 +60,14 @@ export class RoomComponent implements OnInit, OnDestroy {
   createdRoomUrl: string;
   isInRoom: boolean;
   isCopiedToClipboard: boolean;
+  mediaRecorder: any;
+  videoChunks: Array<any>;
+  isRecording: boolean;
+  isFinishedRecording: boolean;
+  recordStream: MediaStream;
+  audioSourcesForRecording: Array<MediaStreamAudioSourceNode>;
+  audioContextForRecord: AudioContext;
+  destinationForRecord: MediaStreamAudioDestinationNode;
 
   constructor(
     private database: AngularFireDatabase,
@@ -95,6 +105,7 @@ export class RoomComponent implements OnInit, OnDestroy {
     this.isRemoteAudioOns = [];
     this.isRemoteVideoOns = [];
     this.MAX_CONNECTION_COUNT = 3;
+    this.audioSourcesForRecording = [];
 
     // --- multi video ---
     // this._assert('videoContainer', this.videoContainer.nativeElement);
@@ -290,10 +301,10 @@ export class RoomComponent implements OnInit, OnDestroy {
     return {
       video:
         memberCount <= 1 ? {frameRate: 30, width: 640, height: 480} :
-        memberCount <= 2 ? {frameRate: 30, width: 640, height: 480} :
-        memberCount <= 3 ? {frameRate: 20, width: 640, height: 480} :
-        memberCount <= 4 ? {frameRate: 15, width: 640, height: 480} :
-        memberCount <= 6 ? {frameRate: 12, width: 480, height: 360} :
+        memberCount <= 2 ? {frameRate: 15, width: 640, height: 480} :
+        memberCount <= 3 ? {frameRate: 12, width: 640, height: 480} :
+        memberCount <= 4 ? {frameRate: 12, width: 480, height: 360} :
+        memberCount <= 6 ? {frameRate: 9, width: 480, height: 360} :
         memberCount <= 9 ? {frameRate: 9, width: 320, height: 240} :
         memberCount <= 12 ? {frameRate: 7, width: 240, height: 180} :
         memberCount <= 15 ? {frameRate: 5, width: 160, height: 120} : false,
@@ -386,6 +397,35 @@ export class RoomComponent implements OnInit, OnDestroy {
     videoSender.replaceTrack(screenVideoTrack);
     this.isScreenSharing = false;
   }
+
+  changeVideoCodec(peerConnection: RTCPeerConnection, mimeType: string) {
+    const transceivers = peerConnection.getTransceivers();
+    transceivers.forEach(transceiver => {
+      const kind = transceiver.sender.track.kind;
+      let sendCodecs = RTCRtpSender.getCapabilities(kind).codecs;
+      let recvCodecs = RTCRtpReceiver.getCapabilities(kind).codecs;
+      if (kind === 'video') {
+        sendCodecs = this.preferCodec(sendCodecs, mimeType);
+        recvCodecs = this.preferCodec(recvCodecs, mimeType);
+        transceiver.setCodecPreferences([...sendCodecs, ...recvCodecs]);
+      }
+    });
+    // peerConnection.onnegotiationneeded();
+  }
+
+  preferCodec(codecs, mimeType: string) {
+    const otherCodecs = [];
+    const sortedCodecs = [];
+    codecs.forEach(codec => {
+      if (codec.mimeType === mimeType) {
+        sortedCodecs.push(codec);
+      } else {
+        otherCodecs.push(codec);
+      }
+    });
+    return sortedCodecs.concat(otherCodecs);
+  }
+
 
   drawContext(videoTag: ElementRef, canvasTag: ElementRef) {
     if (!videoTag?.nativeElement) {
@@ -718,6 +758,11 @@ export class RoomComponent implements OnInit, OnDestroy {
   addRemoteStream(id: string, stream: MediaStream): void {
     this._assert('addRemoteStream() stream must NOT EXIST', (! this.remoteStreams[id]));
     this.remoteStreams[id] = stream;
+    if (this.isRecording) {
+      const remoteAudioSource = this.audioContextForRecord.createMediaStreamSource(this.remoteStreams[id]);
+      remoteAudioSource.connect(this.destinationForRecord);
+      this.audioSourcesForRecording[id] = remoteAudioSource;
+    }
   }
 
   getRemoteStream(id: string): void {
@@ -736,7 +781,9 @@ export class RoomComponent implements OnInit, OnDestroy {
         const peerId = ids[0];
         const streamId = ids[1];
         if (peerId === id) {
+          this.audioSourcesForRecording[id].disconnect(this.remoteStreams[id]);
           delete this.remoteStreams[id];
+          delete this.audioSourcesForRecording[id];
         }
       }
     }
@@ -820,6 +867,7 @@ export class RoomComponent implements OnInit, OnDestroy {
   } {
     const videoWraper: HTMLDivElement = document.createElement('div');
     videoWraper.style.lineHeight = '0';
+    videoWraper.style.margin = 'auto';
     videoWraper.id = 'video_wraper_' + id;
     const video: HTMLVideoElement = document.createElement('video');
     video.id = 'remote_video_' + id;
@@ -903,6 +951,75 @@ export class RoomComponent implements OnInit, OnDestroy {
     this._assert('removeVideoWraperElement() video must exist', videoWraper);
     this.videoContainer.nativeElement.removeChild(videoWraper);
     return videoWraper;
+  }
+
+  async handleClickStartRecording() {
+    this.audioSourcesForRecording = [];
+    this.recordStream = await navigator.mediaDevices[`getDisplayMedia`]({video: true});
+    this.audioContextForRecord = new AudioContext();
+    this.destinationForRecord = this.audioContextForRecord.createMediaStreamDestination();
+    const localAudioSource = this.audioContextForRecord.createMediaStreamSource(this.canvasStream);
+    localAudioSource.connect(this.destinationForRecord);
+    for (const id in this.remoteStreams) {
+      if (id) {
+        const remoteAudioSource = this.audioContextForRecord.createMediaStreamSource(this.remoteStreams[id]);
+        remoteAudioSource.connect(this.destinationForRecord);
+        this.audioSourcesForRecording[id] = remoteAudioSource;
+      }
+    }
+    this.recordStream.addTrack(this.destinationForRecord.stream.getAudioTracks()[0]);
+    this.mediaRecorder = new MediaRecorder(this.recordStream, {mimeType: 'video/webm;codec=h264'});
+    this.videoChunks = [];
+    this.mediaRecorder.ondataavailable = (e) => {
+      if (e.data) {
+        this.videoChunks.push(e.data);
+      }
+    };
+    this.isRecording = true;
+    this.mediaRecorder.start(10);
+  }
+  handleClickStopRecording() {
+    this.mediaRecorder.stop();
+    this.recordStream.getTracks().map(track => track.stop());
+    this.isRecording = false;
+    this.isFinishedRecording = true;
+  }
+
+  async handleClickDownloadRecord() {
+    const { createFFmpeg, fetchFile } = FFmpeg;
+    const ffmpeg = createFFmpeg({log: true});
+    const fileBlob = new Blob(this.videoChunks, { type: 'video/webm;codec=h264' });
+    const videoURL = await this.transcode(fileBlob);
+    const link = document.createElement('a');
+    link.href = videoURL;
+    link.download = 'recording.mp4';
+    link.click();
+    link.download = Date.now() + '_meeting.mp4';
+    setTimeout(() => {
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(videoURL);
+    }, 100);
+    this.isFinishedRecording = true;
+  }
+
+  async transcode(videoChunks: Blob): Promise<string> {
+    const { createFFmpeg, fetchFile } = FFmpeg;
+    const ffmpeg = createFFmpeg({
+      log: true,
+    });
+    const message = document.getElementById('message');
+    const name = 'record.webm';
+    // tslint:disable-next-line: no-console
+    console.log('Loading ffmpeg-core.js');
+    await ffmpeg.load();
+    // tslint:disable-next-line: no-console
+    console.log('Start transcoding');
+    ffmpeg.FS('writeFile', name, await fetchFile(videoChunks));
+    await ffmpeg.run('-y', '-i', name, '-c:v', 'copy', '-q:a', '0', 'output.mp4');
+    // tslint:disable-next-line: no-console
+    console.log('Complete transcoding');
+    const data = ffmpeg.FS('readFile', 'output.mp4');
+    return URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' }));
   }
 
   // ---------------------- media handling -----------------------
@@ -1105,6 +1222,7 @@ export class RoomComponent implements OnInit, OnDestroy {
         }
         else {
           // this.playVideo(remoteVideo, stream);
+          this.changeVideoCodec(peer, 'video/mp4');
           this.attachVideo(id, stream);
         }
       };
@@ -1115,6 +1233,7 @@ export class RoomComponent implements OnInit, OnDestroy {
         // tslint:disable-next-line: no-console
         console.log('-- peer.onaddstream() stream.id=' + stream.id);
         // this.playVideo(remoteVideo, stream);
+        this.changeVideoCodec(peer, 'video/mp4');
         this.attachVideo(id, stream);
       };
     }

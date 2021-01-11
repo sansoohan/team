@@ -39,6 +39,17 @@
             <div *ngIf="isScreenSharing && !isMobileDevice" class="nav-item">
               <a class="nav-link" (click)="handleClickStopScreenSharing()">Stop Screen Share</a>
             </div>
+
+            <div *ngIf="!isRecording && !isMobileDevice" class="nav-item">
+              <a class="nav-link" (click)="handleClickStartRecording()">Start Record</a>
+            </div>
+            <div *ngIf="isRecording && !isMobileDevice" class="nav-item">
+              <a class="nav-link" (click)="handleClickStopRecording()">Stop Record</a>
+            </div>
+            <div *ngIf="isFinishedRecording && !isMobileDevice" class="nav-item">
+              <a class="nav-link" (click)="handleClickDownloadRecord()">Download Record</a>
+            </div>
+
             <div class="nav-item">
               <a class="nav-link" (click)="handleClickLeaveRoom()">Leave</a>
             </div>
