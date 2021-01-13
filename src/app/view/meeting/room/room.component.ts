@@ -302,11 +302,11 @@ export class RoomComponent implements OnInit, OnDestroy {
       video:
         memberCount <= 1 ? {frameRate: 30, width: 640, height: 480} :
         memberCount <= 2 ? {frameRate: 15, width: 640, height: 480} :
-        memberCount <= 3 ? {frameRate: 12, width: 640, height: 480} :
-        memberCount <= 4 ? {frameRate: 12, width: 480, height: 360} :
-        memberCount <= 6 ? {frameRate: 9, width: 480, height: 360} :
-        memberCount <= 9 ? {frameRate: 9, width: 320, height: 240} :
-        memberCount <= 12 ? {frameRate: 7, width: 240, height: 180} :
+        memberCount <= 3 ? {frameRate: 12, width: 480, height: 360} :
+        memberCount <= 4 ? {frameRate: 9, width: 480, height: 360} :
+        memberCount <= 6 ? {frameRate: 7, width: 480, height: 360} :
+        memberCount <= 9 ? {frameRate: 7, width: 320, height: 240} :
+        memberCount <= 12 ? {frameRate: 6, width: 240, height: 180} :
         memberCount <= 15 ? {frameRate: 5, width: 160, height: 120} : false,
       audio: true,
     };
@@ -372,14 +372,18 @@ export class RoomComponent implements OnInit, OnDestroy {
   async handleClickStartScreenSharing(): Promise<void> {
     try {
       this.shareStream = await navigator.mediaDevices[`getDisplayMedia`]({video: true});
+      const [videoTrack] = this.shareStream.getVideoTracks();
       this.setMediaStatus(this.shareStream, 'Video', this.isLocalVideoOn);
       this.canvasVideo.nativeElement.srcObject = this.shareStream;
-      const videoSender = this.peerConnection.getSenders().find(sender => {
-        return sender.track.kind === 'video';
-      });
-      const [screenVideoTrack] = this.shareStream.getVideoTracks();
-      videoSender.replaceTrack(screenVideoTrack);
-      screenVideoTrack.addEventListener('ended', () => {
+      for (const id in this.peerConnections) {
+        if (id) {
+          const videoSender = this.peerConnections[id].getSenders().find(sender => {
+            return sender.track.kind === 'video';
+          });
+          videoSender.replaceTrack(videoTrack);
+        }
+      }
+      videoTrack.addEventListener('ended', () => {
         this.handleClickStopScreenSharing();
       }, {once: true});
       this.isScreenSharing = true;
@@ -390,11 +394,15 @@ export class RoomComponent implements OnInit, OnDestroy {
 
   handleClickStopScreenSharing(): void {
     this.canvasVideo.nativeElement.srcObject = this.canvasStream;
-    const videoSender = this.peerConnection.getSenders().find(sender => {
-      return sender.track.kind === 'video';
-    });
-    const [screenVideoTrack] = this.canvasStream.getVideoTracks();
-    videoSender.replaceTrack(screenVideoTrack);
+    const [videoTrack] = this.canvasStream.getVideoTracks();
+    for (const id in this.peerConnections) {
+      if (id) {
+        const videoSender = this.peerConnections[id].getSenders().find(sender => {
+          return sender.track.kind === 'video';
+        });
+        videoSender.replaceTrack(videoTrack);
+      }
+    }
     this.isScreenSharing = false;
   }
 
@@ -956,6 +964,7 @@ export class RoomComponent implements OnInit, OnDestroy {
   async handleClickStartRecording() {
     this.audioSourcesForRecording = [];
     this.recordStream = await navigator.mediaDevices[`getDisplayMedia`]({video: true});
+    const [videoTrack] = this.recordStream.getVideoTracks();
     this.audioContextForRecord = new AudioContext();
     this.destinationForRecord = this.audioContextForRecord.createMediaStreamDestination();
     const localAudioSource = this.audioContextForRecord.createMediaStreamSource(this.canvasStream);
@@ -977,6 +986,9 @@ export class RoomComponent implements OnInit, OnDestroy {
     };
     this.isRecording = true;
     this.mediaRecorder.start(10);
+    videoTrack.addEventListener('ended', () => {
+      this.handleClickStopRecording();
+    }, {once: true});
   }
   handleClickStopRecording() {
     this.mediaRecorder.stop();
@@ -992,11 +1004,10 @@ export class RoomComponent implements OnInit, OnDestroy {
     const videoURL = await this.transcode(fileBlob);
     const link = document.createElement('a');
     link.href = videoURL;
-    link.download = 'recording.mp4';
-    link.click();
     link.download = Date.now() + '_meeting.mp4';
+    link.click();
     setTimeout(() => {
-      document.body.removeChild(link);
+      document.removeChild(link);
       window.URL.revokeObjectURL(videoURL);
     }, 100);
     this.isFinishedRecording = true;
