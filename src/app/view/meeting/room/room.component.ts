@@ -276,7 +276,7 @@ export class RoomComponent implements OnInit, OnDestroy {
     }
 
     // Resizing Video Button
-    const buttonSize = bestLayout.videoWidth / 10;
+    const buttonSize = bestLayout.videoWidth / 15;
 
     const buttonGroups: Array<HTMLDivElement> = [
       this.localButtonGroup.nativeElement,
@@ -288,7 +288,7 @@ export class RoomComponent implements OnInit, OnDestroy {
       buttonGroupElement.childNodes.forEach((buttonNode: ChildNode) => {
         const buttonElement = (buttonNode as HTMLButtonElement);
         buttonElement.style.padding = '0';
-        buttonElement.style.fontSize = `${buttonSize * 3 / 4}px`;
+        buttonElement.style.fontSize = `${buttonSize * 3 / 5}px`;
         buttonElement.style.height = `${buttonSize}px`;
         buttonElement.style.width = `${buttonSize}px`;
         buttonElement.style.borderRadius = `${buttonSize}px`;

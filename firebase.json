@@ -30,7 +30,7 @@
     },
     {
       "target": "teams-staging",
-      "public": "dist/teams-teams-staging",
+      "public": "dist/teams-staging",
       "ignore": [
         "firebase.json",
         "**/.*",

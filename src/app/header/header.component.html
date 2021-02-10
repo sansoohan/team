@@ -6,18 +6,17 @@
   <div class="collapse navbar-collapse">
     <a
       *ngIf="router.url.includes('/meeting')"
-      class="navbar-brand selected-header-link"
+      class="navbar-brand selected-header-link d-flex"
       (click)="routerHelper.goToMeeting(params)"
-    >Meeting</a>
+    ><span class="mx-auto">Meeting</span></a>
   </div>
 </nav>
 
 <nav
   class="header-navbar navbar navbar-expand-lg navbar-dark bg-dark fixed-top header-common"
-  [class.main-header]="router.url.includes('/main')"
   [class.meeting-header]="router.url.includes('/meeting')"
 >
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTopCollapse" aria-controls="navbarTopCollapse" aria-expanded="false" aria-label="Toggle navigation">
+  <button class="navbar-toggler nav-collapse-button" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTopCollapse" aria-controls="navbarTopCollapse" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
 
@@ -27,11 +26,6 @@
       class="navbar-brand header-link"
       (click)="routerHelper.goToMeeting(params)"
     >Meeting</a>
-    <ngx-auth-firebaseui-avatar
-      *ngIf="authService.isSignedIn()"
-      (onSignOut)="authService.onSignOut()"
-      [canEditAccount]="true"
-    ></ngx-auth-firebaseui-avatar>
 
     <!-- Right Side -->
     <div style="margin-left:auto">
@@ -39,7 +33,7 @@
         <input
           [value]="searchValue"
           (keyup)="changeSearch($event)"
-          class="search-input form-control mr-2"
+          class="search-input form-control ms-2"
           type="search"
           list="staticUserIds"
           placeholder="Search"
@@ -52,7 +46,7 @@
         >
           <div
             *ngFor="let result of searchResults | async"
-            class="d-flex mr-2"
+            class="d-flex ms-2"
             (click)="setSearchValue(result.aboutContent.userName)"
           >
             <img class="rounded-circle search-profile" [src]="getSearchProfileImage(result)">
@@ -67,8 +61,16 @@
             (click)="closeSearchListDropDown()"
           >Close</a>
         </div>
-
+    
         <div [class]="searchValue&&isSearchValueSelected?'dropdown-menu show':'dropdown-menu'">
+          <a
+            class="dropdown-item"
+            (click)="routerHelper.goToProfile({userName:searchValue})"
+          >{{searchValue}}'s Profile</a>
+          <a
+            class="dropdown-item"
+            (click)="routerHelper.goToBlogPrologue({userName:searchValue})"
+          >{{searchValue}}'s Blog</a>
           <a
             class="dropdown-item"
             (click)="routerHelper.goToTalk({userName:searchValue})"
@@ -80,6 +82,12 @@
         </div>
       </div>
     </div>
+    <ngx-auth-firebaseui-avatar
+      class="mx-2"
+      *ngIf="authService.isSignedIn()"
+      (onSignOut)="authService.onSignOut()"
+      [canEditAccount]="true"
+    ></ngx-auth-firebaseui-avatar>
     <button
       *ngIf="!authService.isSignedIn()"
       routerLink="/sign-in"
