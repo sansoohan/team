@@ -88,7 +88,7 @@ export class RoomComponent implements OnInit, OnDestroy {
     this.isInRoom = this.params.roomId ? true : false;
     this.roomId = this.params.roomId;
     this.isCopiedToClipboard = false;
-    this.databaseRoot = 'talk/meeting_room/';
+    this.databaseRoot = 'meeting/room/';
     // this.remoteVideo = document.getElementById('remote_video');
     this.localStream = null;
     // this.peerConnection = null;
