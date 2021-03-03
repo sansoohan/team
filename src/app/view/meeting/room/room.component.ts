@@ -68,12 +68,14 @@ export class RoomComponent implements OnInit, OnDestroy {
   audioSourcesForRecording: Array<MediaStreamAudioSourceNode>;
   audioContextForRecord: AudioContext;
   destinationForRecord: MediaStreamAudioDestinationNode;
+  recordType: string;
 
   constructor(
     private database: AngularFireDatabase,
     private routerHelper: RouterHelper,
     private route: ActivatedRoute,
   ) {
+    this.recordType = `${this.supportsRecording('video/mp4') ? 'video/mp4' : 'video/webm;codecs=h264'}`
     this.paramSub = this.route.params.subscribe((params) => {
       if (params?.roomId) {
         this.startMeeting(params);
@@ -954,6 +956,12 @@ export class RoomComponent implements OnInit, OnDestroy {
     return {video, videoWraper, buttonGroup };
   }
 
+  supportsRecording(mimeType: string) {
+    if (!MediaRecorder)
+      return false;
+    return MediaRecorder.isTypeSupported(mimeType);
+  }
+
   removeVideoWraperElement(id: string): HTMLDivElement {
     const videoWraper: HTMLDivElement = (document.getElementById('video_wraper_' + id) as HTMLDivElement);
     this._assert('removeVideoWraperElement() video must exist', videoWraper);
@@ -977,7 +985,7 @@ export class RoomComponent implements OnInit, OnDestroy {
       }
     }
     this.recordStream.addTrack(this.destinationForRecord.stream.getAudioTracks()[0]);
-    this.mediaRecorder = new MediaRecorder(this.recordStream, {mimeType: 'video/webm;codec=h264'});
+    this.mediaRecorder = new MediaRecorder(this.recordStream, {mimeType: this.recordType});
     this.videoChunks = [];
     this.mediaRecorder.ondataavailable = (e) => {
       if (e.data) {
@@ -1000,7 +1008,7 @@ export class RoomComponent implements OnInit, OnDestroy {
   async handleClickDownloadRecord() {
     const { createFFmpeg, fetchFile } = FFmpeg;
     const ffmpeg = createFFmpeg({log: true});
-    const fileBlob = new Blob(this.videoChunks, { type: 'video/webm;codec=h264' });
+    const fileBlob = new Blob(this.videoChunks, { type: this.recordType });
     const videoURL = await this.transcode(fileBlob);
     const link = document.createElement('a');
     link.href = videoURL;

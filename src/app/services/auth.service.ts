@@ -31,6 +31,7 @@ export class AuthService {
   }
 
   isSignedIn(): any {
+    // console.log(this.afAuth.currentUser);
     if (localStorage.getItem('currentUser')){
       return true;
     }
