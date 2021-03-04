@@ -75,7 +75,7 @@ export class RoomComponent implements OnInit, OnDestroy {
     private routerHelper: RouterHelper,
     private route: ActivatedRoute,
   ) {
-    this.recordType = `${this.supportsRecording('video/mp4') ? 'video/mp4' : 'video/webm;codecs=h264'}`
+    this.recordType = `${this.supportsRecording('video/mp4') ? 'video/mp4' : 'video/webm;codecs=h264'}`;
     this.paramSub = this.route.params.subscribe((params) => {
       if (params?.roomId) {
         this.startMeeting(params);
@@ -620,6 +620,7 @@ export class RoomComponent implements OnInit, OnDestroy {
       });
 
       this.clientRef = this.database.list(this.databaseRoot + roomId + '/_direct_/' + this.clientId);
+      this.database.database.ref(this.databaseRoot + roomId + '/_direct_/' + this.clientId).onDisconnect().remove();
       this.clientRef.stateChanges(['child_added']).forEach((data) => {
         // tslint:disable-next-line: no-console
         console.log('clientRef.on(data)  data.key=' + data.key + ', data.val():', data.payload.val());
@@ -670,7 +671,7 @@ export class RoomComponent implements OnInit, OnDestroy {
   emitRoom(msg: any): void {
     // socket.emit('message', msg);
     msg.from = this.clientId;
-    this.roomBroadcastRef.push(msg);
+    this.roomBroadcastRef.push(msg).then(ref => ref.onDisconnect().remove());
   }
 
   emitTo(id: string, msg: any): void {
@@ -957,8 +958,9 @@ export class RoomComponent implements OnInit, OnDestroy {
   }
 
   supportsRecording(mimeType: string) {
-    if (!MediaRecorder)
+    if (!MediaRecorder) {
       return false;
+    }
     return MediaRecorder.isTypeSupported(mimeType);
   }
 
