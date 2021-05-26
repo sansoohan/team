@@ -7,13 +7,14 @@
     <a
       *ngIf="router.url.includes('/meeting')"
       class="navbar-brand selected-header-link d-flex"
-      (click)="routerHelper.goToMeeting(params)"
+      (click)="goToMeeting({})"
     ><span class="mx-auto">Meeting</span></a>
   </div>
 </nav>
 
 <nav
   class="header-navbar navbar navbar-expand-lg navbar-dark bg-dark fixed-top header-common"
+  [class.main-header]="router.url.includes('/main')"
   [class.meeting-header]="router.url.includes('/meeting')"
 >
   <button class="navbar-toggler nav-collapse-button" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTopCollapse" aria-controls="navbarTopCollapse" aria-expanded="false" aria-label="Toggle navigation">
@@ -24,15 +25,16 @@
     <a
       *ngIf="!router.url.includes('/meeting')"
       class="navbar-brand header-link"
-      (click)="routerHelper.goToMeeting(params)"
+      (click)="goToMeeting({})"
     >Meeting</a>
 
     <!-- Right Side -->
-    <div style="margin-left:auto">
+    <div style="margin-left:auto;margin-right:12px">
       <div class="input-group">
         <input
           [value]="searchValue"
           (keyup)="changeSearch($event)"
+          (blur)="blurSearchListDropDown($event)"
           class="search-input form-control ms-2"
           type="search"
           list="staticUserIds"
@@ -46,53 +48,45 @@
         >
           <div
             *ngFor="let result of searchResults | async"
-            class="d-flex ms-2"
-            (click)="setSearchValue(result.aboutContent.userName)"
+            class="d-flex m-2"
+            (click)="setSearchValue(result.userName)"
           >
-            <img class="rounded-circle search-profile" [src]="getSearchProfileImage(result)">
-            <a>
-              {{result.aboutContent.userName}}
+            <img class="rounded-circle search-profile mx-2" [src]="getSearchProfileImage(result)">
+            <a class="mx-2">
+              {{result.userName}}
               <br>
               ({{result.aboutContent.email}})
             </a>
           </div>
-          <a
-            class="dropdown-item"
-            (click)="closeSearchListDropDown()"
-          >Close</a>
         </div>
     
         <div [class]="searchValue&&isSearchValueSelected?'dropdown-menu show':'dropdown-menu'">
           <a
             class="dropdown-item"
-            (click)="routerHelper.goToProfile({userName:searchValue})"
+            (click)="goToProfile({userName:searchValue})"
           >{{searchValue}}'s Profile</a>
           <a
             class="dropdown-item"
-            (click)="routerHelper.goToBlogPrologue({userName:searchValue})"
+            (click)="goToBlogPrologue({userName:searchValue})"
           >{{searchValue}}'s Blog</a>
           <a
             class="dropdown-item"
-            (click)="routerHelper.goToTalk({userName:searchValue})"
-          >{{searchValue}}'s Talk</a>
-          <a
-            class="dropdown-item"
-            (click)="closeProfileLinkDropDown()"
-          >Close</a>
+            (click)="goToMeeting({userName:searchValue})"
+          >{{searchValue}}'s Meeting</a>
         </div>
       </div>
     </div>
-    <ngx-auth-firebaseui-avatar
-      class="mx-2"
+
+    <button
       *ngIf="authService.isSignedIn()"
-      (onSignOut)="authService.onSignOut()"
-      [canEditAccount]="true"
-    ></ngx-auth-firebaseui-avatar>
+      class="btn btn-secondary sign-in-out-button"
+      (click)="authService.onSignOut()"
+    >Sign Out</button>
     <button
       *ngIf="!authService.isSignedIn()"
       routerLink="/sign-in"
       routerLinkActive="active"
-      class="btn btn-secondary sign-in-button"
+      class="btn btn-secondary sign-in-out-button"
     >Sign In</button>
   </div>
 </nav>

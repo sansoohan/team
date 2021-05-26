@@ -1,3 +1,17 @@
-<div>
-  <app-meeting-room></app-meeting-room>
+<div *ngIf=!isPage>
+  <app-modules-not-found></app-modules-not-found>
+</div>
+<div *ngIf=isPage>
+  <div *ngIf="isLoading">
+    <app-modules-page-loading></app-modules-page-loading>
+  </div>
+  <app-meeting-entrance
+    *ngIf="!params.roomId"
+    [meetingContent]="meetingContent"
+  >
+  </app-meeting-entrance>
+  <app-meeting-room
+    *ngIf="params.roomId"
+    [meetingContent]="meetingContent"
+  ></app-meeting-room>
 </div>

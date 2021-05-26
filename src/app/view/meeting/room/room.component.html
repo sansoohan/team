@@ -3,13 +3,10 @@
 </div>
 <div
   *ngIf="isPage"
-  class="talks"
+  class="meetings"
 >
-  <div *ngIf="isLoading">
-    <app-modules-page-loading style="color:'white'"></app-modules-page-loading>
-  </div>
   <app-meeting-left-sidebar
-    [isInRoom]="isInRoom"
+    [isInRoom]="true"
     [isMobileDevice]="isMobileDevice"
     [isScreenSharing]="isScreenSharing"
     [isRecording]="isRecording"
@@ -20,7 +17,7 @@
     (clickStartRecording)="handleClickStartRecording()"
     (clickStopRecording)="handleClickStopRecording()"
     (clickDownloadRecord)="handleClickDownloadRecord()"
-    ></app-meeting-left-sidebar>
+  ></app-meeting-left-sidebar>
   <div class="copy-to-clipboard">
     <button
       *ngIf="isInRoom"

@@ -5,17 +5,18 @@ import { AuthService } from 'src/app/services/auth.service';
 @Component({
   selector: 'app-sign-in',
   templateUrl: './sign-in.component.html',
-  styleUrls: ['./sign-in.component.css']
+  styleUrls: ['./sign-in.component.scss']
 })
 export class SignInComponent implements OnInit {
   // signInErrorMessage = '';
-  // tslint:disable-next-line:no-shadowed-variable
+  // eslint-disable-next-line no-shadow
   constructor(
     private router: Router,
     public authService: AuthService
   ) {
-    if (this.authService.isSignedIn()){
-      this.router.navigate(['/profile']);
+    if (this.authService.isSignedIn()) {
+      const {uid, userName} = this.authService.getCurrentUser();
+      this.router.navigate(['/meeting', userName || uid]);
     }
   }
 
