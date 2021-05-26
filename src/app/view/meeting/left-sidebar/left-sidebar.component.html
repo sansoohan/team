@@ -20,18 +20,15 @@
           </button>
         </div>
 
+        <!-- In Entrance -->
         <div class="collapse navbar-collapse" id="navbarSideCollapse">
           <ul *ngIf="!isInRoom" class="navbar-nav">
             <div class="nav-item">
-              <a class="nav-link" (click)="handleClickCreateRoom()">Create Talk Room</a>
-            </div>
-            <div class="nav-item">
-              <a class="nav-link" (click)="handleClickJoinRoom()">Join Talk Room</a>
-            </div>
-            <div *ngIf="sessionStorage.getItem('beforeRoomId')"  class="nav-item">
-              <a class="nav-link" (click)="clickBackToRoom()">Back to Talk Room</a>
+              <a class="nav-link" (click)="handleClickCreateRoom()">Create Meeting Room</a>
             </div>
           </ul>
+
+          <!-- In Room -->
           <ul *ngIf="isInRoom" class="navbar-nav">
             <div *ngIf="!isScreenSharing && !isMobileDevice" class="nav-item">
               <a class="nav-link" (click)="handleClickStartScreenSharing()">Start Screen Share</a>

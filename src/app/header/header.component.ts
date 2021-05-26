@@ -3,31 +3,33 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 import * as firebase from 'firebase';
-import Identicon from 'identicon.js';
+import Identicon, { IdenticonOptions } from 'identicon.js';
 import { Subscription } from 'rxjs';
 import { RouterHelper } from 'src/app/helper/router.helper';
 import { DomSanitizer } from '@angular/platform-browser';
 
+const FieldPath = firebase.default.firestore.FieldPath;
+
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.css']
+  styleUrls: ['./header.component.scss']
 })
-export class HeaderComponent {
-  isPage: boolean;
-  params: any;
-  paramSub: Subscription;
 
-  // Search
-  isSearchValueSelected: boolean;
-  selectedSearchName: string;
+export class HeaderComponent {
+  params: any;
+  paramSub?: Subscription;
+
+  selectedSearchName?: string;
   searchValue: string;
   searchResults: any;
 
-  // tslint:disable-next-line:no-shadowed-variable
+  isPage = true;
+  isSearchValueSelected = false;
+
+  // eslint-disable-next-line no-shadow
   constructor(
     private firestore: AngularFirestore,
-    private route: ActivatedRoute,
     public authService: AuthService,
     public routerHelper: RouterHelper,
     private domSanitizer: DomSanitizer,
@@ -35,34 +37,35 @@ export class HeaderComponent {
   ) {
     this.searchValue = '';
     this.isSearchValueSelected = false;
-    this.paramSub = this.route.params.subscribe(params => {
-      this.isPage = true;
-      this.params = params;
-    });
   }
 
-  closeSearchListDropDown() {
+  blurSearchListDropDown(event: any): void {
+    const beforeValue = event?.target?.value;
+    setTimeout(() => {
+      if (beforeValue === this.searchValue) {
+        this.closeSearchListDropDown();
+      }
+    }, 100);
+  }
+
+  closeSearchListDropDown(): void {
     this.searchValue = '';
     this.isSearchValueSelected = false;
   }
-  closeProfileLinkDropDown() {
-    this.searchValue = '';
-    this.isSearchValueSelected = false;
-  }
 
-  async setSearchValue(searchValue) {
+  setSearchValue(searchValue: string): void {
     this.isSearchValueSelected = true;
     this.searchValue = searchValue;
   }
 
-  getSearchProfileImage(searchProfile) {
+  getSearchProfileImage(searchProfile: any): void {
     let profileImageSrc;
     if (searchProfile.profileImageSrc !== '') {
       profileImageSrc = searchProfile.profileImageSrc;
     }
     else {
       const hash = searchProfile.ownerId;
-      const options = {
+      const options: IdenticonOptions = {
         // foreground: [0, 0, 0, 255],               // rgba black
         background: [230, 230, 230, 230],         // rgba white
         margin: 0.2,                              // 20% margin
@@ -91,7 +94,7 @@ export class HeaderComponent {
       }
 
       this.searchResults = this.firestore.collection('profiles', ref => ref
-      .orderBy(new firebase.firestore.FieldPath('aboutContent', 'userName'))
+      .orderBy(new FieldPath('userName'))
       .limit(10)
       .startAt(this.searchValue)
       .endAt(this.searchValue + '\uf8ff'))
@@ -100,5 +103,17 @@ export class HeaderComponent {
   }
   toggleSearchValueSelected(isSelected: boolean): void{
     this.isSearchValueSelected = isSelected;
+  }
+  goToProfile(params: any): void {
+    this.closeSearchListDropDown();
+  }
+  goToBlogPrologue(params: any): void {
+    this.closeSearchListDropDown();
+  }
+  goToMeeting(params: any): void {
+    this.closeSearchListDropDown();
+    const { userName: ownerName } = this.authService.getCurrentUser();
+    this.routerHelper.goToMeeting({
+      userName: params?.userName || ownerName || 'sansoohan' });
   }
 }

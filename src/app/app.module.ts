@@ -19,7 +19,6 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 
 // Firebase
-import { AngularFireAuthModule } from '@angular/fire/auth';
 import { AngularFireAnalyticsModule } from '@angular/fire/analytics';
 import { AngularFireStorageModule } from '@angular/fire/storage';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
@@ -29,27 +28,26 @@ import { environment } from 'src/environments/environment';
 // ngx module
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 import { MarkdownModule } from 'ngx-markdown';
+import { NgxFileDropModule } from 'ngx-file-drop';
 
 // View
 import { AppComponent } from 'src/app/app.component';
 import { HeaderComponent } from './header/header.component';
 import { MeetingModule } from './view/meeting/meeting.module';
-import { ContactComponent } from 'src/app/view/contact/contact.component';
 import { MainComponent } from 'src/app/view/main/main.component';
-import { ProfileModule } from 'src/app/view/profile/profile.module';
 import { SignInComponent } from 'src/app/view/sign-in/sign-in.component';
 import { SignUpComponent } from 'src/app/view/sign-up/sign-up.component';
 
 // Moudles
 import { EmbededGooglemapModule } from 'src/app/modules/embeded-googlemap/embeded-googlemap.module';
 import { NotFoundModule } from 'src/app/modules/not-found/not-found.module';
+import { AngularFireModule } from '@angular/fire';
 
 @NgModule({
   declarations: [
     AppComponent,
     SignInComponent,
     SignUpComponent,
-    ContactComponent,
     MainComponent,
     HeaderComponent,
   ],
@@ -61,11 +59,11 @@ import { NotFoundModule } from 'src/app/modules/not-found/not-found.module';
     BrowserAnimationsModule,
     SweetAlert2Module.forRoot(),
     AppRoutingModule,
-    BrowserAnimationsModule,
     HttpClientModule,
     MarkdownModule.forRoot({
       sanitize: SecurityContext.NONE,
     }),
+    NgxFileDropModule,
     MatButtonModule,
     MatIconModule,
     MatTabsModule,
@@ -88,12 +86,12 @@ import { NotFoundModule } from 'src/app/modules/not-found/not-found.module';
         // Plus protected routes are still protected even though user is connected.
         guardProtectedRoutesUntilEmailIsVerified: true,
         enableEmailVerification: true, // default: true
+        useRawUserCredential: true
       }
     ),
-    ProfileModule,
     MeetingModule,
+    AngularFireModule.initializeApp(environment.firebase),
     AngularFireAnalyticsModule,
-    AngularFireAuthModule,
     AngularFirestoreModule,
     AngularFireStorageModule,
     AppRoutingModule,
@@ -106,7 +104,10 @@ import { NotFoundModule } from 'src/app/modules/not-found/not-found.module';
     NotFoundModule,
   ],
   providers: [
-    {provide: APP_BASE_HREF, useValue: '/'}
+    {
+      provide: APP_BASE_HREF,
+      useValue: '/',
+    },
   ],
   bootstrap: [AppComponent]
 })

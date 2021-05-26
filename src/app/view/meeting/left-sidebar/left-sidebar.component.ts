@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { AuthService } from 'src/app/services/auth.service';
-import { DataTransferHelper } from 'src/app/helper/data-transefer.helper';
+import { DataTransferHelper } from 'src/app/helper/data-transfer.helper';
 import { RouterHelper } from 'src/app/helper/router.helper';
 import { FormHelper } from 'src/app/helper/form.helper';
 import { Subscription } from 'rxjs';
@@ -11,29 +11,30 @@ import { ProfileService } from 'src/app/services/profile.service';
 @Component({
   selector: 'app-meeting-left-sidebar',
   templateUrl: './left-sidebar.component.html',
-  styleUrls: ['../meeting.component.css', './left-sidebar.component.css']
+  styleUrls: ['../meeting.component.scss', './left-sidebar.component.scss']
 })
 export class LeftSidebarComponent implements OnInit, OnDestroy {
+  // In Entrance
   @Output() clickCreateRoom: EventEmitter<null> = new EventEmitter();
-  @Output() clickJoinRoom: EventEmitter<null> = new EventEmitter();
+
+  // In Room
   @Output() clickLeaveRoom: EventEmitter<null> = new EventEmitter();
   @Output() clickStartScreenSharing: EventEmitter<null> = new EventEmitter();
   @Output() clickStopScreenSharing: EventEmitter<null> = new EventEmitter();
   @Output() clickStartRecording: EventEmitter<null> = new EventEmitter();
   @Output() clickStopRecording: EventEmitter<null> = new EventEmitter();
   @Output() clickDownloadRecord: EventEmitter<null> = new EventEmitter();
-
-  @Input() isInRoom: boolean;
-  @Input() isScreenSharing: boolean;
-  @Input() isRecording: boolean;
-  @Input() isFinishedRecording: boolean;
-  @Input() isMobileDevice: boolean;
+  @Input() isInRoom?: boolean;
+  @Input() isScreenSharing?: boolean;
+  @Input() isRecording?: boolean;
+  @Input() isFinishedRecording?: boolean;
+  @Input() isMobileDevice?: boolean;
 
   paramSub: Subscription;
   params: any;
-  isPage: boolean;
-  isLoading: boolean;
-  talkContent: MeetingContent;
+  isPage?: boolean;
+  isLoading?: boolean;
+  meetingContent?: MeetingContent;
   sessionStorage: Storage;
 
   constructor(
@@ -55,49 +56,40 @@ export class LeftSidebarComponent implements OnInit, OnDestroy {
     });
   }
 
-  handleClickCreateRoom() {
+  // In Entrance
+  handleClickCreateRoom(): void {
     this.clickCreateRoom.emit();
   }
 
-  handleClickJoinRoom() {
-    this.clickJoinRoom.emit();
-  }
-
-  handleClickLeaveRoom() {
+  // In Room
+  handleClickLeaveRoom(): void {
     this.clickLeaveRoom.emit();
   }
 
-  handleClickStartScreenSharing() {
+  handleClickStartScreenSharing(): void {
     this.clickStartScreenSharing.emit();
   }
 
-  handleClickStopScreenSharing() {
+  handleClickStopScreenSharing(): void {
     this.clickStopScreenSharing.emit();
   }
 
-  handleClickStartRecording() {
+  handleClickStartRecording(): void {
     this.clickStartRecording.emit();
   }
 
-  handleClickStopRecording() {
+  handleClickStopRecording(): void {
     this.clickStopRecording.emit();
   }
 
-  handleClickDownloadRecord() {
+  handleClickDownloadRecord(): void {
     this.clickDownloadRecord.emit();
-  }
-
-  clickBackToRoom() {
-    const roomId = sessionStorage.getItem('beforeRoomId');
-    this.routerHelper.goToUrl(
-      `${window.location.origin}/#/talk/${this.params.userName}/room/${roomId}`
-    );
   }
 
   ngOnInit(): void {
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.paramSub.unsubscribe();
   }
 }

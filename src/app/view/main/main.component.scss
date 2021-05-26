@@ -1,0 +1,74 @@
+.container {
+  max-width: 960px;
+}
+
+/*
+ * Dummy devices (replace them with your own or something else entirely!)
+ */
+
+.banner-background-image {
+  background-image: url('/assets/img/banner/banner.png');
+  background-color: rgba(255,255,255,0.5);
+  background-blend-mode: lighten;
+  background-size:cover;
+  transition: background-color .5s;
+  .banner-background-text {
+    transition: background-color .5s;
+  }
+}
+
+.banner-background-image:hover {
+  background-color:rgba(255,255,255,0.2); 
+  .banner-background-text {
+    background-color:rgba(255,255,255,0.7);
+  }
+}
+
+.blog-background-image {
+  background-image: url('/assets/img/about/about.png');
+  background-color:rgba(255,255,255,0.5);
+  background-blend-mode:lighten;
+  background-size:cover;
+  transition: background-color .5s;
+  .blog-background-text {
+    transition: background-color .5s;
+  }
+}
+
+.blog-background-image:hover {
+  background-color:rgba(255,255,255,0.2); 
+  .blog-background-text {
+    background-color:rgba(255,255,255,0.7);
+  }
+}
+
+.video-chat-image {
+  background-image: url('/assets/img/work/work.png');
+  background-color:rgba(255,255,255,0.5);
+  background-blend-mode:lighten;
+  background-size:cover;
+  transition: background-color .5s;
+  .video-chat-text {
+    transition: background-color .5s;
+  }
+}
+
+.video-chat-image:hover {
+  background-color:rgba(255,255,255,0.2); 
+  .video-chat-text {
+    background-color:rgba(255,255,255,0.7);
+  }
+}
+
+/*
+ * Extra utilities
+ */
+
+.flex-equal > * {
+  flex: 1;
+}
+@media (min-width: 768px) {
+  .flex-md-equal > * {
+    flex: 1;
+  }
+}
