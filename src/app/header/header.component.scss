@@ -53,17 +53,7 @@
   margin-left: 0;
 }
 
-.header-navbar.talk-header {
-  margin-left: 50%;
-  width: 50%;
-}
-
-.header-navbar.blog-header {
-  margin-left: 50%;
-  width: 50%;
-}
-
-.header-navbar.profile-header {
+.header-navbar.meeting-header {
   margin-left: 50%;
   width: 50%;
 }
@@ -72,18 +62,10 @@
   .header-navbar {
     margin-left: 0px;
   }
-  .header-navbar.talk-header {
+  .header-navbar.meeting-header {
     margin-left: 110px;
     width: calc(100vw - 110px);
   }
-  .header-navbar.blog-header {
-    margin-left: 110px;
-    width: calc(100vw - 110px);
-  }
-  .header-navbar.profile-header {
-    margin-left: 110px;
-    width: calc(100vw - 110px);
-  }  
 }
 
 .search-navbar {

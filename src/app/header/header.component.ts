@@ -104,6 +104,9 @@ export class HeaderComponent {
   toggleSearchValueSelected(isSelected: boolean): void{
     this.isSearchValueSelected = isSelected;
   }
+  goToMain(params: any): void {
+    this.routerHelper.goToMain({});
+  }
   goToProfile(params: any): void {
     this.closeSearchListDropDown();
   }

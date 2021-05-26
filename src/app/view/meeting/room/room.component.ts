@@ -1240,7 +1240,7 @@ export class RoomComponent implements OnInit, OnDestroy {
   }
 
   pauseVideo(element: any): void {
-    element.pause();
+    element?.pause();
     if ('srcObject' in element) {
       element.srcObject = null;
     }
