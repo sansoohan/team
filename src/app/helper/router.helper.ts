@@ -28,6 +28,11 @@ export class RouterHelper {
       this.router.onSameUrlNavigation = 'ignore'; // Restore config after navigation completes
     });
   }
+  goToMain(params: any): void {
+    this.router.navigate(['/'].filter(Boolean)).finally(() => {
+      this.router.onSameUrlNavigation = 'ignore'; // Restore config after navigation completes
+    });
+  }
 
   scrollToIdElement(profileTitle: string): void {
     setTimeout(() => {

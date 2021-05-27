@@ -56,6 +56,7 @@ export class EntranceComponent implements OnInit, OnDestroy {
       this.params = params;
       this._meetingContent = meetingContent;
       this.meetingId = meetingContent.id;
+      console.log(meetingContent);
       this.roomCreatedAtList = meetingContent?.roomCreatedAtList || [];
       // this.databaseRoot = `meetings/${meetingContent.id}/rooms/`;
       this.isPage = true;
@@ -102,12 +103,12 @@ export class EntranceComponent implements OnInit, OnDestroy {
       await Promise.all([
         this.meetingService.create([
           environment.rootPath,
-          `meetings/${this.meetingId}`,
+          `meetings/${uid}`,
           'rooms',
         ].join('/'), newRoom),
         this.meetingService.update([
           environment.rootPath,
-          `meetings/${this.meetingId}`,
+          `meetings/${uid}`,
         ].join('/'), {
           roomCreatedAtList: [...this.roomCreatedAtList, newRoom.createdAt]
         }),

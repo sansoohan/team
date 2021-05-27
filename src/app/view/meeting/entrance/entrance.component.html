@@ -36,13 +36,13 @@
             class="badge bg-light text-dark user-in-room my-auto"
           >Empty</span>
           <span
-            *ngIf="roomContent.broadcastIds?.length === 1"
+            *ngIf="roomContent.broadcastIds?.length <= 10 && roomContent.broadcastIds?.length > 0"
             class="badge bg-success user-in-room my-auto"
-          >Waiting</span>
+          >Waiting : {{roomContent.broadcastIds?.length}}</span>
           <span
-            *ngIf="roomContent.broadcastIds?.length === 2"
+            *ngIf="roomContent.broadcastIds?.length > 10"
             class="badge bg-secondary user-in-room my-auto"
-          >Full</span>
+          >Full : {{roomContent.broadcastIds?.length}}</span>
         </div>
         <div class="room-list-col col-3 d-flex my-auto">
           <span

@@ -50,38 +50,33 @@ export class AuthService {
     return this.afAuth.currentUser;
   }
 
-  async makeCollectionIfNotExist(uid: string): Promise<void> {
+  async makeCollectionIfNotExist(): Promise<void> {
+    const authUser = await this.getAuthUser();
     const isProfile = await this.isExists([
       `${environment.rootPath.split('/')[0]}/showlog`,
-      'profiles',
-      uid,
+      `profiles/${authUser.uid}`,
     ].join('/'));
-
-    const authUser = await this.getAuthUser();
 
     if (!isProfile) {
       // Init Profile Data
       await this.set([
         `${environment.rootPath.split('/')[0]}/showlog`,
-        'profiles',
-        authUser.uid,
+        `profiles/${authUser.uid}`,
       ].join('/'), new ProfileContent());
     }
 
     const isMeeting = await this.isExists([
       environment.rootPath,
-      'meetings',
-      uid,
+      `meetings/${authUser.uid}`,
     ].join('/'));
 
     if (!isMeeting) {
       // Init Meeting Data
       await this.set([
         environment.rootPath,
-        'meetings',
-        authUser.uid,
+        `meetings/${authUser.uid}`,
       ].join('/'), new MeetingContent());
-    }    
+    }
   }
 
   async signInSuccess(event: any): Promise<void> {
@@ -91,8 +86,7 @@ export class AuthService {
 
     const profile: any = await this.firestore.doc([
       `${environment.rootPath.split('/')[0]}/showlog`,
-      'profiles',
-      event.user.uid,
+      `profiles/${event.user.uid}`,
     ].join('/')).get().toPromise();
     const currentUser = {
       providerData: event.user.providerData,
@@ -105,7 +99,7 @@ export class AuthService {
       userName: profile.data()?.userName || event.user.uid,
     };
     localStorage.setItem('currentUser', JSON.stringify(currentUser));
-    await this.makeCollectionIfNotExist(event.user.uid);
+    await this.makeCollectionIfNotExist();
     this.toastHelper.showSuccess(`Hello ${currentUser.userName}`, '');
     this.router.navigate(['/meeting', currentUser.userName]);
   }
@@ -149,7 +143,7 @@ export class AuthService {
   }
 
   async set(path: string, content: any): Promise<void> {
-    const {uid, userName} = await this.getAuthUser() || {};
+    const {uid, userName} = await this.getCurrentUser() || {};
     content.id = uid;
     content.ownerId = uid;
     content.userName = userName || uid;

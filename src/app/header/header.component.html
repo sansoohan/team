@@ -9,6 +9,12 @@
       class="navbar-brand selected-header-link d-flex"
       (click)="goToMeeting({})"
     ><span class="mx-auto">Meeting</span></a>
+
+    <a
+      *ngIf="router.url.includes('/board')"
+      class="navbar-brand selected-header-link d-flex"
+      (click)="goToMeeting({})"
+    ><span class="mx-auto">Board</span></a>
   </div>
 </nav>
 
@@ -27,6 +33,12 @@
       class="navbar-brand header-link"
       (click)="goToMeeting({})"
     >Meeting</a>
+
+    <a
+      *ngIf="!router.url.includes('/board')"
+      class="navbar-brand header-link"
+      (click)="goToMain({})"
+    >Board</a>
 
     <!-- Right Side -->
     <div style="margin-left:auto;margin-right:12px">
