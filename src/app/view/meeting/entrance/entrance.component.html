@@ -24,23 +24,26 @@
         <div class="room-list-col col-6 d-flex m-auto">
           <button
             class="btn btn-sm p-1"
-            [class.btn-outline-warning]="roomContent.broadcastIds && roomContent.broadcastIds.length < 2"
-            [class.btn-outline-secondary]="roomContent.broadcastIds?.length === 2"
-            [disabled]="roomContent.broadcastIds?.length === 2"
+            [class.btn-outline-warning]="roomContent.broadcastIds && countMember(roomContent) <= 10"
+            [class.btn-outline-secondary]="countMember(roomContent) > 10"
+            [disabled]="countMember(roomContent) > 10"
             (click)="goToRoom(roomContent.id)"
           >{{roomContent.id}}</button>
         </div>
         <div class="room-list-col col-2 d-flex">
           <span
-            *ngIf="roomContent.broadcastIds?.length === 0"
+            *ngIf="countMember(roomContent) === 0"
             class="badge bg-light text-dark user-in-room my-auto"
           >Empty</span>
           <span
-            *ngIf="roomContent.broadcastIds?.length <= 10 && roomContent.broadcastIds?.length > 0"
+            *ngIf="
+              countMember(roomContent) <= 10
+              && countMember(roomContent) > 0
+            "
             class="badge bg-success user-in-room my-auto"
           >Waiting : {{roomContent.broadcastIds?.length}}</span>
           <span
-            *ngIf="roomContent.broadcastIds?.length > 10"
+            *ngIf="countMember(roomContent) > 10"
             class="badge bg-secondary user-in-room my-auto"
           >Full : {{roomContent.broadcastIds?.length}}</span>
         </div>
