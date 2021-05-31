@@ -56,7 +56,6 @@ export class EntranceComponent implements OnInit, OnDestroy {
       this.params = params;
       this._meetingContent = meetingContent;
       this.meetingId = meetingContent.id;
-      console.log(meetingContent);
       this.roomCreatedAtList = meetingContent?.roomCreatedAtList || [];
       // this.databaseRoot = `meetings/${meetingContent.id}/rooms/`;
       this.isPage = true;
@@ -167,6 +166,10 @@ export class EntranceComponent implements OnInit, OnDestroy {
         this.roomContents.sort((commentA: any, commentB: any) => commentB.createdAt - commentA.createdAt);
       });
     });
+  }
+
+  countMember(roomContent: RoomContent): number {
+    return roomContent.broadcastIds?.length || 0;
   }
 
   ngOnInit(): void {
