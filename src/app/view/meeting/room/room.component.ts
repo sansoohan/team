@@ -19,6 +19,7 @@ declare var MediaRecorder: any;
 
 export class RoomComponent implements OnInit, OnDestroy {
   @ViewChild ('localVideo') public localVideo?: ElementRef;
+  @ViewChild ('localAudio') public localAudio?: ElementRef;
   @ViewChild ('videoContainer') public videoContainer?: ElementRef;
   @ViewChild ('videoBackground') public videoBackground?: ElementRef;
   @ViewChild ('localVideoGroup') public localVideoGroup?: ElementRef;
@@ -26,7 +27,8 @@ export class RoomComponent implements OnInit, OnDestroy {
   @ViewChild ('localCanvas') public localCanvas?: ElementRef;
   @ViewChild ('localButtonGroup') public localButtonGroup?: ElementRef;
 
-  localStream?: MediaStream;
+  localAudioStream?: MediaStream;
+  localVideoStream?: MediaStream;
   canvasStream?: MediaStream;
   paramSub: Subscription;
   params: any;
@@ -63,6 +65,7 @@ export class RoomComponent implements OnInit, OnDestroy {
 
   dataDebugFlag = false;
   isPage = true;
+  isFrontCamera = true;
   roomsPath?: string;
   videoChunks: Array<any> = [];
   availableGrids: Array<Array<any>> = [[]];
@@ -76,7 +79,7 @@ export class RoomComponent implements OnInit, OnDestroy {
   isRemoteVideoOns: {[key: string]: any} = {};
   audioSourcesForRecording: {[key: string]: any} = {};
 
-  MAX_CONNECTION_COUNT = 3;
+  MAX_CONNECTION_COUNT = 10;
 
   constructor(
     private database: AngularFireDatabase,
@@ -122,7 +125,8 @@ export class RoomComponent implements OnInit, OnDestroy {
     this.roomId = this.params.roomId;
     this.isCopiedToClipboard = false;
     // this.remoteVideo = document.getElementById('remote_video');
-    delete this.localStream;
+    delete this.localAudioStream;
+    delete this.localVideoStream;
     // this.peerConnection = null;
     // this.textForSendSdp = document.getElementById('text_for_send_sdp');
     // this.textToReceiveSdp = document.getElementById('text_for_receive_sdp');
@@ -186,7 +190,7 @@ export class RoomComponent implements OnInit, OnDestroy {
       }
     });
     this.setAvailableGrids(30);
-    await this.updateVideoState(this.getVideoLength());
+    await this.updateVideoState(this.getVideoLength(), this.isFrontCamera);
     // this.updateVideoFrameRate(this.getVideoLength());
     this.joinRoom(this.roomId).then(async () => {
       window.addEventListener('resize', this.onResizeWindow.bind(this));
@@ -217,6 +221,7 @@ export class RoomComponent implements OnInit, OnDestroy {
     // await this.stopVideo();
     await this.ngOnDestroy();
     location.href = `${location.origin}/#/meeting/${this.params.userName}`;
+    location.reload();
   }
 
   setAvailableGrids(until = 30): void {
@@ -323,19 +328,24 @@ export class RoomComponent implements OnInit, OnDestroy {
     }
   }
 
-  getMediaConstrains(memberCount: number): MediaStreamConstraints {
-    return {
-      video:
-        memberCount <= 1 ? {frameRate: 30, width: 640, height: 480} :
-        memberCount <= 2 ? {frameRate: 15, width: 640, height: 480} :
-        memberCount <= 3 ? {frameRate: 12, width: 480, height: 360} :
-        memberCount <= 4 ? {frameRate: 9, width: 480, height: 360} :
-        memberCount <= 6 ? {frameRate: 7, width: 480, height: 360} :
-        memberCount <= 9 ? {frameRate: 7, width: 320, height: 240} :
-        memberCount <= 12 ? {frameRate: 6, width: 240, height: 180} :
-        memberCount <= 15 ? {frameRate: 5, width: 160, height: 120} : false,
-      audio: true,
-    };
+  getVideoConstrains(memberCount: number, isFrontCamera: boolean): MediaStreamConstraints {
+    const video: any =
+    memberCount <= 1 ? {frameRate: 30, width: 640, height: 480} :
+    memberCount <= 2 ? {frameRate: 15, width: 640, height: 480} :
+    memberCount <= 3 ? {frameRate: 12, width: 480, height: 360} :
+    memberCount <= 4 ? {frameRate: 9, width: 480, height: 360} :
+    memberCount <= 6 ? {frameRate: 7, width: 480, height: 360} :
+    memberCount <= 9 ? {frameRate: 7, width: 320, height: 240} :
+    memberCount <= 12 ? {frameRate: 6, width: 240, height: 180} :
+    memberCount <= 15 ? {frameRate: 5, width: 160, height: 120} : false;
+
+    video.facingMode = (isFrontCamera? "user" : "environment")
+
+    return { video };
+  }
+
+  getAudioConstrains(): MediaStreamConstraints {
+    return { audio: true };
   }
 
   setMediaStatus(stream?: MediaStream, mediaType?: string, status?: boolean): void {
@@ -358,8 +368,8 @@ export class RoomComponent implements OnInit, OnDestroy {
       if (this.canvasStream) {
         this.setMediaStatus(this.canvasStream, 'Video', this.isLocalVideoOn);
       }
-      if (this.isMobileDevice && this.localStream) {
-        this.setMediaStatus(this.localStream, 'Video', this.isLocalVideoOn);
+      if (this.isMobileDevice && this.localVideoStream) {
+        this.setMediaStatus(this.localVideoStream, 'Video', this.isLocalVideoOn);
       }
     }
   }
@@ -775,7 +785,7 @@ export class RoomComponent implements OnInit, OnDestroy {
 
   // ---- for multi party -----
   isReadyToConnect(): boolean {
-    if (this.localStream) {
+    if (this.localVideoStream && this.localAudioStream) {
       return true;
     }
     else {
@@ -889,7 +899,7 @@ export class RoomComponent implements OnInit, OnDestroy {
   attachVideo(id: string, stream: MediaStream): void {
     const video = this.addRemoteVideoElement(id);
     this.addRemoteStream(id, stream);
-    this.playVideo(video, stream);
+    this.playMedia(video, stream);
     video.volume = 1.0;
   }
 
@@ -920,7 +930,7 @@ export class RoomComponent implements OnInit, OnDestroy {
     this.isRemoteVideoOns[id] = true;
     this.isRemoteAudioOns[id] = true;
     this.isShowingRemoteControl[id] = false;
-    this.updateVideoState(this.getVideoLength());
+    this.updateVideoState(this.getVideoLength(), this.isFrontCamera);
     return video;
   }
 
@@ -938,11 +948,10 @@ export class RoomComponent implements OnInit, OnDestroy {
     delete this.isRemoteVideoOns[id];
     delete this.isRemoteAudioOns[id];
     delete this.isShowingRemoteControl[id];
-    this.updateVideoState(this.getVideoLength());
+    this.updateVideoState(this.getVideoLength(), this.isFrontCamera);
   }
 
-  createVideoWraperElement(id: string)
-  : {
+  createVideoWraperElement(id: string): {
     video: HTMLVideoElement,
     videoWraper: HTMLDivElement,
     buttonGroup: HTMLDivElement,
@@ -953,6 +962,8 @@ export class RoomComponent implements OnInit, OnDestroy {
     videoWraper.id = 'video_wraper_' + id;
     const video: HTMLVideoElement = document.createElement('video');
     video.id = 'remote_video_' + id;
+    video.autoplay = true;
+    video.setAttribute('playsinline', '');
     const buttonGroup: HTMLDivElement = document.createElement('div');
     buttonGroup.style.zIndex = '2';
     buttonGroup.style.display = 'flex';
@@ -1117,13 +1128,18 @@ export class RoomComponent implements OnInit, OnDestroy {
   }
 
   // ---------------------- media handling -----------------------
-  async updateVideoResolution(videoCount: number): Promise<void> {
-    this.localStream = await this.getDeviceStream(this.getMediaConstrains(videoCount));
-    this.playVideo(this.localVideo?.nativeElement, this.localStream);
+  async updateLocalVideoStream(videoCount: number, isFrontCamera: boolean): Promise<void> {
+    this.localVideoStream = await this.getDeviceStream(this.getVideoConstrains(videoCount, isFrontCamera));
+    this.playMedia(this.localVideo?.nativeElement, this.localVideoStream);
   }
 
-  updateVideoFrameRate(videoCount: number): void {
-    const constrains = (this.getMediaConstrains(videoCount) as any);
+  async initLocalAudioStream(): Promise<void> {
+    this.localAudioStream = await this.getDeviceStream(this.getAudioConstrains());
+    this.playMedia(this.localAudio?.nativeElement, this.localAudioStream);
+  }
+
+  updateVideoFrameRate(videoCount: number, isFrontCamera: boolean): void {
+    const constrains = (this.getVideoConstrains(videoCount, isFrontCamera) as any);
     if (this.localCanvasInterval) {
       clearInterval(this.localCanvasInterval);
     }
@@ -1137,7 +1153,7 @@ export class RoomComponent implements OnInit, OnDestroy {
   }
 
   // start local video
-  async updateVideoState(videoCount = 1): Promise<void> {
+  async updateVideoState(videoCount: number, isFrontCamera: boolean): Promise<void> {
     const navi: any = navigator;
     this.mediaDevices = navigator.mediaDevices ||
     ((navi.mozGetUserMedia || navi.webkitGetUserMedia) ? {
@@ -1155,8 +1171,12 @@ export class RoomComponent implements OnInit, OnDestroy {
       return;
     }
 
-    await this.updateVideoResolution(videoCount);
-    this.updateVideoFrameRate(videoCount);
+    await this.updateLocalVideoStream(videoCount, isFrontCamera);
+    if (!this.localAudioStream) {
+      await this.initLocalAudioStream();
+    }
+
+    this.updateVideoFrameRate(videoCount, isFrontCamera);
     this.onResizeWindow();
 
     if (/Firefox/g.test(navigator.userAgent)) {
@@ -1169,7 +1189,7 @@ export class RoomComponent implements OnInit, OnDestroy {
 
     if (!this.canvasStream && this.canvasVideo) {
       this.canvasStream = this.localCanvas?.nativeElement.captureStream();
-      const [localVideoAudio] = this.localStream?.getAudioTracks() || [];
+      const [localVideoAudio] = this.localAudioStream?.getAudioTracks() || [];
       this.canvasStream?.addTrack(localVideoAudio);
       this.canvasVideo.nativeElement.srcObject = this.canvasStream;
       this.canvasVideo.nativeElement.muted = true;
@@ -1182,10 +1202,13 @@ export class RoomComponent implements OnInit, OnDestroy {
   async stopVideo(): Promise<void> {
     this.pauseVideo(this.localVideo?.nativeElement);
     this.pauseVideo(this.canvasVideo?.nativeElement);
-    this.stopStream(this.localStream);
+    this.stopStream(this.localVideoStream);
+    this.stopStream(this.localAudioStream);
     this.stopStream(this.canvasStream);
     this.stopStream(this.shareStream);
-    delete this.localStream;
+
+    delete this.localVideoStream;
+    delete this.localAudioStream;
     delete this.canvasStream;
     delete this.shareStream;
   }
@@ -1196,7 +1219,6 @@ export class RoomComponent implements OnInit, OnDestroy {
       console.warn('NO tracks');
       return;
     }
-    console.log(tracks);
 
     for (const track of tracks) {
       track.stop();
@@ -1224,11 +1246,7 @@ export class RoomComponent implements OnInit, OnDestroy {
     }
   }
 
-  playVideo(element: any, stream?: MediaStream): void {
-    if (!element) {
-      return;
-    }
-
+  playMedia(element: any, stream?: MediaStream): void {
     if ('srcObject' in element) {
       element.srcObject = stream;
     }
@@ -1240,7 +1258,7 @@ export class RoomComponent implements OnInit, OnDestroy {
   }
 
   pauseVideo(element: any): void {
-    element?.pause();
+    element.pause();
     if ('srcObject' in element) {
       element.srcObject = null;
     }
@@ -1323,7 +1341,7 @@ export class RoomComponent implements OnInit, OnDestroy {
           console.log('stream already attached, so ignore');
         }
         else {
-          // this.playVideo(remoteVideo, stream);
+          // this.playMedia(remoteVideo, stream);
           this.changeVideoCodec(peer, 'video/mp4');
           this.attachVideo(id, stream);
         }
@@ -1334,7 +1352,7 @@ export class RoomComponent implements OnInit, OnDestroy {
         const stream = event.stream;
         // tslint:disable-next-line: no-console
         console.log('-- peer.onaddstream() stream.id=' + stream.id);
-        // this.playVideo(remoteVideo, stream);
+        // this.playMedia(remoteVideo, stream);
         this.changeVideoCodec(peer, 'video/mp4');
         this.attachVideo(id, stream);
       };
