@@ -27,8 +27,8 @@ export class RoomComponent implements OnInit, OnDestroy {
   @ViewChild ('localCanvas') public localCanvas?: ElementRef;
   @ViewChild ('localButtonGroup') public localButtonGroup?: ElementRef;
 
-  localAudioStream?: MediaStream;
-  localVideoStream?: MediaStream;
+  localAudioStream?: MediaStream|undefined;
+  localVideoStream?: MediaStream|undefined;
   canvasStream?: MediaStream;
   paramSub: Subscription;
   params: any;
@@ -334,10 +334,10 @@ export class RoomComponent implements OnInit, OnDestroy {
     memberCount <= 2 ? {frameRate: 15, width: 640, height: 480} :
     memberCount <= 3 ? {frameRate: 12, width: 480, height: 360} :
     memberCount <= 4 ? {frameRate: 9, width: 480, height: 360} :
-    memberCount <= 6 ? {frameRate: 7, width: 480, height: 360} :
-    memberCount <= 9 ? {frameRate: 7, width: 320, height: 240} :
-    memberCount <= 12 ? {frameRate: 6, width: 240, height: 180} :
-    memberCount <= 15 ? {frameRate: 5, width: 160, height: 120} : false;
+    memberCount <= 6 ? {frameRate: 7, width: 320, height: 240} :
+    memberCount <= 9 ? {frameRate: 7, width: 240, height: 180} :
+    memberCount <= 12 ? {frameRate: 5, width: 160, height: 120} :
+    memberCount <= 15 ? {frameRate: 4, width: 160, height: 120} : false;
 
     video.facingMode = (isFrontCamera? "user" : "environment")
 
