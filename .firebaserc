@@ -2,10 +2,10 @@
   "targets": {
     "developers-8a830": {
       "hosting": {
-        "teams": [
+        "prod": [
           "teams-5d42a"
         ],
-        "teams-staging": [
+        "stage": [
           "teams-5d42a-staging"
         ]
       }

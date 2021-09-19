@@ -11,8 +11,9 @@
   },
   "hosting": [
     {
-      "target": "teams",
-      "public": "dist/teams",
+      "target": "prod",
+      "predeploy": "npm run build prod",
+      "public": "dist/prod",
       "ignore": [
         "firebase.json",
         "**/.*",
@@ -33,8 +34,9 @@
       }]
     },
     {
-      "target": "teams-staging",
-      "public": "dist/teams-staging",
+      "target": "stage",
+      "predeploy": "npm run build stage",
+      "public": "dist/stage",
       "ignore": [
         "firebase.json",
         "**/.*",
